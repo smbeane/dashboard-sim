@@ -2,7 +2,6 @@
 #define RENDERER_HPP
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
 
 #include <string>
 #include <vector>
@@ -44,7 +43,7 @@ class Renderer {
          * @param name    the name of the rendering window
          */
         Renderer(int wwidth, int wheight, int pwidth, int pheight, int pgap, std::string name = "Renderer") :
-        window_width{ 0 }, window_height{ wheight }, pixel_width{ pwidth },
+        window_width{ wwidth }, window_height{ wheight }, pixel_width{ pwidth },
         pixel_height{ pheight }, pixel_gap{ pgap }, window_name{ name }, 
         window{nullptr}, renderer {nullptr} {
             sdl_init_success = init_window();

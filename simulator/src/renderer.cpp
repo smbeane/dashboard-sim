@@ -1,8 +1,5 @@
 #include <renderer.hpp>
 
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
-
 bool Renderer::able_to_render() {
     return sdl_init_success;
 }
@@ -32,7 +29,7 @@ bool Renderer::init_window() {
 
 bool Renderer::render_matrix(std::vector<Color> matrix) {
 
-    SDL_SetRenderDrawColor( renderer, 10, 10, 10, 255);
+    SDL_SetRenderDrawColor( renderer, 10, 10, 10, 255 );
     SDL_RenderClear( renderer );
 
     for (int i = 0; i < 64; i++) {

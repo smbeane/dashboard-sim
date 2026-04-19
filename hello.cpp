@@ -6,10 +6,11 @@
 #include <renderer.hpp>
 #include <vector>
 
-const int width      { 64 * 20 };
-const int height     { 32 * 20 };
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
+
+const int width      { 64 * (pixel_size + pixel_gap * 2) };
+const int height     { 32 * (pixel_size + pixel_gap * 2) };
 
 std::vector<Color> grid (64 * 32);
 
@@ -41,6 +42,8 @@ int main ( int argc, char* args[] ) {
         }
         
         std::fill(grid.begin(), grid.end(), Color(curr_color, curr_color, curr_color));
+
+        render.render_matrix(grid);
 
         curr_color = increase ? curr_color + 1 : curr_color - 1;
         if (increase && curr_color >= 255) increase = false;
