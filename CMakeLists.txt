@@ -10,7 +10,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 add_subdirectory(SDL EXCLUDE_FROM_ALL)
 add_subdirectory(color)
 add_subdirectory(simulator)
+add_subdirectory(fonts)
 
 add_executable(dashboard_sim WIN32 hello.cpp)
 
-target_link_libraries(dashboard_sim PRIVATE color simulator SDL3::SDL3)
+target_link_libraries(dashboard_sim PRIVATE color simulator fonts SDL3::SDL3)
