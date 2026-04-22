@@ -8,18 +8,20 @@
 #include <color.hpp>
 #include <renderer.hpp>
 #include <fonts.hpp>
-
+#include <line.hpp>
 
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
-
 std::vector<Color> grid (64 * 32);
 
+
 std::vector<std::string> flags = {"--page", "--font_size", "--refresh_rate", "--window_width", "--window_height"};
-std::vector<int> inputs(5);
 
-
-void parse_args (int argc, char* args[]) {
+std::vector<int> parse_args (int argc, char* args[]) {
+    std::vector<int> inputs(5, 0);
+    inputs[3] = 1408;
+    inputs[4] = 704;
+    
     for (int i = 0; i < argc; i++) {
         std::string flag(args[i]);
         
@@ -30,11 +32,13 @@ void parse_args (int argc, char* args[]) {
         } 
     }
 
-    std::cout << "Window width: " << args[3] << std::endl;
-    std::cout << "Window height: " << args[4] << std::endl;
-    std::cout << "Font Height: " << args[1] << std::endl;
-    std::cout << "FPS: " << args[2] << std::endl;
-    std::cout << "Page Selection: " << args[0] << std::endl;
+    std::cout << "Page Selection: " << inputs[0] << std::endl;
+    std::cout << "Font Height: " << inputs[1] << std::endl;
+    std::cout << "FPS: " << inputs[2] << std::endl;
+    std::cout << "Window width: " << inputs[3] << std::endl;
+    std::cout << "Window height: " << inputs[4] << std::endl;
+
+    return inputs;
 
 }
 
@@ -43,7 +47,7 @@ void parse_args (int argc, char* args[]) {
 int main ( int argc, char* argv[] ) {
     int exitCode{ 0 };
 
-    parse_args(argc, argv);
+    std::vector<int> inputs = parse_args(argc, argv);
     int window_width = inputs[3]; 
     int window_height = inputs[4];
 
