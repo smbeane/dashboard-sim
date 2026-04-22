@@ -1,7 +1,16 @@
 # LED Dashboard Simulator
 
-## Folder Structure
+## Command Line Arguments
+`--page` page selection if there is a specific page to be ran (no default)
 
+`--font_size` vertical font size (3 x 5)
+
+`--refresh_rate` the refresh rate of the simulator (defaults to 60 fps)
+
+`--window_width, --window_height` dimensions for the simulation window (defaults to 1280 x 640)
+
+
+## Folder Structure
 ``` 
 dashboard_sim
 ├── build

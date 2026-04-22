@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -12,16 +13,42 @@
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
 
-const int width      { 64 * (pixel_size + pixel_gap * 2) };
-const int height     { 32 * (pixel_size + pixel_gap * 2) };
-
 std::vector<Color> grid (64 * 32);
 
-int main ( int argc, char* args[] ) {
+std::vector<std::string> flags = {"--page", "--font_size", "--refresh_rate", "--window_width", "--window_height"};
+std::vector<int> inputs(5);
+
+
+void parse_args (int argc, char* args[]) {
+    for (int i = 0; i < argc; i++) {
+        std::string flag(args[i]);
+        
+        if (!(i + 1 < argc)) continue; 
+        std::string value(args[i + 1]);
+        for (int j = 0; j < flags.size(); j++) {
+            if ( flag == flags[j] ) inputs[j] = std::stoi(value);
+        } 
+    }
+
+    std::cout << "Window width: " << args[3] << std::endl;
+    std::cout << "Window height: " << args[4] << std::endl;
+    std::cout << "Font Height: " << args[1] << std::endl;
+    std::cout << "FPS: " << args[2] << std::endl;
+    std::cout << "Page Selection: " << args[0] << std::endl;
+
+}
+
+
+
+int main ( int argc, char* argv[] ) {
     int exitCode{ 0 };
 
-    Renderer render( width, height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
+    parse_args(argc, argv);
+    int window_width = inputs[3]; 
+    int window_height = inputs[4];
 
+    Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
+    
     if ( !(render.able_to_render())) {
         
         SDL_Log ( "Window could not initialize \n");   

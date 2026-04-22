@@ -12,6 +12,6 @@ add_subdirectory(color)
 add_subdirectory(simulator)
 add_subdirectory(fonts)
 
-add_executable(dashboard_sim WIN32 hello.cpp)
+add_executable(dashboard_sim hello.cpp)
 
 target_link_libraries(dashboard_sim PRIVATE color simulator fonts SDL3::SDL3)
