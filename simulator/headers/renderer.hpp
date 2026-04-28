@@ -4,7 +4,7 @@
 #include <SDL3/SDL.h>
 
 #include <string>
-#include <vector>
+#include <array>
 #include <color.hpp>
 
 class Renderer {
@@ -51,7 +51,7 @@ class Renderer {
         
         bool able_to_render();
 
-        bool render_matrix(std::vector<Color> grid);
+        bool render_matrix(std::array<Color, 64*32> grid);
         
         void close_window();
         

@@ -27,7 +27,7 @@ bool Renderer::init_window() {
     }
 }
 
-bool Renderer::render_matrix(std::vector<Color> matrix) {
+bool Renderer::render_matrix(std::array<Color, 64*32> matrix) {
 
     SDL_SetRenderDrawColor( renderer, 10, 10, 10, 255 );
     SDL_RenderClear( renderer );
