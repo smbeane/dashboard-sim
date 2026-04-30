@@ -16,10 +16,3 @@ add_subdirectory(components)
 add_executable(dashboard_sim hello.cpp)
 
 target_link_libraries(dashboard_sim PRIVATE color simulator fonts components SDL3::SDL3)
-
-add_custom_target(add_component
-    COMMAND python ${CMAKE_SOURCE_DIR}/scripts/create_component.py $ENV{NAME}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Generating template for component: ${NAME}"
-    USES_TERMINAL
-)

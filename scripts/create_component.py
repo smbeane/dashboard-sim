@@ -3,7 +3,7 @@ import sys
 
 def create_component(name):
     class_name = name[0].upper() + name[1:]
-    base_path = f"../components/{name.lower()}"
+    base_path = f"components/{name.lower()}"
     os.makedirs(base_path, exist_ok=True)
 
     with open(f"{base_path}/{name.lower()}.hpp", "w") as f:
