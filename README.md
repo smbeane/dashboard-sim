@@ -1,6 +1,11 @@
 # LED Dashboard Simulator
 
-## Command Line Arguments
+## Directions (Starting in base directory)
+1. `cd build`
+2. `cmake .. --preset {PRESET}`
+3. `ninja {ARGS}`
+
+### Command Line Arguments
 `--page` page selection if there is a specific page to be ran (no default)
 
 `--font_size` vertical font size (3 x 5)
@@ -10,20 +15,14 @@
 `--window_width, --window_height` dimensions for the simulation window (defaults to 1280 x 640)
 
 
+# Contributing
+
 ## Folder Structure
 ``` 
 dashboard_sim
 ├── build
 ├── fonts
-|   ├── CMakeLists.txt
-|   └── headers
-|       └── fonts.hpp    
 ├── color
-|   ├── CMakseLists.txt
-|   ├── src
-|   |   └── color.cpp
-|   └── headers
-|       └── color.hpp
 ├── SDL...
 ├── pages
 |   ├── CMakeLists.txt
@@ -35,21 +34,19 @@ dashboard_sim
 |   |   |   └── spotify.hpp
 |   |       └── spotifyClass.hpp
 |   |   └── helpers
-|   └── test
-|       ├── src
-|       |   └── test.cpp
-|       └── headers
-|           └── test.hpp
+|   ├── ...
+|
 └── components 
     ├── CMakeLists.txt
     ├── textbox
-    |   ├── src
-    |   |   └── textbox.cpp
-    |   ├── headers
-    |   |   └── textbox.hpp
-    └── line
-        ├── src
-        |   └── line.cpp
-        └── headers
-            └── line.hpp
+    |   └── textbox.cpp
+    |   └── textbox.hpp
+    ├── ...
+
 ```
+
+## Helpful Scripts
+
+### Creating Components and Pages
+
+To create a component or page, use the `create_component.py` or `create_page.py` scripts with the respective name as a command line argument. As of 4/29/2026, you will have to manually add to the `CMakeLists.txt` and rebuild, however, there are plans to improve the scripts down the line. 
