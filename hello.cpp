@@ -14,6 +14,9 @@
 
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
+const Color profile_color(63, 81, 181);
+const Color white(255, 255, 255);
+
 std::array<Color, 64*32> grid;
 
 
@@ -60,10 +63,10 @@ int main ( int argc, char* argv[] ) {
 
     }
 
-    std::string line1 = "abcdefghijklmnop";
-    std::string line2 = "qrstuvwxyz";
-    std::string line3 = "0123456789";
-    int x_start = 0;
+    // std::string line1 = "abcdefghijklmnop";
+    // std::string line2 = "qrstuvwxyz";
+    // std::string line3 = "0123456789";
+    // int x_start = 0;
 
 //     for (int c = 0; c < line1.length(); c++) {
 //         uint16_t character1 = font_3x5[line1[c] - 'a'];
@@ -105,7 +108,8 @@ int main ( int argc, char* argv[] ) {
 //     x_start += 4; 
 //     }
 
-    Rectangle rect(1, 1, 10, 10, Color(100, 100, 100), Color(255, 153, 123));
+    Rectangle rect(1, 1, 10, 10, white, profile_color);
+
     rect.render_component(grid);
 
     bool quit{ false };
@@ -124,8 +128,6 @@ int main ( int argc, char* argv[] ) {
         }
         
         render.render_matrix(grid);
-
-
 
         // grid.fill(Color(curr_color, curr_color, curr_color));
 

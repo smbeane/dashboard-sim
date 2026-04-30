@@ -1,6 +1,5 @@
 add_library(
     components
-    line/line.cpp line/line.hpp
     rectangle/rectangle.cpp rectangle/rectangle.hpp
 
 )
