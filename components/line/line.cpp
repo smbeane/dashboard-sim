@@ -2,21 +2,8 @@
 #include <iostream>
 
 void Line::render_component(std::array<Color, 64*32>& matrix) {
-    if (!primary.is_visible()) {
-        printf("primary->r = %d\n", int(primary.r));
-        printf("primary->g = %d\n", int(primary.g));
-        printf("primary->b = %d\n", int(primary.b));
-        printf("primary->v = %d\n", int(primary.visible));
-        
-        return;
-    }
+    if (!primary.is_visible()) return;
     
-    printf("primary.r = %d\n", int(primary.r));
-    printf("primary.g = %d\n", int(primary.g));
-    printf("primary.b = %d\n", int(primary.b));
-    printf("primary.v = %d\n", int(primary.visible));
-
-
     int x1 = this->x;
     int y1 = this->y;
     int x2 = this->end_x; 

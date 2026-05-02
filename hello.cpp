@@ -1,6 +1,7 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <memory>
 #include <iostream>
 
 #include <SDL3/SDL.h>
@@ -8,7 +9,6 @@
 
 #include <color.hpp>
 #include <renderer.hpp>
-#include <fonts.hpp>
 
 #include <components.hpp>
 
@@ -17,6 +17,7 @@ const int pixel_gap  { 2 };
 const int pixel_size { 18 };
 const Color profile_color(63, 81, 181, 1);
 const Color white(255, 255, 255, 1);
+const Color black(0, 0, 0, 1);
 
 std::array<Color, 64*32> grid;
 
@@ -63,62 +64,16 @@ int main ( int argc, char* argv[] ) {
 
     }
 
-    // std::string line1 = "abcdefghijklmnop";
-    // std::string line2 = "qrstuvwxyz";
-    // std::string line3 = "0123456789";
-    // int x_start = 0;
+    std::vector<std::unique_ptr<Component>> components;
 
-//     for (int c = 0; c < line1.length(); c++) {
-//         uint16_t character1 = font_3x5[line1[c] - 'a'];
-//         uint16_t character2, character3;
+    components.push_back(std::make_unique<Rectangle>(1, 1, 10, 10, white, profile_color));
+    components.push_back(std::make_unique<Line>(15, 1, profile_color, 22, 7));
+    components.push_back(std::make_unique<Circle>(55, 10, white, profile_color, 5));
+    components.push_back(std::make_unique<Progress_bar>(30, 1, 20, 5, 50, white, profile_color));
+    components.push_back(std::make_unique<Slider>(2, 28, white, profile_color, 15, 50));
+    components.push_back(std::make_unique<Textbox>(5, 20, "ABCDE", 5, 2, profile_color, black));
 
-//         if (c < 10) {
-//             character2 = font_3x5[line2[c] - 'a'];
-//             character3 = font_3x5[line3[c] - 'a'];
-//         } else {
-//             character2 = 0b000000000000000;
-//             character3 = 0b000000000000000;
-//         }
-
-//         uint16_t mask = 0x4000; 
-
-//         for (int j = 0; j < 5; j++) {         
-//             for (int i = 0; i < 3; i++) {     
-                
-//                 int target_index1 = (j * 64) + (x_start + i);
-//                 int target_index2 = ((j + 6) * 64) + (x_start + i);
-//                 int target_index3 = ((j + 12) * 64) + (x_start + i);
-
-//                 if (character1 & mask) {
-//                     grid[target_index1] = Color(255, 255, 255);
-//                 } else {
-//                     grid[target_index1] = Color(0, 0, 0);       
-//                 }
-
-//                 if (character2 & mask) {
-//                     grid[target_index2] = Color(255, 255, 255);
-//                 } else {
-//                     grid[target_index2] = Color(0, 0, 0);       
-//                 }
-
-//                 mask >>= 1; 
-//             }
-//         }
-
-//     x_start += 4; 
-//     }
-
-    Rectangle rect(1, 1, 10, 10, white, profile_color);
-    Line line(15, 11, profile_color, 22, 20);
-    Circle circle (50, 20, white, profile_color, 5);
-    Progress_bar bar (30, 1, 20, 5, 50, white, profile_color);
-    Slider slider (2, 28, white, profile_color, 15, 50);
-
-    rect.render_component(grid);
-    line.render_component(grid);
-    circle.render_component(grid);
-    bar.render_component(grid);
-    slider.render_component(grid);
+    for (auto& c : components) c->render_component(grid);
 
     bool quit{ false };
     int curr_color = 0;
@@ -143,7 +98,19 @@ int main ( int argc, char* argv[] ) {
         // if (increase && curr_color >= 255) increase = false;
         // else if (~increase && curr_color <= 0) increase = true;
 
-        SDL_Delay(10);
+        SDL_Delay(1000);
+
+        Textbox* text = dynamic_cast<Textbox*>(components[5].get());
+        if (text) {
+            text->scroll_text();
+            printf("scrolling\n");
+        } 
+
+
+        for (auto& c : components) c->render_component(grid);
+
+        
+
     }
 
     return exitCode;

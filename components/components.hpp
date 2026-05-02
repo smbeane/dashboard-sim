@@ -6,5 +6,6 @@
 #include "circle/circle.hpp"
 #include "progress_bar/progress_bar.hpp"
 #include "slider/slider.hpp"
+#include "textbox/textbox.hpp"
 
 #endif // COMPONENT_HPP

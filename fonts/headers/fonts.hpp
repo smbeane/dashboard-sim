@@ -1,3 +1,5 @@
+#pragma once 
+
 #include <cstdint>
 
 const uint16_t font_3x5[] = {

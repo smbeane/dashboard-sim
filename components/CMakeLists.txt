@@ -6,9 +6,10 @@ add_library(
     circle/circle.cpp circle/circle.hpp
     progress_bar/progress_bar.cpp progress_bar/progress_bar.hpp
     slider/slider.cpp slider/slider.hpp
+    textbox/textbox.cpp textbox/textbox.hpp
 
 )
 
-target_link_libraries(components PUBLIC color)
+target_link_libraries(components PUBLIC color fonts)
 target_include_directories(components PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_definitions(components PUBLIC COMPONENTS_VERSION=1.0)
