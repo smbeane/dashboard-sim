@@ -2,7 +2,20 @@
 #include <iostream>
 
 void Line::render_component(std::array<Color, 64*32>& matrix) {
-    if (!border_color.is_visible()) return;
+    if (!primary.is_visible()) {
+        printf("primary->r = %d\n", int(primary.r));
+        printf("primary->g = %d\n", int(primary.g));
+        printf("primary->b = %d\n", int(primary.b));
+        printf("primary->v = %d\n", int(primary.visible));
+        
+        return;
+    }
+    
+    printf("primary.r = %d\n", int(primary.r));
+    printf("primary.g = %d\n", int(primary.g));
+    printf("primary.b = %d\n", int(primary.b));
+    printf("primary.v = %d\n", int(primary.visible));
+
 
     int x1 = this->x;
     int y1 = this->y;
@@ -17,7 +30,7 @@ void Line::render_component(std::array<Color, 64*32>& matrix) {
 
     while (true) {
         if (x1 >= 0 && x1 < 64 && y1 >= 0 && y1 < 32) {
-            matrix[y1 * 64 + x1] = this->infill_color;
+            matrix[y1 * 64 + x1] = this->primary;
         }
 
         if (x1 == x2 && y1 == y2) break;

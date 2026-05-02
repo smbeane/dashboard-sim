@@ -14,8 +14,8 @@ class Slider : public Component {
         int length;
         int progress;
 
-        Slider (int x, int y, Color primary, Color secondary, int length , int progress) 
-        :  Component( x, y, primary, secondary ), length(length), progress( progress )  {}
+        Slider (int x, int y, Color p, Color s, int length , int progress) 
+        :  Component( x, y, p, s ), length(length), progress( progress )  {}
 
         void render_component(std::array<Color, 64*32>& matrix) override;
 

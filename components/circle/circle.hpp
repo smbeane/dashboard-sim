@@ -9,8 +9,8 @@ class Circle : public Component {
         // define additional variables and add to constructor
         int radius;
 
-        Circle (int x, int y, Color border, Color infill, int radius) 
-        :  Component(x, y, border, infill), radius(radius)  {}
+        Circle (int x, int y, Color b, Color i, int radius) 
+        :  Component(x, y, b, i), radius(radius)  {}
 
         void render_component(std::array<Color, 64*32>& matrix) override;
 

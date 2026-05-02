@@ -9,12 +9,12 @@
 class Component {
     public:
         int x, y;
-        Color border_color;
-        Color infill_color;
+        Color primary;
+        Color secondary;
         bool visible;
 
-        Component (int x, int y, Color border, Color infill) 
-        : x(x), y(y), border_color(border), infill_color(infill), visible(false) {}
+        Component (int x, int y, Color p, Color s) 
+        : x(x), y(y), primary(p), secondary(s), visible(false) {}
 
         void show_component() { visible = true;  }
         void hide_component() { visible = false; }

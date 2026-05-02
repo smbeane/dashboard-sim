@@ -109,10 +109,10 @@ int main ( int argc, char* argv[] ) {
 //     }
 
     Rectangle rect(1, 1, 10, 10, white, profile_color);
-    Line line(10, 11, white, profile_color, 22, 15);
+    Line line(15, 11, profile_color, 22, 20);
     Circle circle (50, 20, white, profile_color, 5);
-    Progress_bar bar (30, 1, 20, 5, 0, white, profile_color);
-    Slider slider (2, 28, white, profile_color, 15, 0);
+    Progress_bar bar (30, 1, 20, 5, 50, white, profile_color);
+    Slider slider (2, 28, white, profile_color, 15, 50);
 
     rect.render_component(grid);
     line.render_component(grid);
