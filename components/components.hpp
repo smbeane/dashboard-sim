@@ -5,5 +5,6 @@
 #include "line/line.hpp"
 #include "circle/circle.hpp"
 #include "progress_bar/progress_bar.hpp"
+#include "slider/slider.hpp"
 
 #endif // COMPONENT_HPP

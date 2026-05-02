@@ -5,6 +5,7 @@ add_library(
     line/line.cpp line/line.hpp
     circle/circle.cpp circle/circle.hpp
     progress_bar/progress_bar.cpp progress_bar/progress_bar.hpp
+    slider/slider.cpp slider/slider.hpp
 
 )
 

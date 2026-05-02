@@ -111,12 +111,14 @@ int main ( int argc, char* argv[] ) {
     Rectangle rect(1, 1, 10, 10, white, profile_color);
     Line line(10, 11, white, profile_color, 22, 15);
     Circle circle (50, 20, white, profile_color, 5);
-    Progress_bar bar (30, 1, 20, 5, 50, white, profile_color);
+    Progress_bar bar (30, 1, 20, 5, 0, white, profile_color);
+    Slider slider (2, 28, white, profile_color, 15, 0);
 
     rect.render_component(grid);
     line.render_component(grid);
     circle.render_component(grid);
     bar.render_component(grid);
+    slider.render_component(grid);
 
     bool quit{ false };
     int curr_color = 0;
