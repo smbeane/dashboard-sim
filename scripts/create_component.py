@@ -29,7 +29,7 @@ class {class_name} : public Component {{
                 ''')
         
         with open(f"{base_path}/{name.lower()}.cpp", "w") as f:
-            f.write(f'''#include <{name.lower()}.hpp>
+            f.write(f'''#include "{name.lower()}.hpp"
 
 void {class_name}::render_component(std::array<Color, 64*32>& matrix) {{
 

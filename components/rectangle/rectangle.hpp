@@ -7,6 +7,8 @@ class Rectangle : public Component {
     public: 
         int width, height;
 
+        Rectangle() : Component(0, 0, Color(0, 0, 0, 0), Color(0, 0, 0, 0)), width(0), height(0) {} 
+
         Rectangle(int x, int y, int w, int h, Color border, Color infill) 
         :  Component(x, y, border, infill), width(w), height(h) {}
 

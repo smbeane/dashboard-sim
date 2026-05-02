@@ -2,6 +2,8 @@
 #include <iostream>
 
 void Line::render_component(std::array<Color, 64*32>& matrix) {
+    if (!border_color.is_visible()) return;
+
     int x1 = this->x;
     int y1 = this->y;
     int x2 = this->end_x; 

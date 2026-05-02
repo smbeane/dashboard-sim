@@ -15,8 +15,8 @@
 
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
-const Color profile_color(63, 81, 181);
-const Color white(255, 255, 255);
+const Color profile_color(63, 81, 181, 1);
+const Color white(255, 255, 255, 1);
 
 std::array<Color, 64*32> grid;
 
@@ -111,10 +111,12 @@ int main ( int argc, char* argv[] ) {
     Rectangle rect(1, 1, 10, 10, white, profile_color);
     Line line(10, 11, white, profile_color, 22, 15);
     Circle circle (50, 20, white, profile_color, 5);
+    Progress_bar bar (30, 1, 20, 5, 50, white, profile_color);
 
     rect.render_component(grid);
     line.render_component(grid);
     circle.render_component(grid);
+    bar.render_component(grid);
 
     bool quit{ false };
     int curr_color = 0;

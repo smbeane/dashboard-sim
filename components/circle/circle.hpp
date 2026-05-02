@@ -17,9 +17,9 @@ class Circle : public Component {
         // define component specific functions
 
     private:
-        void draw_infill(std::array<Color, 64*32>& matrix);
+        void draw_infill(std::array<Color, 64*32>& matrix, Color fill);
         
-        void draw_border(std::array<Color, 64*32>& matrix);
+        void draw_border(std::array<Color, 64*32>& matrix, Color border);
         
 };
 

@@ -4,6 +4,7 @@ add_library(
     rectangle/rectangle.cpp rectangle/rectangle.hpp
     line/line.cpp line/line.hpp
     circle/circle.cpp circle/circle.hpp
+    progress_bar/progress_bar.cpp progress_bar/progress_bar.hpp
 
 )
 

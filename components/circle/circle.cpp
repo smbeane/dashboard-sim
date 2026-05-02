@@ -1,11 +1,11 @@
 #include "circle.hpp"
 
 void Circle::render_component(std::array<Color, 64*32>& matrix) {
-    draw_infill(matrix);
-    draw_border(matrix);    
+    if (infill_color.is_visible()) draw_infill(matrix, this->infill_color);
+    if (border_color.is_visible()) draw_border(matrix, this->border_color);    
 }
 
-void Circle::draw_infill(std::array<Color, 32*64>& matrix) {
+void Circle::draw_infill(std::array<Color, 32*64>& matrix, Color fill) {
     int cx = this->x;
     int cy = this->y;
     int r = this->radius;
@@ -22,7 +22,7 @@ void Circle::draw_infill(std::array<Color, 32*64>& matrix) {
         int end_x = std::min(63, x2);
 
         for (int i = start_x; i <= end_x; i++) {
-            matrix[y_pos * 64 + i] = this->infill_color;
+            matrix[y_pos * 64 + i] = fill;
         }
     };
 
@@ -41,7 +41,7 @@ void Circle::draw_infill(std::array<Color, 32*64>& matrix) {
     }
 }
 
-void Circle::draw_border(std::array<Color, 32*64>& matrix) {
+void Circle::draw_border(std::array<Color, 32*64>& matrix, Color border) {
     int cx = this->x;
     int cy = this->y;
     int r = this->radius;
@@ -51,7 +51,7 @@ void Circle::draw_border(std::array<Color, 32*64>& matrix) {
 
     auto plot_border = [&](int px, int py) {
         if (px >= 0 && px < 64 && py >= 0 && py < 32) {
-            matrix[py * 64 + px] = this->border_color;
+            matrix[py * 64 + px] = border;
         }
     };
 
