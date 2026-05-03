@@ -3,7 +3,7 @@
 #ifndef COMPONENT_HPP
 #define COMPONENT_HPP
 
-#include <color.hpp>
+#include <colors.hpp>
 #include <array>
 
 class Component {

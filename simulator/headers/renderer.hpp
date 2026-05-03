@@ -5,7 +5,7 @@
 
 #include <string>
 #include <array>
-#include <color.hpp>
+#include <colors.hpp>
 
 class Renderer {
     public:

@@ -1,6 +1,7 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
 
+#include "component.hpp"
 #include "rectangle/rectangle.hpp"
 #include "line/line.hpp"
 #include "circle/circle.hpp"
