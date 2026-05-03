@@ -24,8 +24,9 @@ int main ( int argc, char* argv[] ) {
     int window_height = inputs[4];
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
-    ComponentPage components ("Component Page");
-    
+    // ComponentPage components ("Component Page");
+    TimePage time_page ("Time");
+
     bool quit = false;
     SDL_Event e;
     SDL_zero ( e );
@@ -37,12 +38,12 @@ int main ( int argc, char* argv[] ) {
             }  
         }
         
-        components.render_page(grid);
+        time_page.render_page(grid);
         render.render_matrix(grid);
 
         SDL_Delay(1000);
 
-        components.update_data();
+        time_page.update_data();
     }
 
     return 0;

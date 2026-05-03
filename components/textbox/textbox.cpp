@@ -38,7 +38,7 @@ void Textbox::swap_text(std::string new_text) {
     text.clear();
 
     for (char c : new_text) {
-        text.push_back(std::tolower(c));
+        text.push_back(std::toupper(c));
     }
 
     scroll_start = text.begin();

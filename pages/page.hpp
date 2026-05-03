@@ -22,7 +22,7 @@ class Page {
 
         virtual void init_page () = 0;
         
-        virtual void render_page(std::array<Color, 32*64>& matrix) = 0;
+        void render_page(std::array<Color, 32*64>& matrix);
 
         virtual void update_data() = 0;
 };

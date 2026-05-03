@@ -11,13 +11,6 @@ void ComponentPage::init_page() {
 }
 
 
-void ComponentPage::render_page(std::array<Color, 32*64>& matrix) {
-    for (auto& c : components) {
-        c->render_component(matrix);
-    }
-}
-
-
 void ComponentPage::update_data() {
     for (int i = 0; i < components.size(); i++) {
 

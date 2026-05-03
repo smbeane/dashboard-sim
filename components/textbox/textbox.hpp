@@ -14,6 +14,8 @@ class Textbox : public Component {
         int length;
         
         // TODO: update to include font selections
+        Textbox () : Component(0, 0, black, black), text(""), length(0) {};
+
         Textbox (int x, int y, std::string t, int length, int scroll_gap, Color primary, Color secondary) 
         :  Component(x, y, primary, secondary), length(length) {
             

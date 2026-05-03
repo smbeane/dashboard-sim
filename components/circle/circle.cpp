@@ -1,7 +1,11 @@
 #include "circle.hpp"
 
+#include <iostream>
+
 void Circle::render_component(std::array<Color, 64*32>& matrix) {
-    if (secondary.is_visible()) draw_infill(matrix, this->secondary);
+    if (secondary.is_visible()) {
+        draw_infill(matrix, this->secondary);
+    }
     if (primary.is_visible()) draw_border(matrix, this->primary);    
 }
 
