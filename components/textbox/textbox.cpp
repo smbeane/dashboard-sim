@@ -6,12 +6,10 @@ void Textbox::render_component(std::array<Color, 64*32>& matrix) {
     int dy = this->y;
 
     std::string::const_iterator curr_char = scroll_start;
-    
 
     for (int c = 0; c < box_length; c++) {
         if (text.empty()) break;
-
-        uint16_t character = font_3x5[*curr_char - 'a'];
+        uint16_t character = font_3x5[*curr_char - 32];
         uint16_t mask = 0x4000; 
 
         for (int row = 0; row < 5; row++) {

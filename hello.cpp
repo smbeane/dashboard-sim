@@ -70,9 +70,9 @@ int main ( int argc, char* argv[] ) {
     components.push_back(std::make_unique<Line>(15, 1, profile_color, 22, 7));
     components.push_back(std::make_unique<Circle>(55, 10, white, profile_color, 5));
     components.push_back(std::make_unique<Progress_bar>(30, 1, 20, 5, 50, white, profile_color));
-    components.push_back(std::make_unique<Slider>(2, 28, white, profile_color, 15, 50));
-    components.push_back(std::make_unique<Textbox>(5, 20, "ABCDE", 5, 2, profile_color, black));
-
+    components.push_back(std::make_unique<Slider>(2, 15, white, profile_color, 15, 50));
+    components.push_back(std::make_unique<Textbox>(5, 18, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 10, 2, profile_color, black));
+    components.push_back(std::make_unique<Textbox>(5, 25, " !\"#$%&'()*+,-./'):;<=>?@[\\]^_`", 10, 2, profile_color, black));
     for (auto& c : components) c->render_component(grid);
 
     bool quit{ false };
@@ -101,11 +101,14 @@ int main ( int argc, char* argv[] ) {
         SDL_Delay(1000);
 
         Textbox* text = dynamic_cast<Textbox*>(components[5].get());
+        Textbox* characters = dynamic_cast<Textbox*>(components[6].get());
+
         if (text) {
             text->scroll_text();
-            printf("scrolling\n");
         } 
-
+        if (characters) {
+            characters->scroll_text();
+        } 
 
         for (auto& c : components) c->render_component(grid);
 

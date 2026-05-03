@@ -18,7 +18,7 @@ class Textbox : public Component {
         :  Component(x, y, primary, secondary), length(length) {
             
             for (char c : t) {
-                text.push_back(std::tolower(c));
+                text.push_back(std::toupper(c));
             }
             
             for (int i = 0; i < scroll_gap; i++) {
