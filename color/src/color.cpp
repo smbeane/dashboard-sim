@@ -1,4 +1,4 @@
-#include <color.hpp>
+#include "../headers/color.hpp"
 
 
 SDL_Color Color::getSDL_Color() {
