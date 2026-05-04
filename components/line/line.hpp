@@ -8,6 +8,8 @@ class Line : public Component {
         
         // define additional variables and add to constructor
         int end_x, end_y;
+        
+        Line () : Component(0, 0, black, black), end_x(0), end_y(0) {}
 
         Line (int x, int y, Color p, int end_x, int end_y) 
         :  Component(x, y, p, Color(1, 1, 1, 1)), end_x(end_x), end_y(end_y)  {}

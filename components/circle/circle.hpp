@@ -9,6 +9,8 @@ class Circle : public Component {
         // define additional variables and add to constructor
         int radius;
 
+        Circle () : Component(0, 0, black, black), radius(0) {}
+
         Circle (int x, int y, Color b, Color i, int radius) 
         :  Component(x, y, b, i), radius(radius)  {}
 

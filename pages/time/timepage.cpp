@@ -1,39 +1,8 @@
 #include "timepage.hpp"
 
 #include <iostream>
-#include <cmath>
-#define PI 3.1415
-
-namespace {
-    void update_minute_hand(Line* hand, std::string time, int x, int y) {
-        int minute = std::stoi(time.substr(3, 2));
-        float degree = (minute / 60.0) * 2 * PI;
-
-        int dx = 8 * cos(degree - PI / 2);
-        int dy = 8 * sin(degree - PI / 2);
-
-        hand->end_x = dx + x;
-        hand->end_y = dy + y;
-    }
-
-    void get_hour_hand (Line* hand, std::string time, int x, int y) {
-        int hour = std::stoi(time.substr(0, 2));
-        int minute = std::stoi(time.substr(3, 2));
-
-        float degree = ((hour / 12.0) + (minute / 720.0))* 2 * PI;
-
-        int dx = 6 * cos(degree - PI / 2);
-        int dy = 6 * sin(degree - PI / 2);
-
-        hand->end_x = dx + x;
-        hand->end_y = dy + y;
-
-    }
-}
-
 
 void TimePage::init_page() {
-    
     std::unique_ptr<Component> tb_time = std::make_unique<Textbox>(29, 3, time, 8, 2, profile_color, black);
     time_tb = static_cast<Textbox*>(tb_time.get());
     components.push_back(std::move(tb_time));
@@ -46,18 +15,12 @@ void TimePage::init_page() {
     year_tb = static_cast<Textbox*>(tb_year.get());
     components.push_back(std::move(tb_year));
 
-    components.push_back(std::make_unique<Circle>(12, 15, profile_color, black, 10));
-    
-    std::unique_ptr<Component> hand_minute = std::make_unique<Line>(12, 15, profile_color, 0, 0);
-    minute_hand = static_cast<Line*>(hand_minute.get());
-    components.push_back(std::move(hand_minute));
-
-    std::unique_ptr<Component> hand_hour = std::make_unique<Line>(12, 15, white, 0, 0);
-    hour_hand = static_cast<Line*>(hand_hour.get());
-    components.push_back(std::move(hand_hour));
-
+    std::unique_ptr<Component> clk = std::make_unique<Clock>(12, 15, profile_color, black, white, profile_color, white);
+    clock = static_cast<Clock*>(clk.get());
+    components.push_back(std::move(clk));
 
     update_data();
+
 }
 
 void TimePage::update_data() {
@@ -70,7 +33,5 @@ void TimePage::update_data() {
     year = get_year_str();
     year_tb->swap_text(year);
 
-    update_minute_hand(minute_hand, time, 12, 15);
-    get_hour_hand(hour_hand, time, 12, 15);
-    
+    if (clock != nullptr) clock->update_time(time);
 }

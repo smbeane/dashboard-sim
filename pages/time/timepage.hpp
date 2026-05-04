@@ -6,7 +6,7 @@
 
 #include <time.hpp>
 #include "../page.hpp"
-
+#include "components/clock.hpp"
 
 class TimePage : public Page {
     public:
@@ -14,14 +14,16 @@ class TimePage : public Page {
         std::string date;
         std::string year;
 
-        Textbox *time_tb,  *date_tb, *year_tb;
-        Line *minute_hand, *hour_hand;
-
-        TimePage(std::string name) : Page(name), time("") { init_page(); };
-
+        TimePage(std::string name) : Page(name), time(""), clock(nullptr) { init_page(); };
+        
         void init_page();
-
+        
         void update_data();
+        private: 
+            Textbox *time_tb = nullptr;
+            Textbox *date_tb = nullptr;
+            Textbox *year_tb = nullptr;
+            Clock   *clock   = nullptr;
 };
 
 
