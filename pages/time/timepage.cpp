@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+const Color MinuteHand = Color(255, 110, 0, 1);
+const Color Grey =  Color(120, 120, 120, 1);
+
 void TimePage::init_page() {
     std::unique_ptr<Component> tb_time = std::make_unique<Textbox>(29, 3, time, 8, 2, profile_color, black);
     time_tb = static_cast<Textbox*>(tb_time.get());
@@ -15,7 +18,7 @@ void TimePage::init_page() {
     year_tb = static_cast<Textbox*>(tb_year.get());
     components.push_back(std::move(tb_year));
 
-    std::unique_ptr<Component> clk = std::make_unique<Clock>(12, 15, profile_color, black, white, profile_color, white);
+    std::unique_ptr<Component> clk = std::make_unique<Clock>(12, 15, profile_color, black, white, MinuteHand, Grey);
     clock = static_cast<Clock*>(clk.get());
     components.push_back(std::move(clk));
 
