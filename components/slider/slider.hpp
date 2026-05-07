@@ -14,10 +14,42 @@ class Slider : public Component {
         int length;
         int progress;
 
-        Slider (int x, int y, Color p, Color s, int length , int progress) 
-        :  Component( x, y, p, s ), length(length), progress( progress )  {}
+        /**
+         * @brief Constructs default Slider, position (0, 0) 
+         *        completely transparent with 0 length and progress
+         */
+        Slider() : Component(0, 0, transparent, transparent), 
+                   length(0), progress(0) {}
 
+        /**
+         * @brief Constructs a Slider at defined pixel location with given
+         *        length and current progress
+         * 
+         * @param x The left pixel offset from left edge of screen (0-63)
+         * @param y The vertical offset from the top edge of screen (0-31)
+         * @param length The pixel length of the bar
+         * @param progress The percentage (0-100) of the way through the progress bar
+         * @param primary The Color of the bar itself
+         * @param secondary The Color of the progress indicator
+         *  
+         */
+        Slider(int x, int y, int length , int progress, Color primary, Color secondary ) 
+        :  Component( x, y, primary, secondary ), length(length), progress( progress )  {}
+
+        /**
+         * @brief Renders component by first rendering the bar as a Line,
+         *        and then rendering the progress indicator over top
+         * 
+         * @param matrix A reference to the pixels to be rendered
+         */
         void render_component(std::array<Color, 64*32>& matrix) override;
+
+        /**
+         * @brief Updates the progress, but doesn't rerender component
+         * 
+         * @param new_progress The percentage (0-100) of the way through the progress bar
+         */
+        void update_progress(int new_progress);
 
         // define component specific functions
 };

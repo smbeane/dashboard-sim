@@ -20,12 +20,16 @@ std::array<Color, 64*32> grid;
 int main ( int argc, char* argv[] ) {
     
     std::vector<int> inputs = parse_args(argc, argv);
+    int page_idx = inputs[0];
     int window_width = inputs[3]; 
     int window_height = inputs[4];
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
-    // ComponentPage components ("Component Page");
-    TimePage time_page ("Time");
+    std::vector<std::unique_ptr<Page>> pages;
+    pages.push_back(std::make_unique<ComponentPage>("Component Renderer"));
+    pages.push_back(std::make_unique<TimePage>("Time Renderer")); 
+
+    Page* selected_page = pages.at(page_idx).get();
 
     bool quit = false;
     SDL_Event e;
@@ -38,12 +42,12 @@ int main ( int argc, char* argv[] ) {
             }  
         }
         
-        time_page.render_page(grid);
+        selected_page->render_page(grid);
         render.render_matrix(grid);
 
         SDL_Delay(1000);
 
-        time_page.update_data();
+        selected_page->update_data();
     }
 
     return 0;

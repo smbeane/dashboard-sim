@@ -11,10 +11,10 @@ class Clock : public Component {
         Clock (int x, int y, Color border, Color infill, Color minute_color, Color hour_color, Color notch_color)  
         : Component(x, y, border, infill), notch_color(notch_color) {
             
-            minute_hand = Line(x, y, minute_color, x, y);
-            hour_hand   = Line(x, y,   hour_color, x, y);
+            minute_hand = Line(x, y, x, y, minute_color);
+            hour_hand   = Line(x, y, x, y, hour_color);
             
-            clock = Circle(x, y, border, infill, 10);
+            clock = Circle(x, y, 10, border, infill);
             
         }
     

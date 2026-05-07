@@ -8,7 +8,6 @@
 #include <colors.hpp>
 #include <components.hpp>
 
-
 class Page {
 
     public:
