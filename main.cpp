@@ -9,8 +9,8 @@
 
 #include <colors.hpp>
 #include <simulator.hpp>
-#include <components.hpp>
-#include <pages.hpp>
+#include <components/components.hpp>
+#include <pages/pages.hpp>
 
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };

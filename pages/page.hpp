@@ -3,10 +3,11 @@
 
 #include <vector>
 #include <string>
+#include <array>
 #include <memory>
 
 #include <colors.hpp>
-#include <components.hpp>
+#include <components/component.hpp>
 
 class Page {
 

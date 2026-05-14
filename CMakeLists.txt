@@ -17,4 +17,4 @@ add_subdirectory(utils)
 
 add_executable(dashboard_sim main.cpp)
 
-target_link_libraries(dashboard_sim PRIVATE color simulator fonts components pages utils SDL3::SDL3)
+target_link_libraries(dashboard_sim PRIVATE  simulator pages SDL3::SDL3)

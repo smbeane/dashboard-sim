@@ -1,12 +1,13 @@
-#ifndef COMPONENTS_HPP
-#define COMPONENTS_HPP
+#ifndef REAL_COMPONENTS_HPP
+#define REAL_COMPONENTS_HPP
 
-#include "component.hpp"
-#include "rectangle/rectangle.hpp"
-#include "line/line.hpp"
-#include "circle/circle.hpp"
-#include "progress_bar/progress_bar.hpp"
-#include "slider/slider.hpp"
-#include "textbox/textbox.hpp"
+#include <components/component.hpp>
 
-#endif // COMPONENT_HPP
+#include <components/rectangle/rectangle.hpp>
+#include <components/line/line.hpp>
+#include <components/circle/circle.hpp>
+#include <components/progress_bar/progress_bar.hpp>
+#include <components/slider/slider.hpp>
+#include <components/textbox/textbox.hpp>
+
+#endif // REAL_COMPONENTS_HPP

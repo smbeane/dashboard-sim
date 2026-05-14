@@ -1,4 +1,4 @@
-#include "../headers/time.hpp"
+#include "time.hpp"
 
 #include <format>
 

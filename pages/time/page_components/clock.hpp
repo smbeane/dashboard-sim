@@ -1,7 +1,7 @@
 #ifndef CLOCK_HPP
 #define CLOCK_HPP
 
-#include <components.hpp>
+#include <components/components.hpp>
 
 class Clock : public Component {
     public:

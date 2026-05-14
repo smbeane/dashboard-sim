@@ -1,5 +1,5 @@
-add_library(
-    components
+add_library(components STATIC
+    component.hpp
     components.hpp
     rectangle/rectangle.cpp rectangle/rectangle.hpp
     line/line.cpp line/line.hpp
@@ -10,6 +10,10 @@ add_library(
 
 )
 
+target_include_directories(components PUBLIC 
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+)
+
 target_link_libraries(components PUBLIC color fonts)
-target_include_directories(components PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+
 target_compile_definitions(components PUBLIC COMPONENTS_VERSION=1.0)

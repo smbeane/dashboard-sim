@@ -5,6 +5,7 @@
 #include <array>
 
 #include "../page.hpp"
+#include <components/components.hpp>
 
 class ComponentPage : public Page {
     public:

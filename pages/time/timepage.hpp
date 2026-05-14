@@ -4,9 +4,10 @@
 #include <string>
 #include <array>
 
-#include <time.hpp>
+#include <utils/time/time.hpp>
+#include <components/components.hpp>
+#include "page_components/clock.hpp"
 #include "../page.hpp"
-#include "components/clock.hpp"
 
 class TimePage : public Page {
     public:

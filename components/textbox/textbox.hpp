@@ -19,6 +19,7 @@ class Textbox : public Component {
         Textbox () : Component(0, 0, black, black), text(""), length(0) {};
         
         // TODO: update to include font selections
+        // TODO: rename to TextBox
         /** 
          * @brief
          * 
