@@ -17,26 +17,30 @@ def create_component(name, subdir):
 class {class_name} : public Component {{
     public: 
         // TODO: define component specific variables
-        // TODO: add variables to each constructor    
+        // TODO: add variables to each constructor  
+        // TODO: fill out function comments  
         
         /**
-         * @brief default constructor, initializes to (0, 0) and completely transparent
+         * @brief Constructs default {class_name}. position (0, 0),
+                  completely transparent _____
          */
         {class_name}() : Component(0, 0, transparent, transparent) {{}}
 
         /**
-         * @brief basic {class_name} constructor
-         *
-         * @param x, y ______ coordinates of {class_name}
-         * @param border, infill defined colors of {class_name}
+         * @brief Constructs a {class_name} at defined _____
+         * 
+         * @param start_x The horizontal offset from the left edge (0-63)
+         * @param start_y The vertical offset from the top edge (0-31)
+         * @param primary Color of _____
+         * @param border  Color of _____
          */
-        {class_name} (int x, int y, Color border, Color infill) 
-        :  Component(x, y, border, infill)  {{}}
+        {class_name} (int x, int y, Color primary, Color secondary) 
+        :  Component(x, y, primary, secondary)  {{}}
 
         /**
-         * @brief renders all defined components in constructor
+         * @brief Renders component
          *
-         * @param matrix reference to array of pixels
+         * @param matrix A reference to the pixels to be rendered
          */
         void render_component(std::array<Color, 64*32>& matrix) override;
 
