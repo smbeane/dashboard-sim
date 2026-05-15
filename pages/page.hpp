@@ -8,12 +8,14 @@
 
 #include <colors.hpp>
 #include <components/component.hpp>
+#include <utils/inputs/rotary_encoder.hpp>
 
 class Page {
 
     public:
         std::string name;
         std::vector<std::unique_ptr<Component>> components;
+        // std::vector<> input_functions;
 
 
         Page () : name("Basic Page"), components() {};
@@ -25,6 +27,8 @@ class Page {
         void render_page(std::array<Color, 32*64>& matrix);
 
         virtual void update_data() = 0;
+
+        virtual void execute_action(RotaryAction action);
 };
 
 

@@ -11,6 +11,7 @@
 #include <simulator.hpp>
 #include <components/components.hpp>
 #include <pages/pages.hpp>
+#include <utils/inputs/rotary_encoder.hpp>
 
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
@@ -32,22 +33,42 @@ int main ( int argc, char* argv[] ) {
     Page* selected_page = pages.at(page_idx).get();
 
     bool quit = false;
-    SDL_Event e;
-    SDL_zero ( e );
+    SDL_Event event;
     
     while ( quit == false ) {
-        while ( SDL_PollEvent( &e ) == true ) {
-            if ( e.type == SDL_EVENT_QUIT ) {
+
+        while ( SDL_PollEvent( &event ) == true ) {
+            if ( event.type == SDL_EVENT_QUIT ) {
                 quit = true;
             }  
+
+            else if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (page_idx == 1){
+                    switch (event.key.key) {
+                        case SDLK_ESCAPE:
+                            quit = true;
+                            break;
+                        case SDLK_LEFT:
+                        case SDLK_A:
+                            selected_page->execute_action(RotaryAction::Left);
+                            break;
+                        case SDLK_D:
+                        case SDLK_RIGHT:   
+                            selected_page->execute_action(RotaryAction::Right);
+                            break;
+                        case SDLK_S:
+                        case SDLK_DOWN:
+                            selected_page->execute_action(RotaryAction::Press);
+                            break;
+                    }
+                }
+            }
         }
         
         selected_page->render_page(grid);
         render.render_matrix(grid);
-
-        SDL_Delay(1000);
-
         selected_page->update_data();
+
     }
 
     return 0;

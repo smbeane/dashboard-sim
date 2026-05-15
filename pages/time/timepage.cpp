@@ -24,6 +24,18 @@ void TimePage::init_page() {
 
     update_data();
 
+    rotary.bind (RotaryAction::Left, [this]() {
+        std::cout << "Timepage: Rotating Left" << std::endl;
+    });
+
+    rotary.bind (RotaryAction::Right, [this]() {
+        std::cout << "Timepage: Rotating Right" << std::endl;
+    });
+
+    rotary.bind (RotaryAction::Press, [this]() {
+        std::cout << "Timepage: Rotating Press" << std::endl;
+    });
+
 }
 
 void TimePage::update_data() {
@@ -37,4 +49,10 @@ void TimePage::update_data() {
     year_tb->swap_text(year);
 
     if (clock != nullptr) clock->update_time(time);
+}
+
+void TimePage::execute_action(RotaryAction action) {
+
+    rotary.execute(action);
+
 }
