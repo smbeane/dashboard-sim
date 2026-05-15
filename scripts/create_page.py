@@ -40,7 +40,7 @@ class {page_name} : public Page {{
         // TODO: define page specific functions
 }};
 
-#endif // {page_name}_HPP
+#endif // {name.upper()}_HPP
 ''')
         
     # Write Source File
