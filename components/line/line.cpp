@@ -2,7 +2,7 @@
 #include <iostream>
 
 void Line::render_component(std::array<Color, 64*32>& matrix) {
-    if (!primary.is_visible()) return;
+    if (!primary.is_transparent()) return;
     
     int x1 = this->x;
     int y1 = this->y;

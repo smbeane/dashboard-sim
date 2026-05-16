@@ -10,17 +10,18 @@ class Component {
     // TODO: for all components, update public and private standings
     // TODO: add get and set methods for all variables
     // TODO: add center on page function with left or right bias
+    
     public:
         int x, y;
         Color primary;
         Color secondary;
-        bool visible;
+        bool is_visible;
 
         Component (int x, int y, Color p, Color s) 
-        : x(x), y(y), primary(p), secondary(s), visible(false) {}
+        : x(x), y(y), primary(p), secondary(s), is_visible(false) {}
 
-        void show_component() { visible = true;  }
-        void hide_component() { visible = false; }
+        void show_component() { is_visible = true;  }
+        void hide_component() { is_visible = false; }
 
         virtual void render_component(std::array<Color, 64*32>& matrix) = 0;
 

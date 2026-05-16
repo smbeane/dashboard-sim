@@ -3,10 +3,10 @@
 #include <iostream>
 
 void Circle::render_component(std::array<Color, 64*32>& matrix) {
-    if (secondary.is_visible()) {
+    if (secondary.is_transparent()) {
         draw_infill(matrix, this->secondary);
     }
-    if (primary.is_visible()) draw_border(matrix, this->primary);    
+    if (primary.is_transparent()) draw_border(matrix, this->primary);    
 }
 
 void Circle::draw_infill(std::array<Color, 32*64>& matrix, Color fill) {

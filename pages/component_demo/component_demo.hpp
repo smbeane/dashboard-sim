@@ -14,8 +14,6 @@ class ComponentPage : public Page {
 
         void init_page();
 
-        void render_page(std::array<Color, 32*64>& matrix);
-
         void update_data();
 
 

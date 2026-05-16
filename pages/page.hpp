@@ -16,10 +16,11 @@ class Page {
     // TODO: add_component function that returns a pointer reference
     // TODO: for all pages, update public and private standings
     // TODO: add get and set methods for all variables
+    protected: 
+        std::vector<std::unique_ptr<Component>> components;
+    
     public:
         std::string name;
-        std::vector<std::unique_ptr<Component>> components;
-
 
         Page () : name("Basic Page"), components() {};
 
@@ -27,9 +28,9 @@ class Page {
 
         virtual void init_page () = 0;
         
-        void render_page(std::array<Color, 32*64>& matrix);
-
         virtual void update_data() = 0;
+        
+        virtual void render_page(std::array<Color, 32*64>& matrix);
 
         virtual void execute_action(RotaryAction action, int rotary);
 };
