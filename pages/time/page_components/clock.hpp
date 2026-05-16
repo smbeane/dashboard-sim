@@ -6,9 +6,8 @@
 class Clock : public Component {
     // TODO: add function comments
     private: 
-        
+        Point center;
         Color notch_color;    
-    
         Line minute_hand, hour_hand;
         Circle clock;
         
@@ -17,13 +16,13 @@ class Clock : public Component {
     public:
     
     
-        Clock (int x, int y, Color border, Color infill, Color minute_color, Color hour_color, Color notch_color)  
-        : Component(x, y, border, infill), notch_color(notch_color) {
+        Clock (Point center, Color border, Color infill, Color minute_color, Color hour_color, Color notch_color)  
+        : Component(border, infill), center(center), notch_color(notch_color) {
             
-            minute_hand = Line(x, y, x, y, minute_color);
-            hour_hand   = Line(x, y, x, y, hour_color);
+            minute_hand = Line(center, center, minute_color);
+            hour_hand   = Line(center, center, hour_color);
             
-            clock = Circle(x, y, 10, border, infill);
+            clock = Circle(center, 10, border, infill);
             
         }
 

@@ -1,12 +1,12 @@
 #include "colorpicker.hpp"
 
 void ColorPickerPage::init_page() {
-    std::unique_ptr<Component> tb_title = std::make_unique<TextBox>(8, 2, "Color Picker", 12, 0, WHITE, BLACK);
+    std::unique_ptr<Component> tb_title = std::make_unique<TextBox>(Point(8, 2), "Color Picker", 12, 0, WHITE, BLACK);
     components.push_back(std::move(tb_title));
 
-    std::unique_ptr<Component> slider_r = std::make_unique<Slider>(2, 12, 20, 0, 255, chosen.r, true, WHITE, Color(255, 0, 0));
-    std::unique_ptr<Component> slider_g = std::make_unique<Slider>(2, 19, 20, 0, 255, chosen.g, true, Color(80, 80, 80), Color(0, 255, 0));
-    std::unique_ptr<Component> slider_b = std::make_unique<Slider>(2, 26, 20, 0, 255, chosen.b, true, Color(80, 80, 80), Color(0, 0, 255));
+    std::unique_ptr<Component> slider_r = std::make_unique<Slider>(Point(2, 12), 20, 0, 255, chosen.r, true, WHITE, Color(255, 0, 0));
+    std::unique_ptr<Component> slider_g = std::make_unique<Slider>(Point(2, 19), 20, 0, 255, chosen.g, true, Color(80, 80, 80), Color(0, 255, 0));
+    std::unique_ptr<Component> slider_b = std::make_unique<Slider>(Point(2, 26), 20, 0, 255, chosen.b, true, Color(80, 80, 80), Color(0, 0, 255));
     sliders[0] = static_cast<Slider*>(slider_r.get());
     sliders[1] = static_cast<Slider*>(slider_g.get());
     sliders[2] = static_cast<Slider*>(slider_b.get());
@@ -14,9 +14,9 @@ void ColorPickerPage::init_page() {
     components.push_back(std::move(slider_g));
     components.push_back(std::move(slider_b));
     
-    std::unique_ptr<Component> tb_r = std::make_unique<TextBox>(24, 10, std::to_string(chosen.r), 3, 0, WHITE, BLACK);
-    std::unique_ptr<Component> tb_g = std::make_unique<TextBox>(24, 17, std::to_string(chosen.g), 3, 0, Color(80, 80, 80), BLACK);
-    std::unique_ptr<Component> tb_b = std::make_unique<TextBox>(24, 24, std::to_string(chosen.b), 3, 0, Color(80, 80, 80), BLACK);
+    std::unique_ptr<Component> tb_r = std::make_unique<TextBox>(Point(24, 10), std::to_string(chosen.r), 3, 0, WHITE, BLACK);
+    std::unique_ptr<Component> tb_g = std::make_unique<TextBox>(Point(24, 17), std::to_string(chosen.g), 3, 0, Color(80, 80, 80), BLACK);
+    std::unique_ptr<Component> tb_b = std::make_unique<TextBox>(Point(24, 24), std::to_string(chosen.b), 3, 0, Color(80, 80, 80), BLACK);
     textboxes[0] = static_cast<TextBox*>(tb_r.get());
     textboxes[1] = static_cast<TextBox*>(tb_g.get());
     textboxes[2] = static_cast<TextBox*>(tb_b.get());
@@ -26,7 +26,7 @@ void ColorPickerPage::init_page() {
 
     curr_selected = 0;
 
-    std::unique_ptr<Component> rect_picked = std::make_unique<Rectangle>(39, 9, 21, 21, chosen);
+    std::unique_ptr<Component> rect_picked = std::make_unique<Rectangle>(Point(39, 9), 21, 21, chosen);
     picked_rect = static_cast<Rectangle*>(rect_picked.get());
     components.push_back(std::move(rect_picked));
 

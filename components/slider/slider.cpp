@@ -1,11 +1,13 @@
 #include "slider.hpp"
 
 void Slider::render_component(std::array<Color, 64*32>& matrix) {
-    Line line (x, y, x + length - 1, y, primary);
+    Point end(start.x + length - 1, start.y);
+
+    Line line (start, end, primary);
     line.render_component(matrix);
 
-    int x_pos = x + round((float(progress) / (max - min)) * (length - 1));
-    matrix[64 * y + x_pos] = secondary;
+    int x_pos = start.x + round((float(progress) / (max - min)) * (length - 1));
+    matrix[64 * start.y + x_pos] = secondary;
 }
 
 void Slider::set_progress(int new_progress) {

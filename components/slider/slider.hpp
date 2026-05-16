@@ -10,6 +10,7 @@
 class Slider : public Component {
     private:
 
+        Point start;
         int length;
         int min; 
         int max;
@@ -22,15 +23,14 @@ class Slider : public Component {
          * @brief Constructs default Slider, position (0, 0) 
          *        completely transparent with 0 length and progress
          */
-        Slider() : Component(0, 0, TRANSPARENT, TRANSPARENT), 
-                   length(0), min(0), max(0), progress(0), wrap(false) {}
+        Slider() : Component(TRANSPARENT, TRANSPARENT), 
+                   start({0, 0}), length(0), min(0), max(0), progress(0), wrap(false) {}
 
         /**
          * @brief Constructs a Slider at defined pixel location with given
          *        length and current progress
          * 
-         * @param x The left pixel offset from left edge of screen (0-63)
-         * @param y The vertical offset from the top edge of screen (0-31)
+         * @param start The left pixel offset from top left corner of screen (0-63, 0-31)
          * @param length The pixel length of the bar
          * @param min The minimum progress level
          * @param max The maximum progress level
@@ -40,8 +40,8 @@ class Slider : public Component {
          * @param secondary The Color of the progress indicator
          *  
          */
-        Slider(int x, int y, int length , int min, int max, int progress, bool wrap, Color primary, Color secondary ) 
-        :  Component( x, y, primary, secondary ), length(length), min(min), max(max), progress( progress ), wrap(wrap)  {}
+        Slider(Point start, int length , int min, int max, int progress, bool wrap, Color primary, Color secondary ) 
+        :  Component(primary, secondary ), start(start), length(length), min(min), max(max), progress( progress ), wrap(wrap)  {}
 
         /**
          * @brief Renders component by first rendering the bar as a Line,

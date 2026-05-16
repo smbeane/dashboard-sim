@@ -1,6 +1,8 @@
 #include "rectangle.hpp"
 
 void Rectangle::render_component(std::array<Color, 64*32>& matrix) {
+    int x = pos.x;
+    int y = pos.y;
 
     if (primary.is_transparent()) {
         for (int i = x; i < x + width ; i++) {

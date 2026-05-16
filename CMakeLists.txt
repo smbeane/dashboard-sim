@@ -14,7 +14,8 @@ add_subdirectory(fonts)
 add_subdirectory(components)
 add_subdirectory(pages)
 add_subdirectory(utils)
+add_subdirectory(point)
 
 add_executable(dashboard_sim main.cpp)
 
-target_link_libraries(dashboard_sim PRIVATE  simulator pages SDL3::SDL3)
+target_link_libraries(dashboard_sim PRIVATE simulator pages SDL3::SDL3)

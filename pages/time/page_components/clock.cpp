@@ -41,12 +41,15 @@ void Clock::render_component(std::array<Color, 32*64>& matrix) {
 }
 
 void Clock::update_time(std::string time) {
-    update_minute_hand(minute_hand, time, x, y); 
-    update_hour_hand(hour_hand, time, x, y);
+    update_minute_hand(minute_hand, time, center.x, center.y); 
+    update_hour_hand(hour_hand, time, center.x, center.y);
 }
 
 void Clock::render_time_notches(std::array<Color, 32*64>& matrix) {
     // 12 o'clock
+    int x = center.x;
+    int y = center.y;
+    
     matrix[(y - 9) * 64 + x] = notch_color;
     
     // 11 and 1 o'clock

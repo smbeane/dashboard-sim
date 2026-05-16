@@ -6,6 +6,7 @@
 class Circle : public Component {
     private: 
         
+        Point center;
         int radius;
     
         /**
@@ -29,19 +30,18 @@ class Circle : public Component {
          * @brief Constructs default Circle, position (0, 0), 
          *        completely transparent with 0 radius
          */
-        Circle () : Component(0, 0, TRANSPARENT, TRANSPARENT), radius(0) {}
+        Circle () : Component(TRANSPARENT, TRANSPARENT), center({0, 0}), radius(0) {}
 
         /**
          * @brief Constructs a Circle at defined pixel location
          * 
-         * @param x The center offset from left edge (0-63)
-         * @param y The center offset from top edge (0-31)
+         * @param center The center Point from the top left corner (0-63,0-31)
          * @param radius Radius of the outer rim
          * @param border Color of the circle border
          * @param infill Color of the circle infill
          */
-        Circle (int x, int y,  int radius, Color border, Color infill) 
-        :  Component(x, y, border, infill), radius(radius)  {}
+        Circle (Point center,  int radius, Color border, Color infill) 
+        :  Component(border, infill), center(center), radius(radius)  {}
 
         /**
          * @brief Renders component by first rendering infill,

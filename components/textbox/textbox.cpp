@@ -2,8 +2,8 @@
 
 void TextBox::render_component(std::array<Color, 64*32>& matrix) {
     int box_length = text.length() > length ? length : text.length();
-    int dx = this->x;
-    int dy = this->y;
+    int dx = this->pos.x;
+    int dy = this->pos.y;
 
     std::string::const_iterator curr_char = scroll_start;
 

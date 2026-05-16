@@ -4,10 +4,10 @@
 void Line::render_component(std::array<Color, 64*32>& matrix) {
     if (!primary.is_transparent()) return;
     
-    int x1 = this->x;
-    int y1 = this->y;
-    int x2 = this->end_x; 
-    int y2 = this->end_y;
+    int x1 = this->start.x;
+    int y1 = this->start.y;
+    int x2 = this->end.x; 
+    int y2 = this->end.y;
 
     int dx =  abs(x2 - x1);
     int dy = -abs(y2 - y1);

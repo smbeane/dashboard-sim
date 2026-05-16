@@ -4,24 +4,21 @@
 #define COMPONENT_HPP
 
 #include <color/colors.hpp>
+#include <point/point.hpp>
 #include <array>
 
 class Component {
-    // TODO: for all components, update public and private standings
-    // TODO: add get and set methods for all variables
     // TODO: add center on page function with left or right bias
     // TODO: use point class instead of separate x, y
     protected: 
-        
-        int x, y;
         Color primary;
         Color secondary;
         bool is_visible;
 
     public:
 
-        Component (int x, int y, Color p, Color s) 
-        : x(x), y(y), primary(p), secondary(s), is_visible(false) {}
+        Component (Color p, Color s) 
+        : primary(p), secondary(s), is_visible(false) {}
 
         void show_component() { is_visible = true;  }
         void hide_component() { is_visible = false; }

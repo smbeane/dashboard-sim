@@ -10,8 +10,8 @@ void Circle::render_component(std::array<Color, 64*32>& matrix) {
 }
 
 void Circle::draw_infill(std::array<Color, 32*64>& matrix) {
-    int cx = this->x;
-    int cy = this->y;
+    int cx = this->center.x;
+    int cy = this->center.y;
     int r = this->radius;
     int x_off = 0;
     int y_off = r;
@@ -46,8 +46,8 @@ void Circle::draw_infill(std::array<Color, 32*64>& matrix) {
 }
 
 void Circle::draw_border(std::array<Color, 32*64>& matrix) {
-    int cx = this->x;
-    int cy = this->y;
+    int cx = this->center.x;
+    int cy = this->center.y;
     int r = this->radius;
     int x_off = 0;
     int y_off = r;

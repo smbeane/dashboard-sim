@@ -8,7 +8,7 @@
 
 class ProgressBar : public Component {
     private: 
-        
+        Point pos;
         int width, height;
         int progress;
 
@@ -18,23 +18,21 @@ class ProgressBar : public Component {
          * @brief Constructs default ProgressBar, position (0, 0)
          *        completely transparent with 0 width, height, or progress
          */
-        ProgressBar () : Component(0, 0, TRANSPARENT, TRANSPARENT), 
-                          width(0), height(0), progress(0) {}
+        ProgressBar () : Component(TRANSPARENT, TRANSPARENT), 
+                         pos({0, 0}), width(0), height(0), progress(0) {}
 
         /**
          * @brief Constructs a ProgressBar at defined pixel location
          * 
-         * @param x The center offset from left edge (0-63)
-         * @param y The center offset from top edge (0-31)
+         * @param pos The top left offset from the top left corner (0-63, 0-31)
          * @param w The width of the border (0 < w < 63 - x)
          * @param h The height of the border (0 < h < 31 - x)
          * @param progress The percentage (0 - 100) of bar to be filled
          * @param border Color of the border
          * @param infill Color of the progress infill
          */
-        ProgressBar (int x, int y, int width, int height, int progress, Color border, Color infill) 
-        :  Component(x, y, border, infill), width(width), height(height), progress(progress)
-        {}
+        ProgressBar (Point pos, int width, int height, int progress, Color border, Color infill) 
+        :  Component(border, infill), pos(pos), width(width), height(height), progress(progress) {}
 
         /**
          * @brief Renders component using two Rectangles, one with transparent
