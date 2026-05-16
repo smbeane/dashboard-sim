@@ -6,32 +6,34 @@
 
 #include "../component.hpp"
 
-class Textbox : public Component {
+class TextBox : public Component {
+    // TODO: add alignment
+    // TODO: if text updates to less than length, must update to clear the chars removed
     public: 
         
         std::string text;
         int length;
         
         /**
-         * @brief Constructs default Textbox, position (0, 0), 
+         * @brief Constructs default TextBox, position (0, 0), 
          *        completely transparent with 0 length and text
          */
-        Textbox () : Component(0, 0, black, black), text(""), length(0) {};
+        TextBox () : Component(0, 0, black, black), text(""), length(0) {};
         
         // TODO: update to include font selections
         // TODO: rename to TextBox
         /** 
          * @brief
          * 
-         * @param x The horizontal offset from the left edge of Textbox to the left edge of screen (0-63)
-         * @param y The vertical offset from the top edge of Textbox to the top edge of screen (0-31)
+         * @param x The horizontal offset from the left edge of TextBox to the left edge of screen (0-63)
+         * @param y The vertical offset from the top edge of TextBox to the top edge of screen (0-31)
          * @param t std::string of text to be rendered
          * @param length The number of characters to be displayed at one time
          * @param scroll_gap The number of 3x5 spaces between full scroll rotations
          * @param primary The Color of the text
-         * @param secondary The Color of the background of the Textbox
+         * @param secondary The Color of the background of the TextBox
         */
-        Textbox (int x, int y, std::string t, int length, int scroll_gap, Color primary, Color secondary) 
+        TextBox (int x, int y, std::string t, int length, int scroll_gap, Color primary, Color secondary) 
         :  Component(x, y, primary, secondary), length(length) {
             
             for (char c : t) {

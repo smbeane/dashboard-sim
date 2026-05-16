@@ -6,16 +6,16 @@ const Color MinuteHand = Color(255, 110, 0, 1);
 const Color Grey =  Color(120, 120, 120, 1);
 
 void TimePage::init_page() {
-    std::unique_ptr<Component> tb_time = std::make_unique<Textbox>(29, 3, time, 8, 2, profile_color, black);
-    time_tb = static_cast<Textbox*>(tb_time.get());
+    std::unique_ptr<Component> tb_time = std::make_unique<TextBox>(29, 3, time, 8, 2, profile_color, black);
+    time_tb = static_cast<TextBox*>(tb_time.get());
     components.push_back(std::move(tb_time));
 
-    std::unique_ptr<Component> tb_date = std::make_unique<Textbox>(27, 24, date, 9, 2, profile_color, black);
-    date_tb = static_cast<Textbox*>(tb_date.get());
+    std::unique_ptr<Component> tb_date = std::make_unique<TextBox>(27, 24, date, 9, 2, profile_color, black);
+    date_tb = static_cast<TextBox*>(tb_date.get());
     components.push_back(std::move(tb_date));
 
-    std::unique_ptr<Component> tb_year = std::make_unique<Textbox>(47, 18, year, 4, 2, profile_color, black);
-    year_tb = static_cast<Textbox*>(tb_year.get());
+    std::unique_ptr<Component> tb_year = std::make_unique<TextBox>(47, 18, year, 4, 2, profile_color, black);
+    year_tb = static_cast<TextBox*>(tb_year.get());
     components.push_back(std::move(tb_year));
 
     std::unique_ptr<Component> clk = std::make_unique<Clock>(12, 15, profile_color, black, white, MinuteHand, Grey);
@@ -23,18 +23,6 @@ void TimePage::init_page() {
     components.push_back(std::move(clk));
 
     update_data();
-
-    rotary.bind (RotaryAction::Left, [this]() {
-        std::cout << "Timepage: Rotating Left" << std::endl;
-    });
-
-    rotary.bind (RotaryAction::Right, [this]() {
-        std::cout << "Timepage: Rotating Right" << std::endl;
-    });
-
-    rotary.bind (RotaryAction::Press, [this]() {
-        std::cout << "Timepage: Rotating Press" << std::endl;
-    });
 
 }
 
@@ -49,10 +37,4 @@ void TimePage::update_data() {
     year_tb->swap_text(year);
 
     if (clock != nullptr) clock->update_time(time);
-}
-
-void TimePage::execute_action(RotaryAction action) {
-
-    rotary.execute(action);
-
 }

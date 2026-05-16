@@ -1,6 +1,6 @@
 #include "textbox.hpp"
 
-void Textbox::render_component(std::array<Color, 64*32>& matrix) {
+void TextBox::render_component(std::array<Color, 64*32>& matrix) {
     int box_length = text.length() > length ? length : text.length();
     int dx = this->x;
     int dy = this->y;
@@ -34,7 +34,7 @@ void Textbox::render_component(std::array<Color, 64*32>& matrix) {
     }
 }
     
-void Textbox::swap_text(std::string new_text) {
+void TextBox::swap_text(std::string new_text) {
     text.clear();
 
     for (char c : new_text) {
@@ -44,7 +44,7 @@ void Textbox::swap_text(std::string new_text) {
     scroll_start = text.begin();
 }
 
-void Textbox::scroll_text() {
+void TextBox::scroll_text() {
     if (text.empty()) return;
 
     scroll_start++;

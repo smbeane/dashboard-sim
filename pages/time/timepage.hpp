@@ -25,12 +25,10 @@ class TimePage : public Page {
         
         void update_data();
 
-        void execute_action(RotaryAction action);
-
         private: 
-            Textbox *time_tb = nullptr;
-            Textbox *date_tb = nullptr;
-            Textbox *year_tb = nullptr;
+            TextBox *time_tb = nullptr;
+            TextBox *date_tb = nullptr;
+            TextBox *year_tb = nullptr;
             Clock   *clock   = nullptr;
 };
 
