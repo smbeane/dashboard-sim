@@ -13,6 +13,9 @@
 #include <pages/pages.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
 
+// TODO: split into lib and src
+
+
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
 

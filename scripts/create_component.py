@@ -15,8 +15,10 @@ def create_component(name, subdir):
 #include "../component.hpp"
 
 class {class_name} : public Component {{
-    public: 
+    private: 
         // TODO: define component specific variables
+
+    public: 
         // TODO: add variables to each constructor  
         // TODO: fill out function comments  
         

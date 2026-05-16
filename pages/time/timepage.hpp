@@ -12,10 +12,13 @@
 #include "../page.hpp"
 
 class TimePage : public Page {
-    public:
+    private:
         std::string time;
         std::string date;
         std::string year;
+
+    
+    public:
 
         RotaryEncoder rotary;
 

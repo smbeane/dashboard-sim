@@ -9,7 +9,6 @@
 
 class Component {
     // TODO: add center on page function with left or right bias
-    // TODO: use point class instead of separate x, y
     protected: 
         Color primary;
         Color secondary;

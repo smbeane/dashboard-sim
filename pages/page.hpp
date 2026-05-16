@@ -12,10 +12,8 @@
 
 class Page {
     // TODO: implement framerate
-    // TODO: split into lib and src
     // TODO: add_component function that returns a pointer reference
-    // TODO: for all pages, update public and private standings
-    // TODO: add get and set methods for all variables
+    // TODO: figre out how to implement multiple action types
     protected: 
         std::vector<std::unique_ptr<Component>> components;
     

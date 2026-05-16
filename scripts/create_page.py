@@ -13,9 +13,12 @@ def create_page(name, subdir):
 #include "../page.hpp"
 
 class {page_name} : public Page {{
-    public: 
+    private: 
         // TODO: define page specific variables
+
+    public: 
         // TODO: add variables to each constructor    
+        // TODO: define page specific functions
         
         /**
          * @brief 
@@ -37,7 +40,11 @@ class {page_name} : public Page {{
          */
         void update_data() override;
 
-        // TODO: define page specific functions
+        /**
+         * @brief
+         */
+        void execute_action(RotaryACtion action, int rotary) override;
+
 }};
 
 #endif // {name.upper()}_HPP
