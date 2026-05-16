@@ -8,7 +8,7 @@ void Slider::render_component(std::array<Color, 64*32>& matrix) {
     matrix[64 * y + x_pos] = secondary;
 }
 
-void Slider::update_progress(int new_progress) {
+void Slider::set_progress(int new_progress) {
     progress = new_progress;
 }
 
