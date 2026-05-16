@@ -41,6 +41,27 @@ void TextBox::swap_text(std::string new_text) {
         text.push_back(std::toupper(c));
     }
 
+    if (text.length() > length) {
+            text.append(scroll_gap, ' ');
+    } else {
+        int total = length - text.length();
+
+        switch (alignment) {
+            case 'l': 
+                text.append(total, ' ');
+                break;
+            case 'c':
+                text.insert(0, total / 2, ' ');
+                text.append(total - (total / 2), ' ');
+                break;
+
+            case 'r':
+                text.insert(0, total, ' ');
+                break;
+        }
+            
+    }
+
     scroll_start = text.begin();
 }
 

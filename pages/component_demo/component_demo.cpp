@@ -6,8 +6,8 @@ void ComponentPage::init_page() {
     components.push_back(std::make_unique<Circle>(Point(32, 8), 5, WHITE, PROFILE_COLOR));
     components.push_back(std::make_unique<ProgressBar>(Point(40, 4), 20, 5, 50, WHITE, PROFILE_COLOR));
     components.push_back(std::make_unique<Slider>(Point(40, 12), 20, 0, 100, 49, true, WHITE, PROFILE_COLOR));
-    components.push_back(std::make_unique<TextBox>(Point(5, 17), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 14, 2, PROFILE_COLOR, BLACK));
-    components.push_back(std::make_unique<TextBox>(Point(5, 24), " !\"#$%&'()*+,-./'):;<=>?@[\\]^_`", 14, 2, PROFILE_COLOR, BLACK));
+    components.push_back(std::make_unique<TextBox>(Point(5, 17), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 14, 'l', 2, PROFILE_COLOR, BLACK));
+    components.push_back(std::make_unique<TextBox>(Point(5, 24), " !\"#$%&'()*+,-./'):;<=>?@[\\]^_`", 14, 'l', 2, PROFILE_COLOR, BLACK));
 }
 
 

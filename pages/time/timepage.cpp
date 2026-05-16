@@ -6,15 +6,15 @@ const Color MinuteHand = Color(255, 110, 0, 1);
 const Color Grey =  Color(120, 120, 120, 1);
 
 void TimePage::init_page() {
-    std::unique_ptr<Component> tb_time = std::make_unique<TextBox>(Point(29, 3), time, 8, 2, PROFILE_COLOR, BLACK);
+    std::unique_ptr<Component> tb_time = std::make_unique<TextBox>(Point(29, 3), time, 8, 'c', 2, PROFILE_COLOR, BLACK);
     time_tb = static_cast<TextBox*>(tb_time.get());
     components.push_back(std::move(tb_time));
 
-    std::unique_ptr<Component> tb_date = std::make_unique<TextBox>(Point(27, 24), date, 9, 2, PROFILE_COLOR, BLACK);
+    std::unique_ptr<Component> tb_date = std::make_unique<TextBox>(Point(27, 24), date, 9, 'c', 2, PROFILE_COLOR, BLACK);
     date_tb = static_cast<TextBox*>(tb_date.get());
     components.push_back(std::move(tb_date));
 
-    std::unique_ptr<Component> tb_year = std::make_unique<TextBox>(Point(47, 18), year, 4, 2, PROFILE_COLOR, BLACK);
+    std::unique_ptr<Component> tb_year = std::make_unique<TextBox>(Point(47, 18), year, 4, 'c', 2, PROFILE_COLOR, BLACK);
     year_tb = static_cast<TextBox*>(tb_year.get());
     components.push_back(std::move(tb_year));
 

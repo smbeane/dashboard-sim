@@ -13,7 +13,8 @@ class TextBox : public Component {
         Point pos;
         std::string::const_iterator scroll_start;
         std::string text;
-        int length;
+        int length, scroll_gap;
+        char alignment;
         
     public: 
         
@@ -23,6 +24,7 @@ class TextBox : public Component {
          */
         TextBox () : Component( BLACK, BLACK), pos({0, 0}), text(""), length(0) {};
         
+
         // TODO: update to include font selections
         /** 
          * @brief Constructs a TextBox at defined 
@@ -30,20 +32,38 @@ class TextBox : public Component {
          * @param pos The top left offset from the top left corner of screen (0-63, 0-31)
          * @param t std::string of text to be rendered
          * @param length The number of characters to be displayed at one time
+         * @param alignment Character corresponding to text alignment ('l', 'c', 'r')
          * @param scroll_gap The number of 3x5 spaces between full scroll rotations
          * @param primary The Color of the text
          * @param secondary The Color of the background of the TextBox
         */
-        TextBox (Point pos, std::string t, int length, int scroll_gap, Color primary, Color secondary) 
-        :  Component(primary, secondary), pos(pos), length(length) {
-            
+        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
+        :  Component(primary, secondary), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) {
             for (char c : t) {
                 text.push_back(std::toupper(c));
             }
-            
-            for (int i = 0; i < scroll_gap; i++) {
-                text.push_back(' ');
+
+            if (text.length() > length) {
+                    text.append(scroll_gap, ' ');
+            } else {
+                int total = length - text.length();
+
+                switch (alignment) {
+                    case 'l': 
+                        text.append(total, ' ');
+                        break;
+                    case 'c':
+                        text.insert(0, total / 2, ' ');
+                        text.append(total - (total / 2), ' ');
+                        break;
+
+                    case 'r':
+                        text.insert(0, total, ' ');
+                        break;
+                }
+                    
             }
+
 
             scroll_start = text.begin();
             
