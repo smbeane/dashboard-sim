@@ -3,10 +3,10 @@
 #include <iostream>
 
 void ColorPickerPage::init_page() {
-    std::unique_ptr<Component> tb_title = std::make_unique<TextBox>(8, 2, "Color Picker", 12, 0, white, black);
+    std::unique_ptr<Component> tb_title = std::make_unique<TextBox>(8, 2, "Color Picker", 12, 0, WHITE, BLACK);
     components.push_back(std::move(tb_title));
 
-    std::unique_ptr<Component> slider_r = std::make_unique<Slider>(2, 12, 20, 0, 255, color_vals[0], white, Color(255, 0, 0));
+    std::unique_ptr<Component> slider_r = std::make_unique<Slider>(2, 12, 20, 0, 255, color_vals[0], WHITE, Color(255, 0, 0));
     std::unique_ptr<Component> slider_g = std::make_unique<Slider>(2, 19, 20, 0, 255, color_vals[1], Color(80, 80, 80), Color(0, 255, 0));
     std::unique_ptr<Component> slider_b = std::make_unique<Slider>(2, 26, 20, 0, 255, color_vals[2], Color(80, 80, 80), Color(0, 0, 255));
     sliders[0] = static_cast<Slider*>(slider_r.get());
@@ -16,9 +16,9 @@ void ColorPickerPage::init_page() {
     components.push_back(std::move(slider_g));
     components.push_back(std::move(slider_b));
     
-    std::unique_ptr<Component> tb_r = std::make_unique<TextBox>(24, 10, std::to_string(color_vals[0]), 3, 0, white, black);
-    std::unique_ptr<Component> tb_g = std::make_unique<TextBox>(24, 17, std::to_string(color_vals[1]), 3, 0, Color(80, 80, 80), black);
-    std::unique_ptr<Component> tb_b = std::make_unique<TextBox>(24, 24, std::to_string(color_vals[2]), 3, 0, Color(80, 80, 80), black);
+    std::unique_ptr<Component> tb_r = std::make_unique<TextBox>(24, 10, std::to_string(color_vals[0]), 3, 0, WHITE, BLACK);
+    std::unique_ptr<Component> tb_g = std::make_unique<TextBox>(24, 17, std::to_string(color_vals[1]), 3, 0, Color(80, 80, 80), BLACK);
+    std::unique_ptr<Component> tb_b = std::make_unique<TextBox>(24, 24, std::to_string(color_vals[2]), 3, 0, Color(80, 80, 80), BLACK);
     textboxes[0] = static_cast<TextBox*>(tb_r.get());
     textboxes[1] = static_cast<TextBox*>(tb_g.get());
     textboxes[2] = static_cast<TextBox*>(tb_b.get());
@@ -71,8 +71,8 @@ void ColorPickerPage::init_page() {
         if (curr_selected > 0) curr_selected -= 1;
         else curr_selected = 2;
 
-        sliders[curr_selected]->change_primary(white);
-        textboxes[curr_selected]->change_primary(white);
+        sliders[curr_selected]->change_primary(WHITE);
+        textboxes[curr_selected]->change_primary(WHITE);
 
 
     });
@@ -86,8 +86,8 @@ void ColorPickerPage::init_page() {
         if (curr_selected < 2) curr_selected += 1;
         else curr_selected = 0;
 
-        sliders[curr_selected]->change_primary(white);
-        textboxes[curr_selected]->change_primary(white);
+        sliders[curr_selected]->change_primary(WHITE);
+        textboxes[curr_selected]->change_primary(WHITE);
     });
 
     // no binding for now

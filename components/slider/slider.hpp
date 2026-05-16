@@ -20,7 +20,7 @@ class Slider : public Component {
          * @brief Constructs default Slider, position (0, 0) 
          *        completely transparent with 0 length and progress
          */
-        Slider() : Component(0, 0, transparent, transparent), 
+        Slider() : Component(0, 0, TRANSPARENT, TRANSPARENT), 
                    length(0), min(0), max(0), progress(0) {}
 
         /**

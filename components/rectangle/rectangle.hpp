@@ -12,7 +12,7 @@ class Rectangle : public Component {
          * @brief Constructs default rectangle, position (0, 0),
          *        completely transparent with 0 width or height
          */
-        Rectangle() : Component(0, 0, transparent, transparent), width(0), height(0) {} 
+        Rectangle() : Component(0, 0, TRANSPARENT, TRANSPARENT), width(0), height(0) {} 
 
         /**
          * @brief Construct a Rectangle at a defined pixel location

@@ -9,6 +9,7 @@
 class Component {
     // TODO: for all components, update public and private standings
     // TODO: add get and set methods for all variables
+    // TODO: add center on page function with left or right bias
     public:
         int x, y;
         Color primary;

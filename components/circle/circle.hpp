@@ -12,7 +12,7 @@ class Circle : public Component {
          * @brief Constructs default Circle, position (0, 0), 
          *        completely transparent with 0 radius
          */
-        Circle () : Component(0, 0, transparent, transparent), radius(0) {}
+        Circle () : Component(0, 0, TRANSPARENT, TRANSPARENT), radius(0) {}
 
         /**
          * @brief Constructs a Circle at defined pixel location

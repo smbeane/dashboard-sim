@@ -18,7 +18,7 @@ class TextBox : public Component {
          * @brief Constructs default TextBox, position (0, 0), 
          *        completely transparent with 0 length and text
          */
-        TextBox () : Component(0, 0, black, black), text(""), length(0) {};
+        TextBox () : Component(0, 0, BLACK, BLACK), text(""), length(0) {};
         
         // TODO: update to include font selections
         // TODO: rename to TextBox

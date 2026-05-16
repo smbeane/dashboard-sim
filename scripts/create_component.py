@@ -24,7 +24,7 @@ class {class_name} : public Component {{
          * @brief Constructs default {class_name}. position (0, 0),
                   completely transparent _____
          */
-        {class_name}() : Component(0, 0, transparent, transparent) {{}}
+        {class_name}() : Component(0, 0, TRANSPARENT, TRANSPARENT) {{}}
 
         /**
          * @brief Constructs a {class_name} at defined _____

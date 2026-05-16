@@ -16,7 +16,7 @@ class ProgressBar : public Component {
          * @brief Constructs default ProgressBar, position (0, 0)
          *        completely transparent with 0 width, height, or progress
          */
-        ProgressBar () : Component(0, 0, transparent, transparent), 
+        ProgressBar () : Component(0, 0, TRANSPARENT, TRANSPARENT), 
                           width(0), height(0), progress(0) {}
 
         /**

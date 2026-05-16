@@ -12,7 +12,7 @@ class Line : public Component {
          * @brief Constructs default Line, position (0, 0) ,
          *        completely transparent with no length
          */
-        Line () : Component(0, 0, black, black), end_x(0), end_y(0) {}
+        Line () : Component(0, 0, BLACK, BLACK), end_x(0), end_y(0) {}
 
         /**
          * @brief Constructs a Line at defined pixel start and end locations
@@ -24,7 +24,7 @@ class Line : public Component {
          * @param primary Color of the line
          */
         Line (int start_x, int start_y, int end_x, int end_y, Color primary) 
-        :  Component(start_x, start_y, primary, transparent), end_x(end_x), end_y(end_y)  {}
+        :  Component(start_x, start_y, primary, TRANSPARENT), end_x(end_x), end_y(end_y)  {}
 
         /**
          * @brief Renders component using Bresenham's Line Algorithm
