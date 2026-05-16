@@ -55,6 +55,14 @@ class Slider : public Component {
         void update_progress(int new_progress);
 
         /**
+         * @brief Returns the current progress 
+         * 
+         * @return progress variable
+         */
+
+        int get_progress() { return progress; }
+
+        /**
          * @brief Increments progress value by 1 until reaching the maximum
          */
         void increment_slider() {
