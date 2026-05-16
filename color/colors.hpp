@@ -1,7 +1,7 @@
 #ifndef COLORS_HPP
 #define COLORS_HPP
 
-#include "headers/color.hpp"
-#include "headers/defaults.hpp"
+#include "color/color.hpp"
+#include "defaults/defaults.hpp"
 
 #endif // COLORS_HPP

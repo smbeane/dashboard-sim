@@ -12,9 +12,19 @@ class Color {
         bool visible;
 
         Color() : r ( 0 ), g ( 0 ), b ( 0 ), visible( 0 )  {}
-        
+
+
         /**
-         * @brief Constructs a Color of defined RGB
+         * @brief Constructs a color of defined RGB 
+         * 
+         * @param r 8-b red value of Color (0-255)
+         * @param g 8-bit green value of Color (0-255)
+         * @param b 8-bit blue value of Color (0-255)
+         */
+        Color(uint8_t r, uint8_t g, uint8_t b) : r ( r ), g ( g ), b ( b ), visible( 1 )  {}
+
+        /**
+         * @brief Constructs a Color of defined RGB and transparency
          * 
          * @param r 8-b red value of Color (0-255)
          * @param g 8-bit green value of Color (0-255)
