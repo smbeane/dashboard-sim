@@ -10,12 +10,15 @@ class Component {
     // TODO: for all components, update public and private standings
     // TODO: add get and set methods for all variables
     // TODO: add center on page function with left or right bias
-    
-    public:
+    // TODO: use point class instead of separate x, y
+    protected: 
+        
         int x, y;
         Color primary;
         Color secondary;
         bool is_visible;
+
+    public:
 
         Component (int x, int y, Color p, Color s) 
         : x(x), y(y), primary(p), secondary(s), is_visible(false) {}

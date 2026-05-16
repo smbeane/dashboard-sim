@@ -32,25 +32,23 @@ void ColorPickerPage::init_page() {
 
 
     rotary_left.bind(RotaryAction::Left, [this]() {
-
-        sliders[curr_selected]->decrement_slider();
+        int progress = sliders[curr_selected]->decrement_slider();
         textboxes[curr_selected]->swap_text(std::to_string(sliders[curr_selected]->get_progress()));
 
-        if (curr_selected == 0) chosen.r = sliders[curr_selected]->get_progress();
-        if (curr_selected == 1) chosen.g = sliders[curr_selected]->get_progress();
-        if (curr_selected == 2) chosen.b = sliders[curr_selected]->get_progress();
-
+        if (curr_selected == 0) chosen.r = progress;
+        if (curr_selected == 1) chosen.g = progress;
+        if (curr_selected == 2) chosen.b = progress;
+        
         picked_rect->change_color(chosen);
     });
 
     rotary_left.bind(RotaryAction::Right, [this]() {
-
-        sliders[curr_selected]->increment_slider();
+        int progress = sliders[curr_selected]->increment_slider();
         textboxes[curr_selected]->swap_text(std::to_string(sliders[curr_selected]->get_progress()));
 
-        if (curr_selected == 0) chosen.r = sliders[curr_selected]->get_progress();
-        if (curr_selected == 1) chosen.g = sliders[curr_selected]->get_progress();
-        if (curr_selected == 2) chosen.b = sliders[curr_selected]->get_progress();
+        if (curr_selected == 0) chosen.r = progress;
+        if (curr_selected == 1) chosen.g = progress;
+        if (curr_selected == 2) chosen.b = progress;
 
         picked_rect->change_color(chosen);
     });

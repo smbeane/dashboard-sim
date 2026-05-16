@@ -9,10 +9,13 @@
 class TextBox : public Component {
     // TODO: add alignment
     // TODO: if text updates to less than length, must update to clear the chars removed
-    public: 
+    private: 
         
+        std::string::const_iterator scroll_start;
         std::string text;
         int length;
+        
+    public: 
         
         /**
          * @brief Constructs default TextBox, position (0, 0), 
@@ -21,9 +24,8 @@ class TextBox : public Component {
         TextBox () : Component(0, 0, BLACK, BLACK), text(""), length(0) {};
         
         // TODO: update to include font selections
-        // TODO: rename to TextBox
         /** 
-         * @brief
+         * @brief Constructs a TextBox at defined 
          * 
          * @param x The horizontal offset from the left edge of TextBox to the left edge of screen (0-63)
          * @param y The vertical offset from the top edge of TextBox to the top edge of screen (0-31)
@@ -62,14 +64,11 @@ class TextBox : public Component {
          */
         void swap_text(std::string new_text);
         
-        // TODO: update to be able to scroll n letters at once
         /**
          * @brief Scrolls the text by one character, but does not rerender
          */
         void scroll_text(); 
-    private:
 
-        std::string::const_iterator scroll_start;
 };
 
 #endif // TEXTBOX_HPP

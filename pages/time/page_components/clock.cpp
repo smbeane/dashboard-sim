@@ -13,8 +13,8 @@ namespace {
         int dx = 8 * cos(degree - PI / 2);
         int dy = 8 * sin(degree - PI / 2);
 
-        hand.end_x = dx + x;
-        hand.end_y = dy + y;
+        hand.set_endx(dx + x);
+        hand.set_endy(dy + y);
     }
 
     void update_hour_hand (Line& hand, std::string time, int x, int y) {
@@ -26,9 +26,8 @@ namespace {
         int dx = 6 * cos(degree - PI / 2);
         int dy = 6 * sin(degree - PI / 2);
 
-        hand.end_x = dx + x;
-        hand.end_y = dy + y;
-
+        hand.set_endx(dx + x);
+        hand.set_endy(dy + y);
     }
 }
 

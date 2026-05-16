@@ -68,24 +68,25 @@ class Slider : public Component {
         /**
          * @brief Increments progress value by 1 until reaching the maximum
          */
-        void increment_slider() {
-            if (progress < max) {
-                progress += 1;
-            } else if (wrap) {
-                progress = min;
-            }
+        int increment_slider() {
+
+            if (progress < max) progress += 1;
+            else if (wrap) progress = min;
+
+            return progress;
         };
 
         /**
          * @brief Decrements progress value by 1 until reaching minimum
          *        or wrapping around to maximum
          */
-        void decrement_slider() {
-            if (progress > min) {
-                progress -= 1;
-            } else if (wrap) {
-                progress = max;
-            }
+        int decrement_slider() {
+            
+            if (progress > min) progress -= 1;
+            else if (wrap) progress = max;
+            
+            return progress;
+
         }
 };
 

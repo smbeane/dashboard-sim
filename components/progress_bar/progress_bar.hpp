@@ -7,11 +7,13 @@
 #include "../component.hpp"
 
 class ProgressBar : public Component {
-    public: 
+    private: 
         
         int width, height;
         int progress;
 
+    public: 
+        
         /**
          * @brief Constructs default ProgressBar, position (0, 0)
          *        completely transparent with 0 width, height, or progress
@@ -49,7 +51,6 @@ class ProgressBar : public Component {
          */
         void update_progress(int new_progress);
 
-    private: 
 };
 
 #endif // PROGRESS_BAR_HPP

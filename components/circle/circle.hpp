@@ -4,9 +4,26 @@
 #include "../component.hpp"
 
 class Circle : public Component {
-    public: 
-
+    private: 
+        
         int radius;
+    
+        /**
+         * @brief Renders the inside of the Circle, including
+         *        where the border would go
+         * 
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void draw_infill(std::array<Color, 64*32>& matrix);
+        
+        /**
+         * @brief Renders only the border of the Circle
+         * 
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void draw_border(std::array<Color, 64*32>& matrix);
+
+    public: 
 
         /**
          * @brief Constructs default Circle, position (0, 0), 
@@ -34,11 +51,6 @@ class Circle : public Component {
          */
         void render_component(std::array<Color, 64*32>& matrix) override;
 
-    private:
-        void draw_infill(std::array<Color, 64*32>& matrix, Color fill);
-        
-        void draw_border(std::array<Color, 64*32>& matrix, Color border);
-        
 };
 
 #endif // CIRCLE_HPP

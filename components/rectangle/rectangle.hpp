@@ -4,8 +4,11 @@
 #include "../component.hpp"
 
 class Rectangle : public Component {
-    public: 
+    private: 
+
         int width, height;
+    
+    public: 
 
         /**
          * @brief Constructs default rectangle, position (0, 0),
