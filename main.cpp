@@ -7,8 +7,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include <colors.hpp>
 #include <simulator.hpp>
+#include <color/colors.hpp>
 #include <components/components.hpp>
 #include <pages/pages.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
@@ -29,6 +29,7 @@ int main ( int argc, char* argv[] ) {
     std::vector<std::unique_ptr<Page>> pages;
     pages.push_back(std::make_unique<ComponentPage>("Component Renderer"));
     pages.push_back(std::make_unique<TimePage>("Time Renderer")); 
+    pages.push_back(std::make_unique<ColorPickerPage>());
 
     Page* selected_page = pages.at(page_idx).get();
 
@@ -43,22 +44,28 @@ int main ( int argc, char* argv[] ) {
             }  
 
             else if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (page_idx == 1){
+                if (page_idx == 2) {
                     switch (event.key.key) {
                         case SDLK_ESCAPE:
                             quit = true;
                             break;
-                        case SDLK_LEFT:
                         case SDLK_A:
-                            selected_page->execute_action(RotaryAction::Left);
+                            selected_page->execute_action(RotaryAction::Left, 0);
+                            break;
+                        case SDLK_LEFT:
+                            selected_page->execute_action(RotaryAction::Left, 1);
                             break;
                         case SDLK_D:
+                            selected_page->execute_action(RotaryAction::Right, 0);
+                            break;
                         case SDLK_RIGHT:   
-                            selected_page->execute_action(RotaryAction::Right);
+                            selected_page->execute_action(RotaryAction::Right, 1);
                             break;
                         case SDLK_S:
+                            selected_page->execute_action(RotaryAction::Press, 0);
+                            break;
                         case SDLK_DOWN:
-                            selected_page->execute_action(RotaryAction::Press);
+                            selected_page->execute_action(RotaryAction::Press, 1);
                             break;
                     }
                 }

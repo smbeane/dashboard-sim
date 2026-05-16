@@ -6,6 +6,6 @@ void Page::render_page(std::array<Color, 32*64>& matrix) {
     }
 }
 
-void Page::execute_action(RotaryAction action) {
+void Page::execute_action(RotaryAction action, int rotary) {
     
 }

@@ -8,6 +8,7 @@
 
 
 class Slider : public Component {
+    // TODO: add wrapping variables that allows numbers to wrap from max to min if trying to increase
     public: 
         
         int length;

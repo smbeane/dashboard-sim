@@ -4,6 +4,7 @@
 #include "../component.hpp"
 
 class Rectangle : public Component {
+    // TODO: add singular color rectangle and change_color function
     public: 
         int width, height;
 

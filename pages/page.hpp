@@ -6,12 +6,16 @@
 #include <array>
 #include <memory>
 
-#include <colors.hpp>
+#include <color/colors.hpp>
 #include <components/component.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
 
 class Page {
     // TODO: implement framerate
+    // TODO: split into lib and src
+    // TODO: add_component function that returns a pointer reference
+    // TODO: for all pages, update public and private standings
+    // TODO: add get and set methods for all variables
     public:
         std::string name;
         std::vector<std::unique_ptr<Component>> components;
@@ -27,7 +31,7 @@ class Page {
 
         virtual void update_data() = 0;
 
-        virtual void execute_action(RotaryAction action);
+        virtual void execute_action(RotaryAction action, int rotary);
 };
 
 
