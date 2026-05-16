@@ -11,11 +11,10 @@
 #include <utils/inputs/rotary_encoder.hpp>
 
 class Page {
-
+    // TODO: implement framerate
     public:
         std::string name;
         std::vector<std::unique_ptr<Component>> components;
-        // std::vector<> input_functions;
 
 
         Page () : name("Basic Page"), components() {};
