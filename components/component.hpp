@@ -24,6 +24,8 @@ class Component {
 
         virtual void render_component(std::array<Color, 64*32>& matrix) = 0;
 
+        void change_color (Color new_color) { primary = new_color; secondary = new_color; };
+
         void change_primary (Color new_primary) { primary = new_primary; };
 
         void change_secondary (Color new_secondary) { secondary = new_secondary; };

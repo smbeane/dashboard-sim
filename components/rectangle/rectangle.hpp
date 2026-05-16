@@ -4,7 +4,6 @@
 #include "../component.hpp"
 
 class Rectangle : public Component {
-    // TODO: add singular color rectangle and change_color function
     public: 
         int width, height;
 
@@ -15,7 +14,21 @@ class Rectangle : public Component {
         Rectangle() : Component(0, 0, TRANSPARENT, TRANSPARENT), width(0), height(0) {} 
 
         /**
+         * @brief Constructs a Rectangle at defined pixel location
+         *        with uniform color
+         * 
+         * @param x The center offset from left edge (0-63)
+         * @param y The center offset from top edge (0-31)
+         * @param w The width of the border (0 < w < 63 - x)
+         * @param h The height of the border (0 < h < 31 - x)
+         * @param color
+         */
+        Rectangle(int x, int y, int w, int h, Color color) 
+        :  Component(x, y, color, color), width(w), height(h) {}
+
+        /**
          * @brief Construct a Rectangle at a defined pixel location
+         *        with separte border and infill color
          * 
          * @param x The center offset from left edge (0-63)
          * @param y The center offset from top edge (0-31)
