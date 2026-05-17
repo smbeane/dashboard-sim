@@ -31,19 +31,20 @@ class ColorPickerPage : public Page {
         ColorPickerPage() : Page("ColorPicker"), chosen(BLACK) { init_page(); };
 
         /**
+         * @brief 
+         */
+        ColorPickerPage(std::string name) : Page(name)  { init_page(); };
+        
+        /**
          * @brief
          */
         ColorPickerPage(std::string name, Color curr) : Page(name), chosen(curr) { init_page(); }; 
-
-        /**
-         * @brief 
-         */
-        ColorPickerPage(std::string name) : Page(name)  {}
+        
 
         /**
          * @brief
          */
-        void init_page() override;
+        void init_page();
 
         /**
          * @brief

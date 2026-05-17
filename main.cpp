@@ -17,7 +17,9 @@
 
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
+
 std::array<Color, MATRIX_SIZE> grid;
+std::vector<std::unique_ptr<Page>> pages;
 
 bool handle_action(Page* page, SDL_Event event) {
     bool quit = false;
@@ -49,6 +51,14 @@ bool handle_action(Page* page, SDL_Event event) {
     return quit;
 }
 
+template <typename T, typename... Args>
+Page* add_page(std::string name, Args... args) {
+    std::unique_ptr<T> page = std::make_unique<T>(name, std::forward<Args>(args)...);
+    T* ptr = page.get();
+    pages.push_back(std::move(page));
+
+    return ptr;
+}
 int main ( int argc, char* argv[] ) {
     
     std::vector<int> inputs = parse_args(argc, argv);
@@ -59,17 +69,18 @@ int main ( int argc, char* argv[] ) {
 
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
-    std::vector<std::unique_ptr<Page>> pages;
-    pages.push_back(std::make_unique<ComponentPage>("Component Renderer"));
-    pages.push_back(std::make_unique<TimePage>("Time Renderer")); 
-    pages.push_back(std::make_unique<ColorPickerPage>());
+    std::vector<Page*> page_ptrs;
+    std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
+    
+    page_ptrs.push_back(add_page<ComponentPage>("Component Demo"));
+    page_ptrs.push_back(add_page<TimePage>("Time Display"));
+    page_ptrs.push_back(add_page<ColorPickerPage>("Color Picker"));
+    page_ptrs.push_back(add_page<PageSelectionPage>("Page Selection", page_names));
 
     if (page_idx < 0 || page_idx >= static_cast<int>(pages.size())) {
         std::cerr << "Warning: invalid page index " << page_idx << ", defaulting to page 0\n";
         page_idx = 0;
     }
-
-    Page* selected_page = pages.at(page_idx).get();
 
     bool quit = false;
     SDL_Event event;
@@ -82,13 +93,13 @@ int main ( int argc, char* argv[] ) {
             }  
 
             else if (event.type == SDL_EVENT_KEY_DOWN) {
-                quit = handle_action(selected_page, event);
+                quit = handle_action(page_ptrs[page_idx], event);
             }
         }
         
-        selected_page->render_page(grid);
+        page_ptrs[page_idx]->render_page(grid);
         render.render_matrix(grid);
-        selected_page->update_data();
+        page_ptrs[page_idx]->update_data();
     }
 
     return 0;

@@ -4,5 +4,6 @@
 #include <pages/component_demo/component_demo.hpp>
 #include <pages/time/timepage.hpp>
 #include <pages/colorpicker/colorpicker.hpp>
+#include <pages/pageselection/pageselection.hpp>
 
 #endif // PAGES_HPP
