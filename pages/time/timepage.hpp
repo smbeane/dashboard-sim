@@ -4,6 +4,7 @@
 #include <string>
 #include <array>
 #include <functional>
+#include <optional>
 
 #include <utils/time/time.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
@@ -13,6 +14,8 @@
 
 class TimePage : public Page {
     private:
+        RotaryEncoder rotary_left, rotary_right;
+
         std::string time;
         std::string date;
         std::string year;
@@ -31,6 +34,10 @@ class TimePage : public Page {
         void init_page();
         
         void update_data();
+
+        void bind_actions();
+
+        std::optional<int> execute_action(RotaryAction action, int rotary);
 
 };
 

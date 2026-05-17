@@ -14,6 +14,7 @@ void TimePage::init_page() {
     clock = create_component<Clock>(Point(12, 15), PROFILE_COLOR, BLACK, WHITE, MinuteHand, Grey);
 
     update_data();
+    bind_actions();
 
 }
 
@@ -28,4 +29,15 @@ void TimePage::update_data() {
     year_tb->swap_text(year);
 
     if (clock != nullptr) clock->update_time(time);
+}
+
+void TimePage::bind_actions() {
+    rotary_left.bind(RotaryAction::Press, [this]() -> std::optional<int> {
+        return 0;
+    });
+}
+
+std::optional<int> TimePage::execute_action(RotaryAction action, int rotary) {
+    if (rotary == 0) return rotary_left.execute(action);
+    else return rotary_right.execute(action);
 }

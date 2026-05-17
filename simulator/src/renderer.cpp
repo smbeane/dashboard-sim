@@ -21,13 +21,6 @@ bool Renderer::init_window() {
     } else {
         
         renderer = SDL_CreateRenderer( window , NULL);
-
-        if ( !(this->able_to_render())) {
-        
-            SDL_Log ( "Window could not initialize \n");   
-            return false;
-
-        }   
         
         return true;
     

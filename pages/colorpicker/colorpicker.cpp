@@ -1,5 +1,6 @@
 #include "colorpicker.hpp"
 
+#include <iostream>
 
 void ColorPickerPage::init_page() {
     create_component<TextBox>(Point(8, 2), "Color Picker", 12, 'c', 0, WHITE, BLACK);
@@ -21,8 +22,7 @@ void ColorPickerPage::init_page() {
 }
 
 void ColorPickerPage::bind_actions() {
-    
-    rotary_left.bind(RotaryAction::Left, [this]() {
+    rotary_left.bind(RotaryAction::Left, [this]() -> std::optional<int> {
         sliders[curr_selected]->change_primary(UNSELECTED);
         textboxes[curr_selected]->change_primary(UNSELECTED);
         
@@ -31,11 +31,11 @@ void ColorPickerPage::bind_actions() {
         
         sliders[curr_selected]->change_primary(WHITE);
         textboxes[curr_selected]->change_primary(WHITE);
-        
-        
+
+        return {};
     });
     
-    rotary_left.bind(RotaryAction::Right, [this]() {
+    rotary_left.bind(RotaryAction::Right, [this]() -> std::optional<int>{
         sliders[curr_selected]->change_primary(UNSELECTED);
         textboxes[curr_selected]->change_primary(UNSELECTED);
         
@@ -44,38 +44,48 @@ void ColorPickerPage::bind_actions() {
         
         sliders[curr_selected]->change_primary(WHITE);
         textboxes[curr_selected]->change_primary(WHITE);
+
+        return {};
+    });
+
+    rotary_left.bind(RotaryAction::Press, [this]() -> std::optional<int>{
+        return 0;
     });
     
-    rotary_right.bind(RotaryAction::Left, [this]() {
+    rotary_right.bind(RotaryAction::Left, [this]() -> std::optional<int>{
         int progress = sliders[curr_selected]->decrement_slider();
         update_color(progress);
+
+        return {};
     });
     
-    rotary_right.bind(RotaryAction::Right, [this]() {
+    rotary_right.bind(RotaryAction::Right, [this]() -> std::optional<int> {
         int progress = sliders[curr_selected]->increment_slider();
         update_color(progress);
+
+        return {};
     });
 }
 
 void ColorPickerPage::update_color(int progress) {
     textboxes[curr_selected]->swap_text(std::to_string(progress));
 
-        switch (curr_selected) {
-            case 0: chosen.r = progress; break;
-            case 1: chosen.g = progress; break;
-            case 2: chosen.b = progress; break;
-        }
-        
-        picked_rect->change_color(chosen);
+    switch (curr_selected) {
+        case 0: chosen.r = progress; break;
+        case 1: chosen.g = progress; break;
+        case 2: chosen.b = progress; break;
+    }
+    
+    picked_rect->change_color(chosen);
 }
 
 void ColorPickerPage::update_data() {
 
 }  
 
-void ColorPickerPage::execute_action(RotaryAction action, int rotary) {
-    if (rotary == 0) rotary_left.execute(action);
-    else rotary_right.execute(action);
+std::optional<int> ColorPickerPage::execute_action(RotaryAction action, int rotary) {
+    if (rotary == 0) return rotary_left.execute(action);
+    else return rotary_right.execute(action);
     
 }
 

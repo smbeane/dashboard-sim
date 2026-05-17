@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <optional>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -20,36 +21,66 @@ const int pixel_size { 18 };
 
 std::array<Color, MATRIX_SIZE> grid;
 std::vector<std::unique_ptr<Page>> pages;
+int page_idx;
+
+void handle_output(RotaryAction action, int rotary, std::optional<int> output) {
+    if (!output) return;
+
+    if (page_idx >= 0 && page_idx <= 3) {
+        grid.fill(BLACK);
+        page_idx = output.value();
+    }
+
+}
+
 
 bool handle_action(Page* page, SDL_Event event) {
     bool quit = false;
-    
+    std::optional<int> output;
+    RotaryAction action;
+    int rotary;
+
     switch (event.key.key) {
         case SDLK_ESCAPE:
             quit = true;
             break;
         case SDLK_A:
-            page->execute_action(RotaryAction::Left, 0);
+            output = page->execute_action(RotaryAction::Left, 0);
+            action = RotaryAction::Left;
+            rotary = 0;
             break;
         case SDLK_LEFT:
-            page->execute_action(RotaryAction::Left, 1);
+            output = page->execute_action(RotaryAction::Left, 1);
+            action = RotaryAction::Left;
+            rotary = 1;
             break;
         case SDLK_D:
-            page->execute_action(RotaryAction::Right, 0);
+            output = page->execute_action(RotaryAction::Right, 0);
+            action = RotaryAction::Right;
+            rotary = 0;
             break;
         case SDLK_RIGHT:   
-            page->execute_action(RotaryAction::Right, 1);
+            output = page->execute_action(RotaryAction::Right, 1);
+            action = RotaryAction::Right;
+            rotary = 1;
             break;
         case SDLK_S:
-            page->execute_action(RotaryAction::Press, 0);
+            output = page->execute_action(RotaryAction::Press, 0);
+            action = RotaryAction::Press;
+            rotary = 0;
             break;
         case SDLK_DOWN:
-            page->execute_action(RotaryAction::Press, 1);
+            output = page->execute_action(RotaryAction::Press, 1);
+            action = RotaryAction::Press;
+            rotary = 1;
             break;
     }
 
+    handle_output(action, rotary, output);
+
     return quit;
 }
+
 
 template <typename T, typename... Args>
 Page* add_page(std::string name, Args... args) {
@@ -59,23 +90,23 @@ Page* add_page(std::string name, Args... args) {
 
     return ptr;
 }
+
 int main ( int argc, char* argv[] ) {
     
     std::vector<int> inputs = parse_args(argc, argv);
-    int page_idx = inputs[0];
+    page_idx = inputs[0];
     int window_width = inputs[3]; 
     int window_height = inputs[4];
-
 
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
     std::vector<Page*> page_ptrs;
     std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
     
+    page_ptrs.push_back(add_page<PageSelectionPage>("Page Selection", page_names));
     page_ptrs.push_back(add_page<ComponentPage>("Component Demo"));
     page_ptrs.push_back(add_page<TimePage>("Time Display"));
     page_ptrs.push_back(add_page<ColorPickerPage>("Color Picker"));
-    page_ptrs.push_back(add_page<PageSelectionPage>("Page Selection", page_names));
 
     if (page_idx < 0 || page_idx >= static_cast<int>(pages.size())) {
         std::cerr << "Warning: invalid page index " << page_idx << ", defaulting to page 0\n";

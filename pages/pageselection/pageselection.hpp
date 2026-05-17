@@ -2,6 +2,10 @@
 #ifndef PAGESELECTION_HPP
 #define PAGESELECTION_HPP
 
+#include <optional>
+#include <vector>
+#include <string>
+
 #include "../page.hpp"
 #include <components/components.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
@@ -28,7 +32,7 @@ class PageSelectionPage : public Page {
 
         void init_page(std::vector<std::string> page_names);
         void update_data() override;
-        void execute_action(RotaryAction action, int rotary) override;
+        std::optional<int> execute_action(RotaryAction action, int rotary) override;
 };
 
 #endif // PAGESELECTION_HPP

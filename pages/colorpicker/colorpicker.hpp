@@ -5,6 +5,7 @@
 #include <string>
 #include <array>
 #include <functional>
+#include <optional>
 
 #include <components/components.hpp>
 #include <color/colors.hpp>
@@ -33,7 +34,7 @@ class ColorPickerPage : public Page {
         /**
          * @brief 
          */
-        ColorPickerPage(std::string name) : Page(name)  { init_page(); };
+        ColorPickerPage(std::string name) : Page(name), chosen(BLACK) { init_page(); };
         
         /**
          * @brief
@@ -54,7 +55,7 @@ class ColorPickerPage : public Page {
         /**
          * @brief 
          */
-        void execute_action(RotaryAction action, int rotary);
+        std::optional<int> execute_action(RotaryAction action, int rotary);
 
 };
 

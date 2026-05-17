@@ -5,6 +5,7 @@
 #include <string>
 #include <array>
 #include <memory>
+#include <optional>
 
 #include <color/colors.hpp>
 #include <components/component.hpp>
@@ -47,7 +48,7 @@ class Page {
         
         virtual void render_page(std::array<Color, MATRIX_SIZE>& matrix);
 
-        virtual void execute_action(RotaryAction action, int rotary);
+        virtual std::optional<int> execute_action(RotaryAction action, int rotary);
 };
 
 
