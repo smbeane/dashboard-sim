@@ -1,74 +1,62 @@
 import os
 import argparse
+import textwrap
+
 
 def create_page(name, subdir):
-    page_name = name[0].upper() + name[1:] + "Page"
-    base_path = f"{subdir}/{name.lower()}"
+    page_name = name[0].upper() + name[1:] + 'Page'
+    base_path = os.path.join(subdir, name.lower())
     os.makedirs(base_path, exist_ok=True)
 
-    with open(f"{base_path}/{name.lower()}.hpp", "w") as f:
-        f.write(f'''#ifndef {name.upper()}_HPP
-#define {name.upper()}_HPP
+    include_guard = f"{name.upper()}_HPP"
+
+    header_content = textwrap.dedent(f'''
+#ifndef {include_guard}
+#define {include_guard}
 
 #include "../page.hpp"
 
 class {page_name} : public Page {{
-    private: 
-        // TODO: define page specific variables
+public:
+    {page_name}() : Page("{page_name}") {{}}
 
-    public: 
-        // TODO: add variables to each constructor    
-        // TODO: define page specific functions
-        
-        /**
-         * @brief 
-         */
-        {page_name}() : Page("") {{}}
+    {page_name}(std::string name) : Page(name) {{}}
 
-        /**
-         * @brief 
-         */
-        {page_name}(std::string name) : Page(name)  {{}}
-
-        /**
-         * @brief
-         */
-        void init_page() override;
-
-        /**
-         * @brief
-         */
-        void update_data() override;
-
-        /**
-         * @brief
-         */
-        void execute_action(RotaryACtion action, int rotary) override;
-
+    void init_page() override;
+    void update_data() override;
+    void execute_action(RotaryAction action, int rotary) override;
 }};
 
-#endif // {name.upper()}_HPP
+#endif // {include_guard}
 ''')
-        
-    # Write Source File
-    with open(f"{base_path}/{name.lower()}.cpp", "w") as f:
-        f.write(f'''#include "{name.lower()}.hpp"
+
+    source_content = textwrap.dedent(f'''
+#include "{name.lower()}.hpp"
 
 void {page_name}::init_page() {{
-
+    // TODO: initialize components for {page_name}
 }}
 
 void {page_name}::update_data() {{
+    // TODO: update page state
+}}
 
-}}  
+void {page_name}::execute_action(RotaryAction action, int rotary) {{
+    // TODO: handle page input actions
+}}
 ''')
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Professional Component Boilerplate Generator")
-    
-    parser.add_argument("-n", "--name", required=True, help="Name of the page")
-    parser.add_argument("-s", "--subdir", default="pages", help="Target directory for the component")
+    with open(os.path.join(base_path, f"{name.lower()}.hpp"), "w") as f:
+        f.write(header_content)
 
+    with open(os.path.join(base_path, f"{name.lower()}.cpp"), "w") as f:
+        f.write(source_content)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Page boilerplate generator")
+    parser.add_argument("-n", "--name", required=True, help="Name of the page")
+    parser.add_argument("-s", "--subdir", default="pages", help="Target directory for the page")
     args = parser.parse_args()
 
     print(f"Creating page: {args.name} in {args.subdir}")

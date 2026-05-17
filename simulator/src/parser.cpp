@@ -27,6 +27,15 @@ std::vector<int> parse_args (int argc, char* args[]) {
         }
     }
 
+    if (inputs[3] <= 0) {
+        std::cerr << "Warning: invalid window width, using default 1408\n";
+        inputs[3] = 1408;
+    }
+    if (inputs[4] <= 0) {
+        std::cerr << "Warning: invalid window height, using default 704\n";
+        inputs[4] = 704;
+    }
+
     return inputs;
 
 }

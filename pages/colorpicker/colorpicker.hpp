@@ -11,7 +11,6 @@
 #include "../page.hpp"
 
 class ColorPickerPage : public Page {
-    // TODO: clean up initialization and saved variables
     private:
         Color chosen;
         std::array<Slider*, 3> sliders;

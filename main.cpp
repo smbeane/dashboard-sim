@@ -17,8 +17,37 @@
 
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
-
 std::array<Color, MATRIX_SIZE> grid;
+
+bool handle_action(Page* page, SDL_Event event) {
+    bool quit = false;
+    
+    switch (event.key.key) {
+        case SDLK_ESCAPE:
+            quit = true;
+            break;
+        case SDLK_A:
+            page->execute_action(RotaryAction::Left, 0);
+            break;
+        case SDLK_LEFT:
+            page->execute_action(RotaryAction::Left, 1);
+            break;
+        case SDLK_D:
+            page->execute_action(RotaryAction::Right, 0);
+            break;
+        case SDLK_RIGHT:   
+            page->execute_action(RotaryAction::Right, 1);
+            break;
+        case SDLK_S:
+            page->execute_action(RotaryAction::Press, 0);
+            break;
+        case SDLK_DOWN:
+            page->execute_action(RotaryAction::Press, 1);
+            break;
+    }
+
+    return quit;
+}
 
 int main ( int argc, char* argv[] ) {
     
@@ -27,14 +56,6 @@ int main ( int argc, char* argv[] ) {
     int window_width = inputs[3]; 
     int window_height = inputs[4];
 
-    if (window_width <= 0) {
-        std::cerr << "Warning: invalid window width, using default 1408\n";
-        window_width = 1408;
-    }
-    if (window_height <= 0) {
-        std::cerr << "Warning: invalid window height, using default 704\n";
-        window_height = 704;
-    }
 
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
@@ -61,38 +82,13 @@ int main ( int argc, char* argv[] ) {
             }  
 
             else if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (page_idx == 2) {
-                    switch (event.key.key) {
-                        case SDLK_ESCAPE:
-                            quit = true;
-                            break;
-                        case SDLK_A:
-                            selected_page->execute_action(RotaryAction::Left, 0);
-                            break;
-                        case SDLK_LEFT:
-                            selected_page->execute_action(RotaryAction::Left, 1);
-                            break;
-                        case SDLK_D:
-                            selected_page->execute_action(RotaryAction::Right, 0);
-                            break;
-                        case SDLK_RIGHT:   
-                            selected_page->execute_action(RotaryAction::Right, 1);
-                            break;
-                        case SDLK_S:
-                            selected_page->execute_action(RotaryAction::Press, 0);
-                            break;
-                        case SDLK_DOWN:
-                            selected_page->execute_action(RotaryAction::Press, 1);
-                            break;
-                    }
-                }
+                quit = handle_action(selected_page, event);
             }
         }
         
         selected_page->render_page(grid);
         render.render_matrix(grid);
         selected_page->update_data();
-
     }
 
     return 0;

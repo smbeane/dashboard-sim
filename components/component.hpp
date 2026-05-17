@@ -19,7 +19,6 @@ inline size_t matrix_index(int x, int y) {
 
 class Component {
     // TODO: add center on page function with left or right bias
-    // TODO: implement bounds checking on all components
     protected: 
         Color primary;
         Color secondary;
