@@ -3,6 +3,7 @@
 
 #include <array>
 #include <functional>
+#include <optional>
 
 #include "input.hpp"
 
@@ -15,12 +16,12 @@ enum class RotaryAction : size_t {
 
 class RotaryEncoder : public InputHandler<static_cast<size_t>(RotaryAction::COUNT)> {
     public:
-        void bind(RotaryAction action, std::function<void()> func) {
+        void bind(RotaryAction action, std::function<std::optional<int>()> func) {
             InputHandler::bind(static_cast<size_t>(action), std::move(func));
         }
 
-        void execute (RotaryAction action) const {
-            InputHandler::execute(static_cast<size_t>(action));
+        std::optional<int> execute (RotaryAction action) const {
+            return InputHandler::execute(static_cast<size_t>(action));
         }
 };
 
