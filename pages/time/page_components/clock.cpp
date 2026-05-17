@@ -31,7 +31,7 @@ namespace {
     }
 }
 
-void Clock::render_component(std::array<Color, 32*64>& matrix) {
+void Clock::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     clock.render_component(matrix);
     render_time_notches(matrix);
 
@@ -45,7 +45,7 @@ void Clock::update_time(std::string time) {
     update_hour_hand(hour_hand, time, center.x, center.y);
 }
 
-void Clock::render_time_notches(std::array<Color, 32*64>& matrix) {
+void Clock::render_time_notches(std::array<Color, MATRIX_SIZE>& matrix) {
     // 12 o'clock
     int x = center.x;
     int y = center.y;

@@ -44,7 +44,7 @@ class {class_name} : public Component {{
          *
          * @param matrix A reference to the pixels to be rendered
          */
-        void render_component(std::array<Color, 64*32>& matrix) override;
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
 
         // TODO: define component specific functions
 }};
@@ -56,7 +56,7 @@ class {class_name} : public Component {{
     with open(f"{base_path}/{name.lower()}.cpp", "w") as f:
         f.write(f'''#include "{name.lower()}.hpp"
 
-void {class_name}::render_component(std::array<Color, 64*32>& matrix) {{
+void {class_name}::render_component(std::array<Color, MATRIX_SIZE>& matrix) {{
 
 }}
 ''')

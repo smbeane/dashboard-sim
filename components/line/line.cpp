@@ -1,8 +1,8 @@
 #include "line.hpp"
 #include <iostream>
 
-void Line::render_component(std::array<Color, 64*32>& matrix) {
-    if (!primary.is_transparent()) return;
+void Line::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    if (primary.is_transparent()) return;
     
     int x1 = this->start.x;
     int y1 = this->start.y;

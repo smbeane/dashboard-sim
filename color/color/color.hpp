@@ -49,7 +49,7 @@ class Color {
          * 
          * @returns bool if visible
          */
-        bool is_transparent() const { return is_visible; }
+        bool is_transparent() const { return !is_visible; }
 };
 
 

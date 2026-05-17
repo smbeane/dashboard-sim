@@ -1,6 +1,6 @@
 #include "page.hpp"
 
-void Page::render_page(std::array<Color, 32*64>& matrix) {
+void Page::render_page(std::array<Color, MATRIX_SIZE>& matrix) {
     for (auto& c : components) {
         c->render_component(matrix);
     }

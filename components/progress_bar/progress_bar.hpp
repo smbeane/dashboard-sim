@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef PROGRESS_BAR_HPP
 #define PROGRESS_BAR_HPP
 
@@ -40,16 +38,15 @@ class ProgressBar : public Component {
          *
          * @param matrix A reference to the pixels to be rendered
          */
-        void render_component(std::array<Color, 64*32>& matrix) override;
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
 
         /**
          * @brief Updates the progress but does not rerender
          * 
-         * @param new_progress Thepercentage (0 - 100) of bar to be filled
+         * @param new_progress The percentage (0 - 100) of bar to be filled
          */
         void update_progress(int new_progress);
 
 };
 
 #endif // PROGRESS_BAR_HPP
-                

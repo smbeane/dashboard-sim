@@ -15,14 +15,14 @@ class Circle : public Component {
          * 
          * @param matrix A reference to the pixels to be rendered
          */
-        void draw_infill(std::array<Color, 64*32>& matrix);
+        void draw_infill(std::array<Color, MATRIX_SIZE>& matrix);
         
         /**
          * @brief Renders only the border of the Circle
          * 
          * @param matrix A reference to the pixels to be rendered
          */
-        void draw_border(std::array<Color, 64*32>& matrix);
+        void draw_border(std::array<Color, MATRIX_SIZE>& matrix);
 
     public: 
 
@@ -49,9 +49,8 @@ class Circle : public Component {
          *
          * @param matrix A reference to the pixels to be rendered
          */
-        void render_component(std::array<Color, 64*32>& matrix) override;
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
 
 };
 
 #endif // CIRCLE_HPP
-                

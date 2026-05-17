@@ -10,7 +10,7 @@
 class ComponentPage : public Page {
     public:
 
-        ComponentPage(std::string name) : Page(name) {init_page();};
+        ComponentPage(std::string name) : Page(name) { init_page(); };
 
         void init_page();
 

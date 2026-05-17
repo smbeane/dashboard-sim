@@ -20,7 +20,7 @@ class TextBox : public Component {
          * @brief Constructs default TextBox, position (0, 0), 
          *        completely transparent with 0 length and text
          */
-        TextBox () : Component( BLACK, BLACK), pos({0, 0}), text(""), length(0) {};
+        TextBox () : Component( BLACK, BLACK), pos({0, 0}), text(""), length(0), alignment('l'), scroll_gap(0) {};
         
 
         // TODO: update to include font selections
@@ -72,7 +72,7 @@ class TextBox : public Component {
          * 
          * @param matrix A reference to the pixels to be rendered
          */
-        void render_component(std::array<Color, 64*32>& matrix) override;
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
         
         /**
          * @brief Swaps the current text with new text, but does not rerender

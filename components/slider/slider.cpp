@@ -1,6 +1,6 @@
 #include "slider.hpp"
 
-void Slider::render_component(std::array<Color, 64*32>& matrix) {
+void Slider::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     Point end(start.x + length - 1, start.y);
 
     Line line (start, end, primary);

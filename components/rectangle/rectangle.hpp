@@ -43,11 +43,11 @@ class Rectangle : public Component {
         :  Component(border, infill), pos(pos), width(w), height(h) {}
 
         /**
-         * @brief Renders component top working downward
+         * @brief Renders component top to bottom
          *
          * @param matrix A reference to the pixels to be rendered
          */
-        void render_component(std::array<Color, 64*32>& matrix) override;
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
 };
 
 #endif // RECTANGLE_HPP

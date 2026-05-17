@@ -11,7 +11,7 @@ class Clock : public Component {
         Line minute_hand, hour_hand;
         Circle clock;
         
-        void render_time_notches(std::array<Color, 64*32>& matrix);
+        void render_time_notches(std::array<Color, MATRIX_SIZE>& matrix);
     
     public:
     
@@ -26,7 +26,7 @@ class Clock : public Component {
             
         }
 
-        void render_component(std::array<Color, 64*32>& matrix) override; 
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override; 
     
         void update_time(std::string time);
     

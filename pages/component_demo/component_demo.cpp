@@ -12,10 +12,9 @@ void ComponentPage::init_page() {
 
 
 void ComponentPage::update_data() {
-    for (int i = 0; i < components.size(); i++) {
-
-        TextBox* t = dynamic_cast<TextBox*>(components[i].get());
-        if (t) t->scroll_text();
-        
+    for (auto& comp : components) {
+        if (auto* t = dynamic_cast<TextBox*>(comp.get())) {
+            t->scroll_text();
+        }
     }
 }

@@ -40,7 +40,7 @@ class Slider : public Component {
          * @param secondary The Color of the progress indicator
          *  
          */
-        Slider(Point start, int length , int min, int max, int progress, bool wrap, Color primary, Color secondary ) 
+        Slider(Point start, int length, int min, int max, int progress, bool wrap, Color primary, Color secondary ) 
         :  Component(primary, secondary ), start(start), length(length), min(min), max(max), progress( progress ), wrap(wrap)  {}
 
         /**
@@ -49,14 +49,14 @@ class Slider : public Component {
          * 
          * @param matrix A reference to the pixels to be rendered
          */
-        void render_component(std::array<Color, 64*32>& matrix) override;
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
 
         /**
          * @brief Returns the current progress 
          * 
          * @return progress variable
          */
-        int get_progress() { return progress; }
+        int get_progress() const { return progress; }
 
         /**
          * @brief Updates the progress, but doesn't rerender component
@@ -69,7 +69,6 @@ class Slider : public Component {
          * @brief Increments progress value by 1 until reaching the maximum
          */
         int increment_slider() {
-
             if (progress < max) progress += 1;
             else if (wrap) progress = min;
 
@@ -81,7 +80,6 @@ class Slider : public Component {
          *        or wrapping around to maximum
          */
         int decrement_slider() {
-            
             if (progress > min) progress -= 1;
             else if (wrap) progress = max;
             

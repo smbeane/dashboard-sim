@@ -31,12 +31,12 @@ class Line : public Component {
          *
          * @param matrix A reference to the pixels to be rendered
          */
-        void render_component(std::array<Color, 64*32>& matrix) override;
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
 
         /**
          * @brief Returns ending x coordinate of the Line
          */
-        int get_endx() { return end.x; };
+        int get_endx() const { return end.x; };
 
         /**
          * @brief Updates ending x coordinate of the Line
@@ -48,7 +48,7 @@ class Line : public Component {
         /**
          * @brief Returns ending y coordinate of the Line
          */
-        int get_endy() { return end.y; };
+        int get_endy() const { return end.y; };
 
         /**
          * @brief Updates ending y coordinate of the Line
@@ -57,10 +57,6 @@ class Line : public Component {
          */
         void set_endy(int new_y) { end.y = new_y; };
 
-
-
-
 };
 
 #endif // LINE_HPP
-                

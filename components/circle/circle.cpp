@@ -2,14 +2,14 @@
 
 #include <iostream>
 
-void Circle::render_component(std::array<Color, 64*32>& matrix) {
-    if (secondary.is_transparent()) {
+void Circle::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    if (!secondary.is_transparent()) {
         draw_infill(matrix);
     }
-    if (primary.is_transparent()) draw_border(matrix);    
+    if (!primary.is_transparent()) draw_border(matrix);    
 }
 
-void Circle::draw_infill(std::array<Color, 32*64>& matrix) {
+void Circle::draw_infill(std::array<Color, MATRIX_SIZE>& matrix) {
     int cx = this->center.x;
     int cy = this->center.y;
     int r = this->radius;
@@ -45,7 +45,7 @@ void Circle::draw_infill(std::array<Color, 32*64>& matrix) {
     }
 }
 
-void Circle::draw_border(std::array<Color, 32*64>& matrix) {
+void Circle::draw_border(std::array<Color, MATRIX_SIZE>& matrix) {
     int cx = this->center.x;
     int cy = this->center.y;
     int r = this->radius;
@@ -77,4 +77,3 @@ void Circle::draw_border(std::array<Color, 32*64>& matrix) {
         x_off++;
     }
 }
-

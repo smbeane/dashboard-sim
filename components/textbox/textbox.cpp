@@ -1,6 +1,6 @@
 #include "textbox.hpp"
 
-void TextBox::render_component(std::array<Color, 64*32>& matrix) {
+void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     int box_length = text.length() > length ? length : text.length();
     int dx = this->pos.x;
     int dy = this->pos.y;
@@ -10,6 +10,8 @@ void TextBox::render_component(std::array<Color, 64*32>& matrix) {
     for (int c = 0; c < box_length; c++) {
         if (text.empty()) break;
         uint16_t character = font_3x5[*curr_char - 32];
+
+        // bit position for 5x3 font rendering (bit 15)
         uint16_t mask = 0x4000; 
 
         for (int row = 0; row < 5; row++) {
