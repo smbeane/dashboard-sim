@@ -16,6 +16,25 @@ class Page {
     // TODO: figre out how to implement multiple action types
     protected: 
         std::vector<std::unique_ptr<Component>> components;
+
+        /**
+         * @brief Constructs and adds a component to the page's layout
+         * 
+         * @tparam T The  class type of the component to create (e.g., TextBox, Slider)
+         * @param args... The arguments to forward directly to the component's constructor
+         * 
+         * @return T* A raw pointer to the newly created component
+         */
+        template <typename T, typename... Args>
+        T* create_component(Args&&... args) {
+            auto component = std::make_unique<T>(std::forward<Args>(args)...);
+            
+            T* component_ptr = component.get();
+            components.push_back(std::move(component));
+
+            return component_ptr;
+        }
+
     
     public:
         std::string name;

@@ -7,8 +7,6 @@
 #include "../component.hpp"
 
 class TextBox : public Component {
-    // TODO: add alignment
-    // TODO: if text updates to less than length, must update to clear the chars removed
     private: 
         Point pos;
         std::string::const_iterator scroll_start;

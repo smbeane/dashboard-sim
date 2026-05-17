@@ -21,6 +21,10 @@ class ColorPickerPage : public Page {
         Rectangle* picked_rect;
         RotaryEncoder rotary_left, rotary_right;
 
+        void bind_actions();
+
+        void update_color(int progress);
+
     public: 
         /**
          * @brief 
