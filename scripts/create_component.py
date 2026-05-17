@@ -1,6 +1,28 @@
 import os
 import argparse
 import textwrap
+from pathlib import Path
+
+
+def add_source_to_cmake(cmake_path, source_line):
+    cmake_file = Path(cmake_path)
+    if not cmake_file.exists():
+        return
+
+    content = cmake_file.read_text()
+    if source_line.strip() in content:
+        return
+
+    marker = "\n)\n"
+    insert_index = content.rfind(marker)
+    if insert_index == -1:
+        insert_index = content.rfind("\n)\n\n")
+
+    if insert_index == -1:
+        return
+
+    content = content[:insert_index] + source_line + content[insert_index:]
+    cmake_file.write_text(content)
 
 
 def create_component(name, subdir):
@@ -55,6 +77,10 @@ void {class_name}::render_component(std::array<Color, MATRIX_SIZE>& matrix) {{
 
     with open(os.path.join(base_path, f"{name.lower()}.cpp"), "w") as f:
         f.write(source_content)
+
+    cmake_path = os.path.join(subdir, "CMakeLists.txt")
+    source_line = f"    {name.lower()}/{name.lower()}.cpp {name.lower()}/{name.lower()}.hpp\n"
+    add_source_to_cmake(cmake_path, source_line)
 
 
 if __name__ == "__main__":
