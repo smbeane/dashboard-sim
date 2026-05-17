@@ -39,15 +39,15 @@ class Page {
     public:
         std::string name;
 
-        Page () : name("Basic Page"), components() {};
+        Page() : name("Basic Page") {};
 
-        Page (std::string name) : name(name), components() {};
+        Page(std::string name) : name(name) {};
 
         virtual void init_page () = 0;
         
         virtual void update_data() = 0;
         
-        virtual void render_page(std::array<Color, 32*64>& matrix);
+        virtual void render_page(std::array<Color, MATRIX_SIZE>& matrix);
 
         virtual void execute_action(RotaryAction action, int rotary);
 };

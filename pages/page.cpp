@@ -7,5 +7,6 @@ void Page::render_page(std::array<Color, 32*64>& matrix) {
 }
 
 void Page::execute_action(RotaryAction action, int rotary) {
-    
+    // Base implementation to compile, 
+    // only needs overridden if necessary
 }

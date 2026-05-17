@@ -1,15 +1,17 @@
 #include "colorpicker.hpp"
 
+const Color unselected = Color(80, 80, 80);
+
 void ColorPickerPage::init_page() {
     create_component<TextBox>(Point(8, 2), "Color Picker", 12, 'c', 0, WHITE, BLACK);
 
     sliders[0] = create_component<Slider>(Point(2, 12), 20, 0, 255, chosen.r, true, WHITE, Color(255, 0, 0));
-    sliders[1] = create_component<Slider>(Point(2, 19), 20, 0, 255, chosen.g, true, Color(80, 80, 80), Color(0, 255, 0));
-    sliders[2] = create_component<Slider>(Point(2, 26), 20, 0, 255, chosen.b, true, Color(80, 80, 80), Color(0, 0, 255));
+    sliders[1] = create_component<Slider>(Point(2, 19), 20, 0, 255, chosen.g, true, unselected, Color(0, 255, 0));
+    sliders[2] = create_component<Slider>(Point(2, 26), 20, 0, 255, chosen.b, true, unselected, Color(0, 0, 255));
     
     textboxes[0] = create_component<TextBox>(Point(24, 10), std::to_string(chosen.r), 3, 'r', 0, WHITE, BLACK);
-    textboxes[1] = create_component<TextBox>(Point(24, 17), std::to_string(chosen.g), 3, 'r', 0, Color(80, 80, 80), BLACK);
-    textboxes[2] = create_component<TextBox>(Point(24, 24), std::to_string(chosen.b), 3, 'r', 0, Color(80, 80, 80), BLACK);
+    textboxes[1] = create_component<TextBox>(Point(24, 17), std::to_string(chosen.g), 3, 'r', 0, unselected, BLACK);
+    textboxes[2] = create_component<TextBox>(Point(24, 24), std::to_string(chosen.b), 3, 'r', 0, unselected, BLACK);
 
     picked_rect = create_component<Rectangle>(Point(39, 9), 21, 21, chosen);
     
@@ -31,8 +33,8 @@ void ColorPickerPage::bind_actions() {
     });
 
     rotary_right.bind(RotaryAction::Left, [this]() {
-        sliders[curr_selected]->change_primary(Color(80, 80, 80));
-        textboxes[curr_selected]->change_primary(Color(80, 80, 80));
+        sliders[curr_selected]->change_primary(unselected);
+        textboxes[curr_selected]->change_primary(unselected);
 
         if (curr_selected > 0) curr_selected -= 1;
         else curr_selected = 2;
@@ -44,8 +46,8 @@ void ColorPickerPage::bind_actions() {
     });
 
     rotary_right.bind(RotaryAction::Right, [this]() {
-        sliders[curr_selected]->change_primary(Color(80, 80, 80));
-        textboxes[curr_selected]->change_primary(Color(80, 80, 80));
+        sliders[curr_selected]->change_primary(unselected);
+        textboxes[curr_selected]->change_primary(unselected);
 
         if (curr_selected < 2) curr_selected += 1;
         else curr_selected = 0;

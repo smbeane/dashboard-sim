@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef DEFAULT_COLORS_HPP
 #define DEFAULT_COLORS_HPP
 
@@ -12,4 +10,3 @@ inline const Color PROFILE_COLOR(63, 81, 181, 1);
 inline const Color TRANSPARENT(0, 0, 0, 0);
 
 #endif // DEFAULT_COLORS_HPP
-

@@ -1,12 +1,11 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
-
 class Point {
     public:
         int x, y;
 
-        Point() : x(0), y(0) {};
+        Point() = default;
 
         Point(int x, int y) : x(x), y(y) {};
 

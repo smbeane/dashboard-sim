@@ -1,5 +1,7 @@
-#ifndef REAL_COMPONENTS_HPP
-#define REAL_COMPONENTS_HPP
+#ifndef COMPONENTS_HPP
+#define COMPONENTS_HPP
+
+// Umbrella header for all components
 
 #include <components/component.hpp>
 
@@ -10,4 +12,4 @@
 #include <components/slider/slider.hpp>
 #include <components/textbox/textbox.hpp>
 
-#endif // REAL_COMPONENTS_HPP
+#endif // COMPONENTS_HPP

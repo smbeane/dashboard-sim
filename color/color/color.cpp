@@ -1,6 +1,5 @@
 #include "color.hpp"
 
-
 SDL_Color Color::getSDL_Color() {
     SDL_Color new_color;
     new_color.r = r;
