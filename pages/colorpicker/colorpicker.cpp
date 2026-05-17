@@ -21,40 +21,40 @@ void ColorPickerPage::init_page() {
 }
 
 void ColorPickerPage::bind_actions() {
+    
     rotary_left.bind(RotaryAction::Left, [this]() {
+        sliders[curr_selected]->change_primary(UNSELECTED);
+        textboxes[curr_selected]->change_primary(UNSELECTED);
+        
+        if (curr_selected > 0) curr_selected -= 1;
+        else curr_selected = 2;
+        
+        sliders[curr_selected]->change_primary(WHITE);
+        textboxes[curr_selected]->change_primary(WHITE);
+        
+        
+    });
+    
+    rotary_left.bind(RotaryAction::Right, [this]() {
+        sliders[curr_selected]->change_primary(UNSELECTED);
+        textboxes[curr_selected]->change_primary(UNSELECTED);
+        
+        if (curr_selected < 2) curr_selected += 1;
+        else curr_selected = 0;
+        
+        sliders[curr_selected]->change_primary(WHITE);
+        textboxes[curr_selected]->change_primary(WHITE);
+    });
+    
+    rotary_right.bind(RotaryAction::Left, [this]() {
         int progress = sliders[curr_selected]->decrement_slider();
         update_color(progress);
     });
-
-    rotary_left.bind(RotaryAction::Right, [this]() {
+    
+    rotary_right.bind(RotaryAction::Right, [this]() {
         int progress = sliders[curr_selected]->increment_slider();
         update_color(progress);
     });
-
-    rotary_right.bind(RotaryAction::Left, [this]() {
-        sliders[curr_selected]->change_primary(UNSELECTED);
-        textboxes[curr_selected]->change_primary(UNSELECTED);
-
-        if (curr_selected > 0) curr_selected -= 1;
-        else curr_selected = 2;
-
-        sliders[curr_selected]->change_primary(WHITE);
-        textboxes[curr_selected]->change_primary(WHITE);
-
-
-    });
-
-    rotary_right.bind(RotaryAction::Right, [this]() {
-        sliders[curr_selected]->change_primary(UNSELECTED);
-        textboxes[curr_selected]->change_primary(UNSELECTED);
-
-        if (curr_selected < 2) curr_selected += 1;
-        else curr_selected = 0;
-
-        sliders[curr_selected]->change_primary(WHITE);
-        textboxes[curr_selected]->change_primary(WHITE);
-    });
-
 }
 
 void ColorPickerPage::update_color(int progress) {

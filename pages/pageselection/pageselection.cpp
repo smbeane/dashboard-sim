@@ -25,11 +25,21 @@ void PageSelectionPage::bind_actions() {
     });
 
     rotary_right.bind(RotaryAction::Left, [this]() {
+        components[selected_idx]->change_primary(UNSELECTED);
 
+        if (selected_idx == 0) selected_idx = components.size() - 1;
+        else selected_idx -= 1;
+    
+        components[selected_idx]->change_primary(WHITE);
     });
 
     rotary_right.bind(RotaryAction::Right, [this]() {
+        components[selected_idx]->change_primary(UNSELECTED);
 
+        if (selected_idx == (components.size() - 1)) selected_idx = 0;
+        else selected_idx += 1;
+
+        components[selected_idx]->change_primary(WHITE);
     });
 
     rotary_right.bind(RotaryAction::Press, [this]() {
