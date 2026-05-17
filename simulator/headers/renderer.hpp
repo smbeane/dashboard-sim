@@ -6,6 +6,8 @@
 #include <string>
 #include <array>
 #include <color/color/color.hpp>
+#include <components/component.hpp>
+
 
 class Renderer {
     public:
@@ -51,7 +53,7 @@ class Renderer {
         
         bool able_to_render();
 
-        bool render_matrix(std::array<Color, 64*32> grid);
+        bool render_matrix(std::array<Color, MATRIX_SIZE> grid);
         
         void close_window();
         

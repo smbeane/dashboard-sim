@@ -6,8 +6,14 @@ void Slider::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     Line line (start, end, primary);
     line.render_component(matrix);
 
+    if (max == min) {
+        return;
+    }
+
     int x_pos = start.x + round((float(progress) / (max - min)) * (length - 1));
-    matrix[64 * start.y + x_pos] = secondary;
+    if (matrix_in_bounds(x_pos, start.y)) {
+        matrix[matrix_index(x_pos, start.y)] = secondary;
+    }
 }
 
 void Slider::set_progress(int new_progress) {

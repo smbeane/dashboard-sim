@@ -5,10 +5,21 @@
 #include <point/point.hpp>
 #include <array>
 
-inline const size_t MATRIX_SIZE = 2048;
+inline constexpr int MATRIX_WIDTH = 64;
+inline constexpr int MATRIX_HEIGHT = 32;
+inline constexpr size_t MATRIX_SIZE = MATRIX_WIDTH * MATRIX_HEIGHT;
+
+inline bool matrix_in_bounds(int x, int y) {
+    return x >= 0 && x < MATRIX_WIDTH && y >= 0 && y < MATRIX_HEIGHT;
+}
+
+inline size_t matrix_index(int x, int y) {
+    return static_cast<size_t>(y) * MATRIX_WIDTH + static_cast<size_t>(x);
+}
 
 class Component {
     // TODO: add center on page function with left or right bias
+    // TODO: implement bounds checking on all components
     protected: 
         Color primary;
         Color secondary;

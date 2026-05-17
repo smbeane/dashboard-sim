@@ -15,11 +15,10 @@
 
 // TODO: split into lib and src
 
-
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
 
-std::array<Color, 64*32> grid;
+std::array<Color, MATRIX_SIZE> grid;
 
 int main ( int argc, char* argv[] ) {
     
@@ -27,12 +26,27 @@ int main ( int argc, char* argv[] ) {
     int page_idx = inputs[0];
     int window_width = inputs[3]; 
     int window_height = inputs[4];
+
+    if (window_width <= 0) {
+        std::cerr << "Warning: invalid window width, using default 1408\n";
+        window_width = 1408;
+    }
+    if (window_height <= 0) {
+        std::cerr << "Warning: invalid window height, using default 704\n";
+        window_height = 704;
+    }
+
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
     std::vector<std::unique_ptr<Page>> pages;
     pages.push_back(std::make_unique<ComponentPage>("Component Renderer"));
     pages.push_back(std::make_unique<TimePage>("Time Renderer")); 
     pages.push_back(std::make_unique<ColorPickerPage>());
+
+    if (page_idx < 0 || page_idx >= static_cast<int>(pages.size())) {
+        std::cerr << "Warning: invalid page index " << page_idx << ", defaulting to page 0\n";
+        page_idx = 0;
+    }
 
     Page* selected_page = pages.at(page_idx).get();
 
