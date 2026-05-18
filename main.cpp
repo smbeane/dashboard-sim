@@ -23,6 +23,13 @@ std::array<Color, MATRIX_SIZE> grid;
 std::vector<std::unique_ptr<Page>> pages;
 int page_idx;
 
+/**
+ * @brief Handles optional page navigation output from a page action.
+ *
+ * @param action The rotary action that triggered the output.
+ * @param rotary Which encoder index produced the action.
+ * @param output Optional page index to navigate to.
+ */
 void handle_output(RotaryAction action, int rotary, std::optional<int> output) {
     if (!output) return;
 
@@ -34,6 +41,13 @@ void handle_output(RotaryAction action, int rotary, std::optional<int> output) {
 }
 
 
+/**
+ * @brief Converts SDL keyboard events into page actions.
+ *
+ * @param page The active page receiving the action.
+ * @param event The SDL event to process.
+ * @return true when the application should quit.
+ */
 bool handle_action(Page* page, SDL_Event event) {
     bool quit = false;
     std::optional<int> output;
@@ -83,6 +97,14 @@ bool handle_action(Page* page, SDL_Event event) {
 
 
 template <typename T, typename... Args>
+/**
+ * @brief Creates and owns a new page instance.
+ *
+ * @tparam T The page type.
+ * @param name Page title.
+ * @param args Constructor arguments forwarded to the page.
+ * @return Raw pointer to the created page.
+ */
 Page* add_page(std::string name, Args... args) {
     std::unique_ptr<T> page = std::make_unique<T>(name, std::forward<Args>(args)...);
     T* ptr = page.get();

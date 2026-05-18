@@ -44,10 +44,28 @@ class Page {
 
         Page(std::string name) : name(name) {};
 
+        /**
+         * @brief Updates any dynamic page state before rendering.
+         *
+         * Derived pages should override this to refresh text, animations,
+         * or other per-frame logic.
+         */
         virtual void update_data() = 0;
         
+        /**
+         * @brief Renders all owned components into the matrix buffer.
+         *
+         * @param matrix The target display buffer.
+         */
         virtual void render_page(std::array<Color, MATRIX_SIZE>& matrix);
 
+        /**
+         * @brief Executes an input action for the page.
+         *
+         * @param action The rotary action to perform.
+         * @param rotary Which encoder index triggered the action.
+         * @return Optional integer output that may signal page navigation.
+         */
         virtual std::optional<int> execute_action(RotaryAction action, int rotary);
 };
 
