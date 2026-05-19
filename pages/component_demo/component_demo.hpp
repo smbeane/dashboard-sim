@@ -17,6 +17,9 @@ class ComponentPage : public Page {
 
         ComponentPage(std::string name) : Page(name) { init_page(); };
 
+        ComponentPage(std::string name, Profile p) : Page(name, p) { init_page(); };
+
+
         /**
          * @brief Creates demo components for the component showcase page.
          */

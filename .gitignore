@@ -3,3 +3,4 @@ build/
 SDL/
 *.sln
 *.vcxproj
+*.env

@@ -10,6 +10,7 @@
 #include <color/colors.hpp>
 #include <components/component.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
+#include <profile/profile.hpp>
 
 class Page {
     // TODO: implement framerate
@@ -17,6 +18,10 @@ class Page {
     // TODO: figre out how to implement multiple action types
     protected: 
         std::vector<std::unique_ptr<Component>> components;
+        
+        Color primary;
+        Color secondary;
+        Color accent;
 
         /**
          * @brief Constructs and adds a component to the page's layout
@@ -40,9 +45,14 @@ class Page {
     public:
         std::string name;
 
-        Page() : name("Basic Page") {};
+        Page() : name("Basic Page"),
+            primary(WHITE), secondary(BLACK), accent(GREY) {};
 
-        Page(std::string name) : name(name) {};
+        Page(std::string name) : name(name), 
+            primary(WHITE), secondary(BLACK), accent(GREY) {};
+
+        Page(std::string name, Profile p) : name(name), 
+            primary(p.get_primary()), secondary(p.get_secondary()), accent(p.get_accent()) {};
 
         /**
          * @brief Updates any dynamic page state before rendering.

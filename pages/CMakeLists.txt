@@ -16,6 +16,7 @@ target_link_libraries(pages
     PUBLIC 
         components 
         color 
+        profile
     PRIVATE    
         utils 
         time_components

@@ -13,6 +13,7 @@
 #include <components/components.hpp>
 #include <pages/pages.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
+#include <profile/profile.hpp>
 
 // TODO: split into lib and src
 
@@ -39,7 +40,6 @@ void handle_output(RotaryAction action, int rotary, std::optional<int> output) {
     }
 
 }
-
 
 /**
  * @brief Converts SDL keyboard events into page actions.
@@ -95,7 +95,6 @@ bool handle_action(Page* page, SDL_Event event) {
     return quit;
 }
 
-
 template <typename T, typename... Args>
 /**
  * @brief Creates and owns a new page instance.
@@ -113,6 +112,11 @@ Page* add_page(std::string name, Args... args) {
     return ptr;
 }
 
+
+void check_profile() {
+    
+}
+
 int main ( int argc, char* argv[] ) {
     
     std::vector<int> inputs = parse_args(argc, argv);
@@ -120,14 +124,16 @@ int main ( int argc, char* argv[] ) {
     int window_width = inputs[3]; 
     int window_height = inputs[4];
 
+    Profile p;
+
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
     std::vector<Page*> page_ptrs;
     std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
     
     page_ptrs.push_back(add_page<PageSelectionPage>("Page Selection", page_names));
-    page_ptrs.push_back(add_page<ComponentPage>("Component Demo"));
-    page_ptrs.push_back(add_page<TimePage>("Time Display"));
+    page_ptrs.push_back(add_page<ComponentPage>("Component Demo", p));
+    page_ptrs.push_back(add_page<TimePage>("Time Display", p));
     page_ptrs.push_back(add_page<ColorPickerPage>("Color Picker"));
 
     if (page_idx < 0 || page_idx >= static_cast<int>(pages.size())) {
