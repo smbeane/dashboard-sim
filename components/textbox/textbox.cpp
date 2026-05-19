@@ -1,5 +1,35 @@
 #include "textbox.hpp"
 
+void TextBox::init_component(std::string t) {
+    for (char c : t) {
+                text.push_back(std::toupper(c));
+            }
+
+            if (text.length() > length) {
+                    text.append(scroll_gap, ' ');
+            } else {
+                int total = length - text.length();
+
+                switch (alignment) {
+                    case 'l': 
+                        text.append(total, ' ');
+                        break;
+                    case 'c':
+                        text.insert(0, total / 2, ' ');
+                        text.append(total - (total / 2), ' ');
+                        break;
+
+                    case 'r':
+                        text.insert(0, total, ' ');
+                        break;
+                }
+                    
+            }
+
+
+            scroll_start = text.begin();
+}
+
 void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     int box_length = text.length() > length ? length : text.length();
     int dx = this->pos.x;
