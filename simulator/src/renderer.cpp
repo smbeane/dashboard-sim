@@ -55,6 +55,7 @@ bool Renderer::render_matrix(std::array<Color, MATRIX_SIZE> matrix) {
 }
 
 void Renderer::close_window() {
+    SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow( window );
     window = nullptr;
 

@@ -84,6 +84,8 @@ class Component {
          */
         void change_secondary (const Color& new_secondary) { secondary = new_secondary; };
 
+        virtual ~Component() = default;
+
 };
 
 #endif // COMPONENT_HPP

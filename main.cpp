@@ -93,10 +93,6 @@ Page* add_page(std::string name, Args... args) {
 }
 
 
-void check_profile() {
-    
-}
-
 int main ( int argc, char* argv[] ) {
     
     std::vector<int> inputs = parse_args(argc, argv);
@@ -156,6 +152,8 @@ int main ( int argc, char* argv[] ) {
         render.render_matrix(grid);
         page_stack.back()->update_data();
     }
+
+    render.close_window();
 
     return 0;
 }

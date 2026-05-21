@@ -65,12 +65,7 @@ class Renderer {
          * @brief Destroys the window and shuts down SDL.
          */
         void close_window();
-        
-        /**
-         * @brief Runs the renderer loop until closed.
-         */
-        void render_loop();
-        
+
         private: 
         SDL_Window* window;
         SDL_Renderer* renderer;
@@ -78,10 +73,6 @@ class Renderer {
         
         bool init_window();
         
-
     };
- 
-
-
 
 #endif // RENDERER_HPP

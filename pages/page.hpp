@@ -16,8 +16,6 @@
 
 class Page {
     // TODO: implement framerate
-    // TODO: add_component function that returns a pointer reference
-    // TODO: figre out how to implement multiple action types
     protected: 
         std::vector<std::unique_ptr<Component>> components;
         
@@ -86,6 +84,8 @@ class Page {
          * @return Optional integer output that may signal page navigation.
          */
         virtual PageActionResult execute_action(RotaryAction action, int rotary);
+
+        virtual ~Page() = default;
 };
 
 
