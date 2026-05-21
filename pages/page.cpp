@@ -1,5 +1,7 @@
 #include "page.hpp"
 
+#include <pages/pageselection/pageselection.hpp>
+
 /**
  * @brief Renders all page components into the provided matrix buffer.
  *
@@ -20,6 +22,13 @@ void Page::render_page(std::array<Color, MATRIX_SIZE>& matrix) {
  * @param rotary Encoder index that triggered the action.
  * @return Optional result from the action.
  */
-std::optional<int> Page::execute_action(RotaryAction action, int rotary) {
-    return {};
+PageActionResult Page::execute_action(RotaryAction action, int rotary) {
+    if (rotary == 0) return rotary_left.execute(action);
+    else return {};
+}
+
+void Page::bind_actions() {
+    rotary_left.bind(RotaryAction::Press, [this]() -> PageActionResult {
+        return PushAction{std::make_unique<PageSelectionPage>("Page Selection", Config::page_names, name)};
+    });
 }

@@ -29,7 +29,7 @@ class ColorPickerPage : public Page {
         /**
          * @brief Constructs the default color picker page with black initial color.
          */
-        ColorPickerPage() : Page("ColorPicker"), chosen(BLACK) { init_page(); };
+        ColorPickerPage() : Page("Color Picker"), chosen(BLACK) { init_page(); };
 
         /**
          * @brief Constructs a color picker page using the specified page name.
@@ -59,7 +59,7 @@ class ColorPickerPage : public Page {
          * @param rotary Which encoder index triggered the action.
          * @return Optional integer output for navigation.
          */
-        std::optional<int> execute_action(RotaryAction action, int rotary);
+        PageActionResult execute_action(RotaryAction action, int rotary);
 
 };
 

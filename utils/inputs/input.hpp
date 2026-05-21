@@ -5,10 +5,12 @@
 #include <functional>
 #include <optional>
 
+#include <pages/actions.hpp>
+
 template <size_t N>
 class InputHandler {
     public:
-        std::array<std::function<std::optional<int>()>, N> actions;
+        std::array<std::function<PageActionResult()>, N> actions;
 
         /**
          * @brief Stores a callback for a named input action.
@@ -16,7 +18,7 @@ class InputHandler {
          * @param action The action index to bind.
          * @param func   The callback invoked when the action occurs.
          */
-        void bind(size_t action, std::function<std::optional<int>()> func) {
+        void bind(size_t action, std::function<PageActionResult()> func) {
             if (action < N) actions[action] = func;
         }
 
@@ -26,7 +28,7 @@ class InputHandler {
          * @param action The action index to invoke.
          * @return The optional integer result from the callback.
          */
-        std::optional<int> execute(size_t action) const {
+        PageActionResult execute(size_t action) const {
             if (action < N && actions[action]) return actions[action]();
 
             return {};

@@ -1,6 +1,7 @@
 #include "colorpicker.hpp"
 
 #include <iostream>
+#include <pages/pageselection/pageselection.hpp>
 
 void ColorPickerPage::init_page() {
     create_component<TextBox>(Point(8, 2), "Color Picker", 12, 'c', 0, WHITE, BLACK);
@@ -22,7 +23,7 @@ void ColorPickerPage::init_page() {
 }
 
 void ColorPickerPage::bind_actions() {
-    rotary_left.bind(RotaryAction::Left, [this]() -> std::optional<int> {
+    rotary_left.bind(RotaryAction::Left, [this]() -> PageActionResult {
         sliders[curr_selected]->change_primary(UNSELECTED);
         textboxes[curr_selected]->change_primary(UNSELECTED);
         
@@ -35,7 +36,7 @@ void ColorPickerPage::bind_actions() {
         return {};
     });
     
-    rotary_left.bind(RotaryAction::Right, [this]() -> std::optional<int>{
+    rotary_left.bind(RotaryAction::Right, [this]() -> PageActionResult{
         sliders[curr_selected]->change_primary(UNSELECTED);
         textboxes[curr_selected]->change_primary(UNSELECTED);
         
@@ -48,18 +49,18 @@ void ColorPickerPage::bind_actions() {
         return {};
     });
 
-    rotary_left.bind(RotaryAction::Press, [this]() -> std::optional<int>{
-        return 0;
+    rotary_left.bind(RotaryAction::Press, [this]() -> PageActionResult{
+        return PushAction{std::make_unique<PageSelectionPage>("Page Selection", Config::page_names, name)};
     });
     
-    rotary_right.bind(RotaryAction::Left, [this]() -> std::optional<int>{
+    rotary_right.bind(RotaryAction::Left, [this]() -> PageActionResult{
         int progress = sliders[curr_selected]->decrement_slider();
         update_color(progress);
 
         return {};
     });
     
-    rotary_right.bind(RotaryAction::Right, [this]() -> std::optional<int> {
+    rotary_right.bind(RotaryAction::Right, [this]() -> PageActionResult {
         int progress = sliders[curr_selected]->increment_slider();
         update_color(progress);
 
@@ -83,7 +84,7 @@ void ColorPickerPage::update_data() {
 
 }  
 
-std::optional<int> ColorPickerPage::execute_action(RotaryAction action, int rotary) {
+PageActionResult ColorPickerPage::execute_action(RotaryAction action, int rotary) {
     if (rotary == 0) return rotary_left.execute(action);
     else return rotary_right.execute(action);
     

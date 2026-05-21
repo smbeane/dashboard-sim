@@ -15,31 +15,39 @@
 #include <utils/inputs/rotary_encoder.hpp>
 #include <profile/profile.hpp>
 
-// TODO: split into lib and src
-
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
+
+const inline std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
+
+template<class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+
+template<class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+std::vector<std::function<std::unique_ptr<Page>(Profile p)>> factory { 
+    [](Profile p) {
+        return std::make_unique<PageSelectionPage>("Page Selection", page_names);
+    },
+    [](Profile p) {
+        return std::make_unique<ComponentPage>("Component Demo", p);
+    }, 
+    [](Profile p) {
+        return std::make_unique<TimePage>("Time Display", p);
+    }, 
+    [](Profile p) {
+        return std::make_unique<ColorPickerPage>("Color Picker");
+    }
+}; 
+
+std::vector<std::unique_ptr<Page>> page_stack;
 
 std::array<Color, MATRIX_SIZE> grid;
 std::vector<std::unique_ptr<Page>> pages;
 int page_idx;
-
-/**
- * @brief Handles optional page navigation output from a page action.
- *
- * @param action The rotary action that triggered the output.
- * @param rotary Which encoder index produced the action.
- * @param output Optional page index to navigate to.
- */
-void handle_output(RotaryAction action, int rotary, std::optional<int> output) {
-    if (!output) return;
-
-    if (page_idx >= 0 && page_idx <= 3) {
-        grid.fill(BLACK);
-        page_idx = output.value();
-    }
-
-}
 
 /**
  * @brief Converts SDL keyboard events into page actions.
@@ -48,51 +56,23 @@ void handle_output(RotaryAction action, int rotary, std::optional<int> output) {
  * @param event The SDL event to process.
  * @return true when the application should quit.
  */
-bool handle_action(Page* page, SDL_Event event) {
-    bool quit = false;
-    std::optional<int> output;
-    RotaryAction action;
-    int rotary;
-
+PageActionResult handle_action(Page* page, SDL_Event event) {
     switch (event.key.key) {
-        case SDLK_ESCAPE:
-            quit = true;
-            break;
         case SDLK_A:
-            output = page->execute_action(RotaryAction::Left, 0);
-            action = RotaryAction::Left;
-            rotary = 0;
-            break;
+            return page->execute_action(RotaryAction::Left, 0);
         case SDLK_LEFT:
-            output = page->execute_action(RotaryAction::Left, 1);
-            action = RotaryAction::Left;
-            rotary = 1;
-            break;
+            return page->execute_action(RotaryAction::Left, 1);
         case SDLK_D:
-            output = page->execute_action(RotaryAction::Right, 0);
-            action = RotaryAction::Right;
-            rotary = 0;
-            break;
+            return page->execute_action(RotaryAction::Right, 0);
         case SDLK_RIGHT:   
-            output = page->execute_action(RotaryAction::Right, 1);
-            action = RotaryAction::Right;
-            rotary = 1;
-            break;
+            return page->execute_action(RotaryAction::Right, 1);
         case SDLK_S:
-            output = page->execute_action(RotaryAction::Press, 0);
-            action = RotaryAction::Press;
-            rotary = 0;
-            break;
+            return page->execute_action(RotaryAction::Press, 0);
         case SDLK_DOWN:
-            output = page->execute_action(RotaryAction::Press, 1);
-            action = RotaryAction::Press;
-            rotary = 1;
-            break;
+            return page->execute_action(RotaryAction::Press, 1);
     }
 
-    handle_output(action, rotary, output);
-
-    return quit;
+    return {};
 }
 
 template <typename T, typename... Args>
@@ -129,17 +109,8 @@ int main ( int argc, char* argv[] ) {
     Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
 
     std::vector<Page*> page_ptrs;
-    std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
     
-    page_ptrs.push_back(add_page<PageSelectionPage>("Page Selection", page_names));
-    page_ptrs.push_back(add_page<ComponentPage>("Component Demo", p));
-    page_ptrs.push_back(add_page<TimePage>("Time Display", p));
-    page_ptrs.push_back(add_page<ColorPickerPage>("Color Picker"));
-
-    if (page_idx < 0 || page_idx >= static_cast<int>(pages.size())) {
-        std::cerr << "Warning: invalid page index " << page_idx << ", defaulting to page 0\n";
-        page_idx = 0;
-    }
+    page_stack.push_back(factory[0](p));
 
     bool quit = false;
     SDL_Event event;
@@ -152,13 +123,38 @@ int main ( int argc, char* argv[] ) {
             }  
 
             else if (event.type == SDL_EVENT_KEY_DOWN) {
-                quit = handle_action(page_ptrs[page_idx], event);
+                if (event.key.key == SDLK_ESCAPE) {
+                    quit = true;
+                    break;
+                } else {
+                    PageActionResult action = handle_action(page_stack.back().get(), event);
+                    std::visit(overloaded {
+                        [] (std::monostate) { },
+                        [p] (NavigateAction const& nav) { 
+                            grid.fill(BLACK);
+                            page_stack.clear();
+                            page_stack.push_back(factory[nav.index](p));
+                         },
+                        [] (ReplaceAction rep) { 
+                            grid.fill(BLACK);
+                            page_stack.at((page_stack.size() - 1)) = std::move(rep.page);
+                         },
+                        [] (PushAction push) { 
+                            grid.fill(BLACK);
+                            page_stack.push_back(std::move(push.page));
+                        },
+                        [p] (PopAction pop) { 
+                            grid.fill(BLACK);
+                            page_stack.pop_back(); 
+                            if (page_stack.empty()) page_stack.push_back(std::make_unique<TimePage>("Time Display", p));
+                        }}, std::move(action));
+                }
             }
         }
         
-        page_ptrs[page_idx]->render_page(grid);
+        page_stack.back()->render_page(grid);
         render.render_matrix(grid);
-        page_ptrs[page_idx]->update_data();
+        page_stack.back()->update_data();
     }
 
     return 0;

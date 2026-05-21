@@ -14,8 +14,6 @@
 
 class TimePage : public Page {
     private:
-        RotaryEncoder rotary_left, rotary_right;
-
         std::string time;
         std::string date;
         std::string year;
@@ -42,20 +40,6 @@ class TimePage : public Page {
          * @brief Updates the displayed time, date, and year each frame.
          */
         void update_data();
-
-        /**
-         * @brief Binds input actions for the time page.
-         */
-        void bind_actions();
-
-        /**
-         * @brief Executes a rotary action on the time page.
-         *
-         * @param action The action to handle.
-         * @param rotary Which encoder index triggered it.
-         * @return Optional output value from the action.
-         */
-        std::optional<int> execute_action(RotaryAction action, int rotary);
 
 };
 

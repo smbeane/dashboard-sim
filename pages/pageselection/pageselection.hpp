@@ -5,6 +5,7 @@
 #include <optional>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "../page.hpp"
 #include <components/components.hpp>
@@ -14,19 +15,27 @@ class PageSelectionPage : public Page {
     private:
         
         int selected_idx;
+        int initial_idx;
         RotaryEncoder rotary_left, rotary_right;
 
         void bind_actions();
 
     public:
 
-        PageSelectionPage() : Page("PageSelectionPage") {}
-
         PageSelectionPage(std::string name, std::vector<std::string> page_names) : Page(name), selected_idx(0) {
             init_page(page_names);
         }
 
-        PageSelectionPage(std::string name, std::vector<std::string> page_names, int selected_idx) : Page(name), selected_idx(selected_idx) {
+        PageSelectionPage(std::string name, std::vector<std::string> page_names, int selected_idx) : Page(name), selected_idx(selected_idx), initial_idx(selected_idx) {
+            init_page(page_names);
+        }
+
+        PageSelectionPage(std::string name, std::vector<std::string> page_names, std::string selected_name) : Page(name) {
+            std::vector<std::string>::iterator it = std::find(page_names.begin(), page_names.end(), selected_name);
+            
+            if (it == page_names.end()) selected_idx = initial_idx = 0;
+            else selected_idx = initial_idx = distance(page_names.begin(), it);
+
             init_page(page_names);
         }
 
@@ -36,6 +45,8 @@ class PageSelectionPage : public Page {
          * @param page_names List of page names to display.
          */
         void init_page(std::vector<std::string> page_names);
+
+        void render_page(std::array<Color, MATRIX_SIZE>& matrix);
 
         /**
          * @brief Updates page selection state (no dynamic content currently).
@@ -49,7 +60,7 @@ class PageSelectionPage : public Page {
          * @param rotary Which encoder index triggered the action.
          * @return Optional selected page index.
          */
-        std::optional<int> execute_action(RotaryAction action, int rotary) override;
+        PageActionResult execute_action(RotaryAction action, int rotary) override;
 };
 
 #endif // PAGESELECTION_HPP

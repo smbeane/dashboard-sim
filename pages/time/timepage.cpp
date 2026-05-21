@@ -5,8 +5,6 @@
 const Color MinuteHand = Color(255, 110, 0, 1);
 
 void TimePage::init_page() {
-    std::cout << primary << secondary << accent << std::endl;
-
     time_tb = create_component<TextBox>(Point(29, 3), time, 8, 'c', 2, primary);
     date_tb = create_component<TextBox>(Point(27, 24), date, 9, 'c', 2, primary);
     year_tb = create_component<TextBox>(Point(47, 18), year, 4, 'c', 2, primary);
@@ -29,15 +27,4 @@ void TimePage::update_data() {
     year_tb->swap_text(year);
 
     if (clock != nullptr) clock->update_time(time);
-}
-
-void TimePage::bind_actions() {
-    rotary_left.bind(RotaryAction::Press, [this]() -> std::optional<int> {
-        return 0;
-    });
-}
-
-std::optional<int> TimePage::execute_action(RotaryAction action, int rotary) {
-    if (rotary == 0) return rotary_left.execute(action);
-    else return rotary_right.execute(action);
 }

@@ -25,7 +25,7 @@ class RotaryEncoder : public InputHandler<static_cast<size_t>(RotaryAction::COUN
          * @param action Rotary action to bind.
          * @param func   Callback invoked when the action occurs.
          */
-        void bind(RotaryAction action, std::function<std::optional<int>()> func) {
+        void bind(RotaryAction action, std::function<PageActionResult()> func) {
             InputHandler::bind(static_cast<size_t>(action), std::move(func));
         }
 
@@ -35,7 +35,7 @@ class RotaryEncoder : public InputHandler<static_cast<size_t>(RotaryAction::COUN
          * @param action The action to execute.
          * @return Optional integer result from the bound callback.
          */
-        std::optional<int> execute (RotaryAction action) const {
+        PageActionResult execute (RotaryAction action) const {
             return InputHandler::execute(static_cast<size_t>(action));
         }
 };

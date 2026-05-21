@@ -10,9 +10,6 @@
 #include <utils/inputs/rotary_encoder.hpp>
 
 class ComponentPage : public Page {
-    private:
-        RotaryEncoder rotary_left, rotary_right;
-
     public:
 
         ComponentPage(std::string name) : Page(name) { init_page(); };
@@ -29,20 +26,6 @@ class ComponentPage : public Page {
          * @brief Updates dynamic demo components each frame.
          */
         void update_data();
-
-        /**
-         * @brief Binds input actions for the component demo page.
-         */
-        void bind_actions();
-
-        /**
-         * @brief Executes a rotary action for the component demo page.
-         *
-         * @param action The rotary action to handle.
-         * @param rotary Which encoder index triggered the action.
-         * @return Optional output value from the action.
-         */
-        std::optional<int> execute_action(RotaryAction action, int rotary);
 
 };
 

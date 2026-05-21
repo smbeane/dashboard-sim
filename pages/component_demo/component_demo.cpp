@@ -20,14 +20,3 @@ void ComponentPage::update_data() {
         }
     }
 }
-
-void ComponentPage::bind_actions() {
-    rotary_left.bind(RotaryAction::Press, [this]() -> std::optional<int> {
-        return 0;
-    });
-}
-
-std::optional<int> ComponentPage::execute_action(RotaryAction action, int rotary) {
-    if (rotary == 0) return rotary_left.execute(action);
-    else return rotary_right.execute(action);
-}
