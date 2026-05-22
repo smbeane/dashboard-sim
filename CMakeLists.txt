@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(dashboard_sim LANGUAGES CXX VERSION 1.0.0)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
+
+# uncomment to check for memory errors (128 bytes on fedora is okay becayse of wayland)
+# running with `SDL_VIDEODRIVER=x11 ./dashboard_sim` will not give those leaks
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
 
 find_package(nlohmann_json REQUIRED)
 

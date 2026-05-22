@@ -11,15 +11,18 @@
 
 class Profile {
     private:
+        std::string path;
         std::string username;
         Color primary;
         Color secondary;
         Color accent;
 
     public: 
-        Profile() { init_profile(); };
+        Profile() { init_profile(""); };
 
-        void init_profile();
+        Profile(std::string p) { init_profile(p); };
+
+        void init_profile(std::string path);
 
         nlohmann::json parse_value(std::string value);
 

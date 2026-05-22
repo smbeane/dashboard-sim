@@ -1,0 +1,2567 @@
+=== File: ./CMakeLists.txt ===
+cmake_minimum_required(VERSION 3.16)
+project(dashboard_sim LANGUAGES CXX VERSION 1.0.0)
+
+find_package(nlohmann_json REQUIRED)
+
+# include(FetchContent)
+# FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+# FetchContent_MakeAvailable(json)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+
+
+add_subdirectory(SDL EXCLUDE_FROM_ALL)
+add_subdirectory(color)
+add_subdirectory(simulator)
+add_subdirectory(fonts)
+add_subdirectory(components)
+add_subdirectory(pages)
+add_subdirectory(utils)
+add_subdirectory(point)
+add_subdirectory(profile)
+
+add_executable(dashboard_sim main.cpp)
+
+target_link_libraries(dashboard_sim PRIVATE simulator pages SDL3::SDL3 nlohmann_json::nlohmann_json profile)
+\n
+=== File: ./color/CMakeLists.txt ===
+add_library (color STATIC
+    colors.hpp
+    color/color.hpp color/color.cpp
+    defaults/defaults.hpp
+)
+
+target_link_libraries ( color PUBLIC SDL3::SDL3 )
+target_include_directories ( color INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/..")
+target_compile_definitions ( color PUBLIC COLOR_VERSION=1.0)\n
+=== File: ./color/color/color.cpp ===
+#include "color.hpp"
+
+SDL_Color Color::getSDL_Color() {
+    SDL_Color new_color;
+    new_color.r = r;
+    new_color.g = g;
+    new_color.b = b;
+    new_color.a = 255;
+
+    return new_color;
+}
+
+std::ostream& operator<<(std::ostream& os, const Color& color) {
+    os << "(" << std::to_string(color.r) << ", " << std::to_string(color.g) << ", " <<  std::to_string(color.b) << ")" << std::endl;
+
+    return os;
+}\n
+=== File: ./color/color/color.hpp ===
+#ifndef COLOR_HPP
+#define COLOR_HPP
+
+#include <cstdint>
+#include <SDL3/SDL_pixels.h>
+#include <iostream>
+
+class Color {
+    public:
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
+        bool is_visible;
+
+        /**
+         * @brief Constructs black color
+        */
+        Color() : r(0), g(0), b(0), is_visible(true) {};
+
+        /**
+         * @brief Constructs a color of defined RGB 
+         * 
+         * @param r 8-bit red value of Color (0-255)
+         * @param g 8-bit green value of Color (0-255)
+         * @param b 8-bit blue value of Color (0-255)
+         */
+        Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b), is_visible(true) {};
+
+        /**
+         * @brief Constructs a Color of defined RGB and transparency
+         * 
+         * @param r 8-b red value of Color (0-255)
+         * @param g 8-bit green value of Color (0-255)
+         * @param b 8-bit blue value of Color (0-255)
+         * @param v Sets visibility of color (0 for transparent, 1 for visible)
+         */
+        Color(uint8_t r, uint8_t g, uint8_t b, bool v) 
+            : r(r), g(g), b(b), is_visible(v) {
+        }   
+
+        /**
+         * @brief Gets the corresponding SDL_Color
+         * 
+         * @return SDL_Color corresponding to the color
+         */
+        SDL_Color getSDL_Color ();
+
+        /**
+         * @brief Checks if color is visible
+         * 
+         * @returns bool if visible
+         */
+        bool is_transparent() const { return !is_visible; }
+
+        friend std::ostream& operator<<(std::ostream& os, const Color& color);
+
+};
+
+#endif // COLOR_HPP\n
+=== File: ./color/colors.hpp ===
+#ifndef COLORS_HPP
+#define COLORS_HPP
+
+#include <color/color/color.hpp>
+#include <color/defaults/defaults.hpp>
+
+#endif // COLORS_HPP\n
+=== File: ./color/defaults/defaults.hpp ===
+#ifndef DEFAULT_COLORS_HPP
+#define DEFAULT_COLORS_HPP
+
+#include "../color/color.hpp"
+
+inline const Color BLACK(0, 0, 0, 1);
+inline const Color WHITE(255, 255, 255, 1);
+inline const Color GREY(128, 128, 128, 1);
+inline const Color PROFILE_COLOR(63, 81, 181, 1);
+inline const Color UNSELECTED(80, 80, 80, 1);
+inline const Color TRANSPARENT(0, 0, 0, 0);
+
+#endif // DEFAULT_COLORS_HPP\n
+=== File: ./components/CMakeLists.txt ===
+add_library(components STATIC
+    component.hpp
+    components.hpp
+    rectangle/rectangle.cpp rectangle/rectangle.hpp
+    line/line.cpp line/line.hpp
+    circle/circle.cpp circle/circle.hpp
+    progress_bar/progress_bar.cpp progress_bar/progress_bar.hpp
+    slider/slider.cpp slider/slider.hpp
+    textbox/textbox.cpp textbox/textbox.hpp
+
+)
+
+target_include_directories(components PUBLIC 
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+)
+
+target_link_libraries(components PUBLIC color fonts)
+
+target_compile_definitions(components PUBLIC COMPONENTS_VERSION=1.0)\n
+=== File: ./components/circle/circle.cpp ===
+#include "circle.hpp"
+
+#include <iostream>
+
+void Circle::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    if (!secondary.is_transparent()) {
+        draw_infill(matrix);
+    }
+    if (!primary.is_transparent()) draw_border(matrix);    
+}
+
+void Circle::draw_infill(std::array<Color, MATRIX_SIZE>& matrix) {
+    int cx = this->center.x;
+    int cy = this->center.y;
+    int r = this->radius;
+    int x_off = 0;
+    int y_off = r;
+    int d = 3 - 2 * r;
+
+    auto draw_fill_line = [&](int x1, int x2, int y_pos) {
+        if (y_pos < 0 || y_pos >= 32) return;
+
+        if (x1 > x2) std::swap(x1, x2);
+
+        int start_x = std::max(0, x1);
+        int end_x = std::min(63, x2);
+
+        for (int i = start_x; i <= end_x; i++) {
+            matrix[y_pos * 64 + i] = secondary;
+        }
+    };
+
+    while (y_off >= x_off) {
+        draw_fill_line(cx - x_off, cx + x_off, cy + y_off);
+        draw_fill_line(cx - x_off, cx + x_off, cy - y_off);
+        draw_fill_line(cx - y_off, cx + y_off, cy + x_off);
+        draw_fill_line(cx - y_off, cx + y_off, cy - x_off);
+
+        if (d < 0) d = d + 4 * x_off + 6;
+        else {
+            d = d + 4 * (x_off - y_off) + 10;
+            y_off--;
+        }
+        x_off++;
+    }
+}
+
+void Circle::draw_border(std::array<Color, MATRIX_SIZE>& matrix) {
+    int cx = this->center.x;
+    int cy = this->center.y;
+    int r = this->radius;
+    int x_off = 0;
+    int y_off = r;
+    int d = 3 - 2 * r;
+
+    auto plot_border = [&](int px, int py) {
+        if (px >= 0 && px < 64 && py >= 0 && py < 32) {
+            matrix[py * 64 + px] = primary;
+        }
+    };
+
+    while (y_off >= x_off) {
+        plot_border(cx + x_off, cy + y_off);
+        plot_border(cx - x_off, cy + y_off);
+        plot_border(cx + x_off, cy - y_off);
+        plot_border(cx - x_off, cy - y_off);
+        plot_border(cx + y_off, cy + x_off);
+        plot_border(cx - y_off, cy + x_off);
+        plot_border(cx + y_off, cy - x_off);
+        plot_border(cx - y_off, cy - x_off);
+
+        if (d < 0) d = d + 4 * x_off + 6;
+        else {
+            d = d + 4 * (x_off - y_off) + 10;
+            y_off--;
+        }
+        x_off++;
+    }
+}\n
+=== File: ./components/circle/circle.hpp ===
+#ifndef CIRCLE_HPP
+#define CIRCLE_HPP
+
+#include "../component.hpp"
+
+class Circle : public Component {
+    private: 
+        
+        Point center;
+        int radius;
+    
+        /**
+         * @brief Renders the inside of the Circle, including
+         *        where the border would go
+         * 
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void draw_infill(std::array<Color, MATRIX_SIZE>& matrix);
+        
+        /**
+         * @brief Renders only the border of the Circle
+         * 
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void draw_border(std::array<Color, MATRIX_SIZE>& matrix);
+
+    public: 
+
+        /**
+         * @brief Constructs default Circle, position (0, 0), 
+         *        completely transparent with 0 radius
+         */
+        Circle () : Component(TRANSPARENT, TRANSPARENT), center({0, 0}), radius(0) {}
+
+        /**
+         * @brief Constructs a Circle at defined pixel location
+         * 
+         * @param center The center Point from the top left corner (0-63,0-31)
+         * @param radius Radius of the outer rim
+         * @param border Color of the circle border
+         * @param infill Color of the circle infill
+         */
+        Circle (Point center,  int radius, Color border, Color infill) 
+        :  Component(border, infill), center(center), radius(radius)  {}
+
+        /**
+         * @brief Renders component by first rendering infill,
+         *        then rendering border over top
+         *
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
+
+};
+
+#endif // CIRCLE_HPP\n
+=== File: ./components/component.hpp ===
+#ifndef COMPONENT_HPP
+#define COMPONENT_HPP
+
+#include <color/colors.hpp>
+#include <point/point.hpp>
+#include <array>
+
+inline constexpr int MATRIX_WIDTH = 64;
+inline constexpr int MATRIX_HEIGHT = 32;
+inline constexpr size_t MATRIX_SIZE = MATRIX_WIDTH * MATRIX_HEIGHT;
+
+/**
+ * @brief Checks whether a pixel coordinate is inside the LED matrix bounds.
+ *
+ * @param x X coordinate to validate.
+ * @param y Y coordinate to validate.
+ * @return true when the point is inside [0,64)x[0,32), false otherwise.
+ */
+inline bool matrix_in_bounds(int x, int y) {
+    return x >= 0 && x < MATRIX_WIDTH && y >= 0 && y < MATRIX_HEIGHT;
+}
+
+/**
+ * @brief Converts 2D matrix coordinates into a flattened linear buffer index.
+ *
+ * @param x X coordinate of the pixel.
+ * @param y Y coordinate of the pixel.
+ * @return Linear index into a MATRIX_SIZE array.
+ */
+inline size_t matrix_index(int x, int y) {
+    return static_cast<size_t>(y) * MATRIX_WIDTH + static_cast<size_t>(x);
+}
+
+/**
+ * @brief Base class for all drawable components in the LED matrix.
+ */
+class Component {
+    // TODO: add center on page function with left or right bias
+    protected: 
+        Color primary;
+        Color secondary;
+        bool is_visible;
+
+    public:
+
+        Component (Color p, Color s) 
+        : primary(p), secondary(s), is_visible(false) {}
+
+        /**
+         * @brief Marks this component as visible for rendering.
+         */
+        void show_component() { is_visible = true;  }
+
+        /**
+         * @brief Hides this component so it is skipped during rendering.
+         */
+        void hide_component() { is_visible = false; }
+
+        /**
+         * @brief Renders the component into the LED matrix pixel buffer.
+         *
+         * @param matrix The target display buffer to draw into.
+         */
+        virtual void render_component(std::array<Color, MATRIX_SIZE>& matrix) = 0;
+
+        /**
+         * @brief Updates both primary and secondary colors to the same value.
+         *
+         * @param new_color The new color to use for the component.
+         */
+        void change_color (const Color& new_color) { primary = secondary = new_color; };
+
+        /**
+         * @brief Updates the primary color used by this component.
+         *
+         * @param new_primary The new primary color.
+         */
+        void change_primary (const Color& new_primary) { primary = new_primary; };
+
+        /**
+         * @brief Updates the secondary color used by this component.
+         *
+         * @param new_secondary The new secondary color.
+         */
+        void change_secondary (const Color& new_secondary) { secondary = new_secondary; };
+
+};
+
+#endif // COMPONENT_HPP\n
+=== File: ./components/components.hpp ===
+#ifndef COMPONENTS_HPP
+#define COMPONENTS_HPP
+
+// Umbrella header for all components
+
+#include <components/component.hpp>
+
+#include <components/rectangle/rectangle.hpp>
+#include <components/line/line.hpp>
+#include <components/circle/circle.hpp>
+#include <components/progress_bar/progress_bar.hpp>
+#include <components/slider/slider.hpp>
+#include <components/textbox/textbox.hpp>
+
+#endif // COMPONENTS_HPP\n
+=== File: ./components/line/line.cpp ===
+#include "line.hpp"
+#include <iostream>
+
+void Line::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    if (primary.is_transparent()) return;
+    
+    int x1 = this->start.x;
+    int y1 = this->start.y;
+    int x2 = this->end.x; 
+    int y2 = this->end.y;
+
+    int dx =  abs(x2 - x1);
+    int dy = -abs(y2 - y1);
+    int sx = x1 < x2 ? 1 : -1;
+    int sy = y1 < y2 ? 1 : -1;
+    int err = dx + dy;
+
+    while (true) {
+        if (x1 >= 0 && x1 < 64 && y1 >= 0 && y1 < 32) {
+            matrix[y1 * 64 + x1] = this->primary;
+        }
+
+        if (x1 == x2 && y1 == y2) break;
+
+        int e2 = 2 * err;
+        if (e2 >= dy) { 
+            err += dy; 
+            x1 += sx; 
+        }
+        if (e2 <= dx) { 
+            err += dx; 
+            y1 += sy; 
+        }
+    }
+}
+
+            \n
+=== File: ./components/line/line.hpp ===
+#ifndef LINE_HPP
+#define LINE_HPP
+
+#include "../component.hpp"
+
+class Line : public Component {
+    private: 
+    
+        Point start, end;
+    
+    public: 
+        
+        /**
+         * @brief Constructs default Line, position (0, 0) ,
+         *        completely transparent with no length
+         */
+        Line () : Component(BLACK, BLACK), start({0, 0}), end({0, 0}) {}
+
+        /**
+         * @brief Constructs a Line at defined pixel start and end locations
+         * 
+         * @param start The starting point from the top left corner (0-63, 0-31)
+         * @param end The ending point from the top left corner (0-63, 0-31)
+         * @param primary Color of the line
+         */
+        Line (Point start, Point end, Color primary) 
+        :  Component(primary, TRANSPARENT), start(start), end(end) {}
+
+        /**
+         * @brief Renders component using Bresenham's Line Algorithm
+         *
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
+
+        /**
+         * @brief Returns ending x coordinate of the Line
+         */
+        int get_endx() const { return end.x; };
+
+        /**
+         * @brief Updates ending x coordinate of the Line
+         * 
+         * @param new_x The new ending x coordinate of the Line (0-63)
+         */
+        void set_endx(int new_x) { end.x = new_x; };
+
+        /**
+         * @brief Returns ending y coordinate of the Line
+         */
+        int get_endy() const { return end.y; };
+
+        /**
+         * @brief Updates ending y coordinate of the Line
+         * 
+         * @param new_y The new ending y coordinate of the Line (0-31)
+         */
+        void set_endy(int new_y) { end.y = new_y; };
+
+};
+
+#endif // LINE_HPP\n
+=== File: ./components/progress_bar/progress_bar.cpp ===
+#include "progress_bar.hpp"
+#include "../rectangle/rectangle.hpp"
+
+#include <cmath>
+
+void ProgressBar::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    Rectangle border(pos, width, height, primary, Color(0, 0, 0, 0));
+    Rectangle infill(pos, round(progress * (width - 2) / 100) + 2, height, Color(0, 0, 0, 0), secondary);
+
+    border.render_component(matrix);
+    infill.render_component(matrix);
+}
+
+void ProgressBar::update_progress(int new_progress) {
+    progress = new_progress;
+}\n
+=== File: ./components/progress_bar/progress_bar.hpp ===
+#ifndef PROGRESS_BAR_HPP
+#define PROGRESS_BAR_HPP
+
+#include <cmath> 
+#include "../component.hpp"
+
+class ProgressBar : public Component {
+    private: 
+        Point pos;
+        int width, height;
+        int progress;
+
+    public: 
+        
+        /**
+         * @brief Constructs default ProgressBar, position (0, 0)
+         *        completely transparent with 0 width, height, or progress
+         */
+        ProgressBar () : Component(TRANSPARENT, TRANSPARENT), 
+                         pos({0, 0}), width(0), height(0), progress(0) {}
+
+        /**
+         * @brief Constructs a ProgressBar at defined pixel location
+         * 
+         * @param pos The top left offset from the top left corner (0-63, 0-31)
+         * @param w The width of the border (0 < w < 63 - x)
+         * @param h The height of the border (0 < h < 31 - x)
+         * @param progress The percentage (0 - 100) of bar to be filled
+         * @param border Color of the border
+         * @param infill Color of the progress infill
+         */
+        ProgressBar (Point pos, int width, int height, int progress, Color border, Color infill) 
+        :  Component(border, infill), pos(pos), width(width), height(height), progress(progress) {}
+
+        /**
+         * @brief Renders component using two Rectangles, one with transparent
+         *        infill, and the other with transparent border over top
+         *
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
+
+        /**
+         * @brief Updates the progress but does not rerender
+         * 
+         * @param new_progress The percentage (0 - 100) of bar to be filled
+         */
+        void update_progress(int new_progress);
+
+};
+
+#endif // PROGRESS_BAR_HPP\n
+=== File: ./components/rectangle/rectangle.cpp ===
+#include "rectangle.hpp"
+
+void Rectangle::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    int x = pos.x;
+    int y = pos.y;
+
+    if (!primary.is_transparent()) {
+        for (int i = x; i < x + width; i++) {
+            if (matrix_in_bounds(i, y)) {
+                matrix[matrix_index(i, y)] = primary;
+            }
+            if (matrix_in_bounds(i, y + height - 1)) {
+                matrix[matrix_index(i, y + height - 1)] = primary;
+            }
+        }
+    }
+
+    for (int j = y + 1; j < y + height - 1; j++) {
+        if (!primary.is_transparent() && matrix_in_bounds(x, j)) {
+            matrix[matrix_index(x, j)] = primary;
+        }
+        
+        if (!secondary.is_transparent()) {
+            for (int i = x + 1; i < x + width - 1; i++) {
+                if (matrix_in_bounds(i, j)) {
+                    matrix[matrix_index(i, j)] = secondary;
+                }
+            }
+        }
+
+        if (!primary.is_transparent() && matrix_in_bounds(x + width - 1, j)) {
+            matrix[matrix_index(x + width - 1, j)] = primary;
+        }
+    }
+}
+\n
+=== File: ./components/rectangle/rectangle.hpp ===
+#ifndef RECTANGLE_HPP
+#define RECTANGLE_HPP
+
+#include "../component.hpp"
+
+class Rectangle : public Component {
+    private: 
+
+        Point pos;
+        int width, height;
+    
+    public: 
+
+        /**
+         * @brief Constructs default rectangle, position (0, 0),
+         *        completely transparent with 0 width or height
+         */
+        Rectangle() : Component(TRANSPARENT, TRANSPARENT), pos({0, 0}), width(0), height(0) {} 
+
+        /**
+         * @brief Constructs a Rectangle at defined pixel location
+         *        with uniform color
+         * 
+         * @param pos The top left offset from top left corner (0-63, 0-31)
+         * @param w The width of the border (0 < w < 63 - x)
+         * @param h The height of the border (0 < h < 31 - x)
+         * @param color
+         */
+        Rectangle(Point pos, int w, int h, Color color) 
+        :  Component(color, color), pos(pos), width(w), height(h) {}
+
+        /**
+         * @brief Construct a Rectangle at a defined pixel location
+         *        with separte border and infill color
+         * 
+         * @param pos The top left offset from the top left corner (0-63, 0-31)
+         * @param w The width of the border (0 < w < 63 - x)
+         * @param h The height of the border (0 < h < 31 - x)
+         * @param border Color of the border
+         * @param infill Color of the infill
+         */
+        Rectangle(Point pos, int w, int h, Color border, Color infill) 
+        :  Component(border, infill), pos(pos), width(w), height(h) {}
+
+        /**
+         * @brief Renders component top to bottom
+         *
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
+};
+
+#endif // RECTANGLE_HPP\n
+=== File: ./components/slider/slider.cpp ===
+#include "slider.hpp"
+
+void Slider::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    Point end(start.x + length - 1, start.y);
+
+    Line line (start, end, primary);
+    line.render_component(matrix);
+
+    if (max == min) {
+        return;
+    }
+
+    int x_pos = start.x + round((float(progress) / (max - min)) * (length - 1));
+    if (matrix_in_bounds(x_pos, start.y)) {
+        matrix[matrix_index(x_pos, start.y)] = secondary;
+    }
+}
+
+void Slider::set_progress(int new_progress) {
+    progress = new_progress;
+}
+
+            \n
+=== File: ./components/slider/slider.hpp ===
+#ifndef SLIDER_HPP
+#define SLIDER_HPP
+
+#include <cmath>
+
+#include "../component.hpp"
+#include "../line/line.hpp"
+
+
+class Slider : public Component {
+    private:
+
+        Point start;
+        int length;
+        int min; 
+        int max;
+        int progress;
+        bool wrap;
+    
+    public: 
+        
+        /**
+         * @brief Constructs default Slider, position (0, 0) 
+         *        completely transparent with 0 length and progress
+         */
+        Slider() : Component(TRANSPARENT, TRANSPARENT), 
+                   start({0, 0}), length(0), min(0), max(0), progress(0), wrap(false) {}
+
+        /**
+         * @brief Constructs a Slider at defined pixel location with given
+         *        length and current progress
+         * 
+         * @param start The left pixel offset from top left corner of screen (0-63, 0-31)
+         * @param length The pixel length of the bar
+         * @param min The minimum progress level
+         * @param max The maximum progress level
+         * @param progress The current progress level (min-max)
+         * @param wrap True if progress should wrap from max to min on increment, or false otherwise
+         * @param primary The Color of the bar itself
+         * @param secondary The Color of the progress indicator
+         *  
+         */
+        Slider(Point start, int length, int min, int max, int progress, bool wrap, Color primary, Color secondary ) 
+        :  Component(primary, secondary ), start(start), length(length), min(min), max(max), progress( progress ), wrap(wrap)  {}
+
+        /**
+         * @brief Renders component by first rendering the bar as a Line,
+         *        and then rendering the progress indicator over top
+         * 
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
+
+        /**
+         * @brief Returns the current progress 
+         * 
+         * @return progress variable
+         */
+        int get_progress() const { return progress; }
+
+        /**
+         * @brief Updates the progress, but doesn't rerender component
+         * 
+         * @param new_progress The percentage (0-100) of the way through the progress bar
+         */
+        void set_progress(int new_progress);
+
+        /**
+         * @brief Increments progress value by 1 until reaching the maximum
+         */
+        int increment_slider() {
+            if (progress < max) progress += 1;
+            else if (wrap) progress = min;
+
+            return progress;
+        };
+
+        /**
+         * @brief Decrements progress value by 1 until reaching minimum
+         *        or wrapping around to maximum
+         */
+        int decrement_slider() {
+            if (progress > min) progress -= 1;
+            else if (wrap) progress = max;
+            
+            return progress;
+
+        }
+};
+
+#endif // SLIDER_HPP
+                \n
+=== File: ./components/textbox/textbox.cpp ===
+#include "textbox.hpp"
+
+void TextBox::init_component(std::string t) {
+    for (char c : t) {
+                text.push_back(std::toupper(c));
+            }
+
+            if (text.length() > length) {
+                    text.append(scroll_gap, ' ');
+            } else {
+                int total = length - text.length();
+
+                switch (alignment) {
+                    case 'l': 
+                        text.append(total, ' ');
+                        break;
+                    case 'c':
+                        text.insert(0, total / 2, ' ');
+                        text.append(total - (total / 2), ' ');
+                        break;
+
+                    case 'r':
+                        text.insert(0, total, ' ');
+                        break;
+                }
+                    
+            }
+
+
+            scroll_start = text.begin();
+}
+
+void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    int box_length = text.length() > length ? length : text.length();
+    int dx = this->pos.x;
+    int dy = this->pos.y;
+
+    std::string::const_iterator curr_char = scroll_start;
+
+    for (int c = 0; c < box_length; c++) {
+        if (text.empty()) break;
+        uint16_t character = font_3x5[*curr_char - 32];
+
+        // bit position for 5x3 font rendering (bit 15)
+        uint16_t mask = 0x4000; 
+
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 3; col++) {
+                int px = dx + col;
+                int py = dy + row;
+
+                if (px >= 0 && px < 64 && py >= 0 && py < 32) {
+                    int pixel_index = (py * 64) + px;
+                    matrix[pixel_index] = (character & mask) ? primary : secondary;
+                }
+                mask >>= 1;
+            }
+        }
+
+        curr_char++;
+        if (curr_char == text.end()) {
+            curr_char = text.begin();
+        }
+
+        dx += 4;
+    }
+}
+    
+void TextBox::swap_text(std::string new_text) {
+    text.clear();
+
+    for (char c : new_text) {
+        text.push_back(std::toupper(c));
+    }
+
+    if (text.length() > length) {
+            text.append(scroll_gap, ' ');
+    } else {
+        int total = length - text.length();
+
+        switch (alignment) {
+            case 'l': 
+                text.append(total, ' ');
+                break;
+            case 'c':
+                text.insert(0, total / 2, ' ');
+                text.append(total - (total / 2), ' ');
+                break;
+
+            case 'r':
+                text.insert(0, total, ' ');
+                break;
+        }
+            
+    }
+
+    scroll_start = text.begin();
+}
+
+void TextBox::scroll_text() {
+    if (text.empty()) return;
+
+    scroll_start++;
+    if (scroll_start == text.end()) {
+        scroll_start = text.begin();
+    }
+}    
+
+            \n
+=== File: ./components/textbox/textbox.hpp ===
+#ifndef TEXTBOX_HPP
+#define TEXTBOX_HPP
+
+#include <string>
+#include <fonts.hpp>
+
+#include "../component.hpp"
+
+class TextBox : public Component {
+    private: 
+        Point pos;
+        std::string::const_iterator scroll_start;
+        std::string text;
+        int length, scroll_gap;
+        char alignment;
+        
+    public: 
+        
+        /**
+         * @brief Constructs default TextBox, position (0, 0), 
+         *        completely transparent with 0 length and text
+         */
+        TextBox () : Component( BLACK, BLACK), pos({0, 0}), text(""), length(0), alignment('l'), scroll_gap(0) {};
+        
+        // TODO: update to include font selections
+        /** 
+         * @brief Constructs a TextBox at defined 
+         * 
+         * @param pos The top left offset from the top left corner of screen (0-63, 0-31)
+         * @param t std::string of text to be rendered
+         * @param length The number of characters to be displayed at one time
+         * @param alignment Character corresponding to text alignment ('l', 'c', 'r')
+         * @param scroll_gap The number of 3x5 spaces between full scroll rotations
+         * @param primary The Color of the text
+        */
+        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary)
+        :  Component(primary, BLACK), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) { init_component(t); };
+
+        // TODO: update to include font selections
+        /** 
+         * @brief Constructs a TextBox at defined 
+         * 
+         * @param pos The top left offset from the top left corner of screen (0-63, 0-31)
+         * @param t std::string of text to be rendered
+         * @param length The number of characters to be displayed at one time
+         * @param alignment Character corresponding to text alignment ('l', 'c', 'r')
+         * @param scroll_gap The number of 3x5 spaces between full scroll rotations
+         * @param primary The Color of the text
+         * @param secondary The Color of the background of the TextBox
+        */
+        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
+        :  Component(primary, secondary), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) { init_component(t); };
+
+
+        
+        void init_component(std::string t);
+
+        /**
+         * @brief Renders component (currently using default font)
+         * 
+         * @param matrix A reference to the pixels to be rendered
+         */
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override;
+        
+        /**
+         * @brief Swaps the current text with new text, but does not rerender
+         * 
+         * @param new_text std::string of new text to be rendered
+         */
+        void swap_text(std::string new_text);
+        
+        /**
+         * @brief Scrolls the text by one character, but does not rerender
+         */
+        void scroll_text(); 
+
+};
+
+#endif // TEXTBOX_HPP
+                \n
+=== File: ./fonts/CMakeLists.txt ===
+add_library (
+    fonts INTERFACE
+)
+
+target_include_directories ( fonts INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/headers")\n
+=== File: ./fonts/headers/fonts.hpp ===
+#pragma once 
+
+#include <cstdint>
+
+const uint16_t font_3x5[] = {
+    0b000000000000000, // space
+    0b010010010000010, // !
+    0b010010000000000, // "
+    0b000111101111000, // #
+    0b111100111001111, // $
+    0b100001010100001, // %
+    0b010101010101011, // &
+    0b010010000000000, // '
+    0b001010010010001, // (
+    0b100010010010100, // )
+    0b101010101000000, // *
+    0b000010111010000, // +
+    0b000000000000010, // ,
+    0b000000111000000, // -
+    0b000000000000010, // .
+    0b001010010010001, // /
+    0b111101101101111, // 0
+    0b010010010010010, // 1
+    0b111001111100111, // 2
+    0b111001111001111, // 3
+    0b101101111001001, // 4
+    0b111100111001111, // 5
+    0b111100111101111, // 6
+    0b111001010100100, // 7
+    0b111101111101111, // 8
+    0b111101111001001, // 9
+    0b000010000010000, // :
+    0b000010000010100, // ;
+    0b001010100010001, // <
+    0b000111000111000, // =
+    0b100010001010100, // >
+    0b111001011000010, // ?
+    0b000111101111000, // @    
+    0b111101111101101, // A
+    0b110101110101110, // B
+    0b111100100100111, // C
+    0b110101101101110, // D
+    0b111100110100111, // E
+    0b111100110100100, // F
+    0b011100100101011, // G
+    0b101101111101101, // H
+    0b111010010010111, // I
+    0b001001001101111, // J
+    0b101101110101101, // K
+    0b100100100100111, // L
+    0b101111101101101, // M
+    0b111101101101101, // N
+    0b111101101101111, // O
+    0b111101111100100, // P
+    0b111101101110001, // Q
+    0b111101110101101, // R
+    0b111100111001111, // S
+    0b111010010010010, // T
+    0b101101101101111, // U
+    0b101101101101010, // V
+    0b101101101111101, // W
+    0b101101010101101, // X
+    0b101101101010010, // Y
+    0b111001010100111, // Z
+    0b011010010010011, // [
+    0b100010010010001, // backslash
+    0b110010010010110, // ]
+    0b001101000000000, // ^
+    0b000000000000111, // _
+    0b010010000000000, // `
+};\n
+=== File: ./main.cpp ===
+#include <string>
+#include <array>
+#include <vector>
+#include <memory>
+#include <iostream>
+#include <optional>
+
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+
+#include <simulator.hpp>
+#include <color/colors.hpp>
+#include <components/components.hpp>
+#include <pages/pages.hpp>
+#include <utils/inputs/rotary_encoder.hpp>
+#include <profile/profile.hpp>
+
+const int pixel_gap  { 2 };
+const int pixel_size { 18 };
+
+const inline std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
+
+template<class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+
+template<class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+std::vector<std::function<std::unique_ptr<Page>(Profile p)>> factory { 
+    [](Profile p) {
+        return std::make_unique<PageSelectionPage>("Page Selection", page_names);
+    },
+    [](Profile p) {
+        return std::make_unique<ComponentPage>("Component Demo", p);
+    }, 
+    [](Profile p) {
+        return std::make_unique<TimePage>("Time Display", p);
+    }, 
+    [](Profile p) {
+        return std::make_unique<ColorPickerPage>("Color Picker");
+    }
+}; 
+
+std::vector<std::unique_ptr<Page>> page_stack;
+
+std::array<Color, MATRIX_SIZE> grid;
+std::vector<std::unique_ptr<Page>> pages;
+int page_idx;
+
+/**
+ * @brief Converts SDL keyboard events into page actions.
+ *
+ * @param page The active page receiving the action.
+ * @param event The SDL event to process.
+ * @return true when the application should quit.
+ */
+PageActionResult handle_action(Page* page, SDL_Event event) {
+    switch (event.key.key) {
+        case SDLK_A:
+            return page->execute_action(RotaryAction::Left, 0);
+        case SDLK_LEFT:
+            return page->execute_action(RotaryAction::Left, 1);
+        case SDLK_D:
+            return page->execute_action(RotaryAction::Right, 0);
+        case SDLK_RIGHT:   
+            return page->execute_action(RotaryAction::Right, 1);
+        case SDLK_S:
+            return page->execute_action(RotaryAction::Press, 0);
+        case SDLK_DOWN:
+            return page->execute_action(RotaryAction::Press, 1);
+    }
+
+    return {};
+}
+
+template <typename T, typename... Args>
+/**
+ * @brief Creates and owns a new page instance.
+ *
+ * @tparam T The page type.
+ * @param name Page title.
+ * @param args Constructor arguments forwarded to the page.
+ * @return Raw pointer to the created page.
+ */
+Page* add_page(std::string name, Args... args) {
+    std::unique_ptr<T> page = std::make_unique<T>(name, std::forward<Args>(args)...);
+    T* ptr = page.get();
+    pages.push_back(std::move(page));
+
+    return ptr;
+}
+
+
+void check_profile() {
+    
+}
+
+int main ( int argc, char* argv[] ) {
+    
+    std::vector<int> inputs = parse_args(argc, argv);
+    page_idx = inputs[0];
+    int window_width = inputs[3]; 
+    int window_height = inputs[4];
+
+    Profile p;
+
+    Renderer render( window_width, window_height, pixel_size, pixel_size, pixel_gap, std::string("LED Matrix Simulator"));
+
+    std::vector<Page*> page_ptrs;
+    
+    page_stack.push_back(factory[0](p));
+
+    bool quit = false;
+    SDL_Event event;
+    
+    while ( quit == false ) {
+
+        while ( SDL_PollEvent( &event ) == true ) {
+            if ( event.type == SDL_EVENT_QUIT ) {
+                quit = true;
+            }  
+
+            else if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (event.key.key == SDLK_ESCAPE) {
+                    quit = true;
+                    break;
+                } else {
+                    PageActionResult action = handle_action(page_stack.back().get(), event);
+                    std::visit(overloaded {
+                        [] (std::monostate) { },
+                        [p] (NavigateAction const& nav) { 
+                            grid.fill(BLACK);
+                            page_stack.clear();
+                            page_stack.push_back(factory[nav.index](p));
+                         },
+                        [] (ReplaceAction rep) { 
+                            grid.fill(BLACK);
+                            page_stack.at((page_stack.size() - 1)) = std::move(rep.page);
+                         },
+                        [] (PushAction push) { 
+                            grid.fill(BLACK);
+                            page_stack.push_back(std::move(push.page));
+                        },
+                        [p] (PopAction pop) { 
+                            grid.fill(BLACK);
+                            page_stack.pop_back(); 
+                            if (page_stack.empty()) page_stack.push_back(std::make_unique<TimePage>("Time Display", p));
+                        }}, std::move(action));
+                }
+            }
+        }
+        
+        page_stack.back()->render_page(grid);
+        render.render_matrix(grid);
+        page_stack.back()->update_data();
+    }
+
+    return 0;
+}\n
+=== File: ./pages/CMakeLists.txt ===
+add_subdirectory(time/page_components)
+
+add_library(pages STATIC
+    page.cpp page.hpp
+    component_demo/component_demo.cpp component_demo/component_demo.hpp
+    time/timepage.cpp time/timepage.hpp
+    colorpicker/colorpicker.cpp colorpicker/colorpicker.hpp
+    pageselection/pageselection.cpp pageselection/pageselection.hpp
+)
+
+target_include_directories(pages PUBLIC 
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+)
+
+target_link_libraries(pages 
+    PUBLIC 
+        components 
+        color 
+        profile
+    PRIVATE    
+        utils 
+        time_components
+)
+
+\n
+=== File: ./pages/colorpicker/colorpicker.cpp ===
+#include "colorpicker.hpp"
+
+#include <iostream>
+#include <pages/pageselection/pageselection.hpp>
+
+void ColorPickerPage::init_page() {
+    create_component<TextBox>(Point(8, 2), "Color Picker", 12, 'c', 0, WHITE, BLACK);
+
+    sliders[0] = create_component<Slider>(Point(2, 12), 20, 0, 255, chosen.r, true, WHITE, Color(255, 0, 0));
+    sliders[1] = create_component<Slider>(Point(2, 19), 20, 0, 255, chosen.g, true, UNSELECTED, Color(0, 255, 0));
+    sliders[2] = create_component<Slider>(Point(2, 26), 20, 0, 255, chosen.b, true, UNSELECTED, Color(0, 0, 255));
+    
+    textboxes[0] = create_component<TextBox>(Point(24, 10), std::to_string(chosen.r), 3, 'r', 0, WHITE, BLACK);
+    textboxes[1] = create_component<TextBox>(Point(24, 17), std::to_string(chosen.g), 3, 'r', 0, UNSELECTED, BLACK);
+    textboxes[2] = create_component<TextBox>(Point(24, 24), std::to_string(chosen.b), 3, 'r', 0, UNSELECTED, BLACK);
+
+    picked_rect = create_component<Rectangle>(Point(39, 9), 21, 21, chosen);
+    
+    curr_selected = 0;
+
+    bind_actions();
+
+}
+
+void ColorPickerPage::bind_actions() {
+    rotary_left.bind(RotaryAction::Left, [this]() -> PageActionResult {
+        sliders[curr_selected]->change_primary(UNSELECTED);
+        textboxes[curr_selected]->change_primary(UNSELECTED);
+        
+        if (curr_selected > 0) curr_selected -= 1;
+        else curr_selected = 2;
+        
+        sliders[curr_selected]->change_primary(WHITE);
+        textboxes[curr_selected]->change_primary(WHITE);
+
+        return {};
+    });
+    
+    rotary_left.bind(RotaryAction::Right, [this]() -> PageActionResult{
+        sliders[curr_selected]->change_primary(UNSELECTED);
+        textboxes[curr_selected]->change_primary(UNSELECTED);
+        
+        if (curr_selected < 2) curr_selected += 1;
+        else curr_selected = 0;
+        
+        sliders[curr_selected]->change_primary(WHITE);
+        textboxes[curr_selected]->change_primary(WHITE);
+
+        return {};
+    });
+
+    rotary_left.bind(RotaryAction::Press, [this]() -> PageActionResult{
+        return PushAction{std::make_unique<PageSelectionPage>("Page Selection", Config::page_names, name)};
+    });
+    
+    rotary_right.bind(RotaryAction::Left, [this]() -> PageActionResult{
+        int progress = sliders[curr_selected]->decrement_slider();
+        update_color(progress);
+
+        return {};
+    });
+    
+    rotary_right.bind(RotaryAction::Right, [this]() -> PageActionResult {
+        int progress = sliders[curr_selected]->increment_slider();
+        update_color(progress);
+
+        return {};
+    });
+}
+
+void ColorPickerPage::update_color(int progress) {
+    textboxes[curr_selected]->swap_text(std::to_string(progress));
+
+    switch (curr_selected) {
+        case 0: chosen.r = progress; break;
+        case 1: chosen.g = progress; break;
+        case 2: chosen.b = progress; break;
+    }
+    
+    picked_rect->change_color(chosen);
+}
+
+void ColorPickerPage::update_data() {
+
+}  
+
+PageActionResult ColorPickerPage::execute_action(RotaryAction action, int rotary) {
+    if (rotary == 0) return rotary_left.execute(action);
+    else return rotary_right.execute(action);
+    
+}
+
+\n
+=== File: ./pages/colorpicker/colorpicker.hpp ===
+#ifndef COLORPICKER_HPP
+#define COLORPICKER_HPP
+
+#include <cstdint>
+#include <string>
+#include <array>
+#include <functional>
+#include <optional>
+
+#include <components/components.hpp>
+#include <color/colors.hpp>
+#include "../page.hpp"
+
+class ColorPickerPage : public Page {
+    private:
+        Color chosen;
+        std::array<Slider*, 3> sliders;
+        std::array<TextBox*, 3> textboxes;
+        int curr_selected;
+
+        Rectangle* picked_rect;
+        RotaryEncoder rotary_left, rotary_right;
+
+        void bind_actions();
+
+        void update_color(int progress);
+
+    public: 
+        /**
+         * @brief Constructs the default color picker page with black initial color.
+         */
+        ColorPickerPage() : Page("Color Picker"), chosen(BLACK) { init_page(); };
+
+        /**
+         * @brief Constructs a color picker page using the specified page name.
+         */
+        ColorPickerPage(std::string name) : Page(name), chosen(BLACK) { init_page(); };
+        
+        /**
+         * @brief Constructs a color picker page with an initial chosen color.
+         */
+        ColorPickerPage(std::string name, Color curr) : Page(name), chosen(curr) { init_page(); }; 
+        
+
+        /**
+         * @brief Creates the color picker components and binds input actions.
+         */
+        void init_page();
+
+        /**
+         * @brief Updates page state each frame (currently no periodic updates).
+         */
+        void update_data() override;
+
+        /**
+         * @brief Executes color picker rotary input actions.
+         *
+         * @param action Rotary action to perform.
+         * @param rotary Which encoder index triggered the action.
+         * @return Optional integer output for navigation.
+         */
+        PageActionResult execute_action(RotaryAction action, int rotary);
+
+};
+
+#endif // COLORPICKER_HPP
+\n
+=== File: ./pages/component_demo/component_demo.cpp ===
+#include "component_demo.hpp"
+
+void ComponentPage::init_page() {
+    components.push_back(std::make_unique<Rectangle>(Point(3, 3), 10, 10, primary, secondary));
+    components.push_back(std::make_unique<Line>(Point(15, 3), Point(24, 12), secondary));
+    components.push_back(std::make_unique<Circle>(Point(32, 8), 5, primary, secondary));
+    components.push_back(std::make_unique<ProgressBar>(Point(40, 4), 20, 5, 50, primary, secondary));
+    components.push_back(std::make_unique<Slider>(Point(40, 12), 20, 0, 100, 49, true, primary, secondary));
+    components.push_back(std::make_unique<TextBox>(Point(5, 17), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 14, 'l', 2, primary));
+    components.push_back(std::make_unique<TextBox>(Point(5, 24), " !\"#$%&'()*+,-./'):;<=>?@[\\]^_`", 14, 'l', 2, primary));
+
+    bind_actions();
+}
+
+
+void ComponentPage::update_data() {
+    for (auto& comp : components) {
+        if (auto* t = dynamic_cast<TextBox*>(comp.get())) {
+            t->scroll_text();
+        }
+    }
+}\n
+=== File: ./pages/component_demo/component_demo.hpp ===
+#ifndef COMPONENT_DEMO_HPP
+#define COMPONENT_DEMO_HPP
+
+#include <string>
+#include <array>
+#include <optional>
+
+#include "../page.hpp"
+#include <components/components.hpp>
+#include <utils/inputs/rotary_encoder.hpp>
+
+class ComponentPage : public Page {
+    public:
+
+        ComponentPage(std::string name) : Page(name) { init_page(); };
+
+        ComponentPage(std::string name, Profile p) : Page(name, p) { init_page(); };
+
+
+        /**
+         * @brief Creates demo components for the component showcase page.
+         */
+        void init_page();
+
+        /**
+         * @brief Updates dynamic demo components each frame.
+         */
+        void update_data();
+
+};
+
+#endif // COMPONENT_DEMO_HPP\n
+=== File: ./pages/page.hpp ===
+#ifndef PAGE_HPP
+#define PAGE_HPP
+
+#include <vector>
+#include <string>
+#include <array>
+#include <memory>
+#include <optional>
+
+#include <color/colors.hpp>
+#include <components/component.hpp>
+#include <utils/inputs/rotary_encoder.hpp>
+#include <profile/profile.hpp>
+#include <pages/actions.hpp>
+#include <pages/menu_config.hpp>
+
+class Page {
+    // TODO: implement framerate
+    protected: 
+        std::vector<std::unique_ptr<Component>> components;
+        
+        Color primary;
+        Color secondary;
+        Color accent;
+
+        RotaryEncoder rotary_left;
+
+        /**
+         * @brief Constructs and adds a component to the page's layout
+         * 
+         * @tparam T The  class type of the component to create (e.g., TextBox, Slider)
+         * @param args... The arguments to forward directly to the component's constructor
+         * 
+         * @return T* A raw pointer to the newly created component
+         */
+        template <typename T, typename... Args>
+        T* create_component(Args&&... args) {
+            auto component = std::make_unique<T>(std::forward<Args>(args)...);
+            
+            T* component_ptr = component.get();
+            components.push_back(std::move(component));
+
+            return component_ptr;
+        }
+
+        /**
+         * @brief Binds all given actions to their corresponding function
+         */
+        virtual void bind_actions();
+
+    public:
+        std::string name;
+
+        Page() : name("Basic Page"),
+            primary(WHITE), secondary(BLACK), accent(GREY) {};
+
+        Page(std::string name) : name(name), 
+            primary(WHITE), secondary(BLACK), accent(GREY) {};
+
+        Page(std::string name, Profile p) : name(name), 
+            primary(p.get_primary()), secondary(p.get_secondary()), accent(p.get_accent()) {};
+
+        /**
+         * @brief Updates any dynamic page state before rendering.
+         *
+         * Derived pages should override this to refresh text, animations,
+         * or other per-frame logic.
+         */
+        virtual void update_data() = 0;
+        
+        /**
+         * @brief Renders all owned components into the matrix buffer.
+         *
+         * @param matrix The target display buffer.
+         */
+        virtual void render_page(std::array<Color, MATRIX_SIZE>& matrix);
+
+
+        /**
+         * @brief Executes an input action for the page.
+         *
+         * @param action The rotary action to perform.
+         * @param rotary Which encoder index triggered the action.
+         * @return Optional integer output that may signal page navigation.
+         */
+        virtual PageActionResult execute_action(RotaryAction action, int rotary);
+};
+
+
+#endif // PAGE_HPP\n
+=== File: ./pages/pages.hpp ===
+#ifndef PAGES_HPP
+#define PAGES_HPP
+
+#include <pages/page.hpp>
+#include <pages/actions.hpp>
+
+#include <pages/component_demo/component_demo.hpp>
+#include <pages/time/timepage.hpp>
+#include <pages/colorpicker/colorpicker.hpp>
+#include <pages/pageselection/pageselection.hpp>
+
+
+#endif // PAGES_HPP\n
+=== File: ./pages/time/page_components/CMakeLists.txt ===
+add_library(time_components STATIC 
+    clock.cpp clock.hpp
+)
+
+target_include_directories(time_components PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
+target_link_libraries(time_components PRIVATE components)\n
+=== File: ./pages/time/page_components/clock.cpp ===
+#include "clock.hpp"
+
+#include <cmath>
+#include <iostream>
+
+#define PI 3.1415
+
+namespace {
+    void update_minute_hand(Line& hand, std::string time, int x, int y) {
+        int minute = std::stoi(time.substr(3, 2));
+        float degree = (minute / 60.0) * 2 * PI;
+
+        int dx = 8 * cos(degree - PI / 2);
+        int dy = 8 * sin(degree - PI / 2);
+
+        hand.set_endx(dx + x);
+        hand.set_endy(dy + y);
+    }
+
+    void update_hour_hand (Line& hand, std::string time, int x, int y) {
+        int hour = std::stoi(time.substr(0, 2));
+        int minute = std::stoi(time.substr(3, 2));
+
+        float degree = ((hour / 12.0) + (minute / 720.0))* 2 * PI;
+
+        int dx = 6 * cos(degree - PI / 2);
+        int dy = 6 * sin(degree - PI / 2);
+
+        hand.set_endx(dx + x);
+        hand.set_endy(dy + y);
+    }
+}
+
+void Clock::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    clock.render_component(matrix);
+    render_time_notches(matrix);
+
+    minute_hand.render_component(matrix);
+    hour_hand.render_component(matrix);
+
+}
+
+void Clock::update_time(std::string time) {
+    update_minute_hand(minute_hand, time, center.x, center.y); 
+    update_hour_hand(hour_hand, time, center.x, center.y);
+}
+
+void Clock::render_time_notches(std::array<Color, MATRIX_SIZE>& matrix) {
+    auto set_notch = [&](int px, int py) {
+        if (matrix_in_bounds(px, py)) {
+            matrix[matrix_index(px, py)] = notch_color;
+        }
+    };
+
+    int x = center.x;
+    int y = center.y;
+
+    set_notch(x, y - 9);
+    set_notch(x - 5, y - 8);
+    set_notch(x + 5, y - 8);
+    set_notch(x - 8, y - 5);
+    set_notch(x + 8, y - 5);
+    set_notch(x - 9, y);
+    set_notch(x + 9, y);
+    set_notch(x - 8, y + 5);
+    set_notch(x + 8, y + 5);
+    set_notch(x - 5, y + 8);
+    set_notch(x + 5, y + 8);
+    set_notch(x, y + 9);
+}
+\n
+=== File: ./pages/time/page_components/clock.hpp ===
+#ifndef CLOCK_HPP
+#define CLOCK_HPP
+
+#include <components/components.hpp>
+
+class Clock : public Component {
+    private: 
+        Point center;
+        Color notch_color;    
+        Line minute_hand, hour_hand;
+        Circle clock;
+        
+        /**
+         * @brief Renders the hour/minute notches around the clock face.
+         *
+         * @param matrix The display buffer to paint into.
+         */
+        void render_time_notches(std::array<Color, MATRIX_SIZE>& matrix);
+    
+    public:
+    
+    
+        /**
+         * @brief Constructs a clock component with border, infill, and hand colors.
+         *
+         * @param center The clock center in matrix coordinates.
+         * @param border Color of the clock bezel.
+         * @param infill Color inside the clock face.
+         * @param minute_color Color of the minute hand.
+         * @param hour_color Color of the hour hand.
+         * @param notch_color Color of the hour notches.
+         */
+        Clock (Point center, Color border, Color infill, Color minute_color, Color hour_color, Color notch_color)  
+        : Component(border, infill), center(center), notch_color(notch_color) {
+            
+            minute_hand = Line(center, center, minute_color);
+            hour_hand   = Line(center, center, hour_color);
+            
+            clock = Circle(center, 10, border, infill);
+            
+        }
+
+        /**
+         * @brief Renders the clock face and hands.
+         *
+         * @param matrix The display buffer to paint into.
+         */
+        void render_component(std::array<Color, MATRIX_SIZE>& matrix) override; 
+    
+        /**
+         * @brief Updates the displayed time from a formatted time string.
+         *
+         * @param time Formatted time text such as "08:45 PM".
+         */
+        void update_time(std::string time);
+    
+    private: 
+
+};
+
+#endif // CLOCK_HPP\n
+=== File: ./pages/time/timepage.cpp ===
+#include "timepage.hpp"
+
+#include <iostream>
+
+const Color MinuteHand = Color(255, 110, 0, 1);
+
+void TimePage::init_page() {
+    time_tb = create_component<TextBox>(Point(29, 3), time, 8, 'c', 2, primary);
+    date_tb = create_component<TextBox>(Point(27, 24), date, 9, 'c', 2, primary);
+    year_tb = create_component<TextBox>(Point(47, 18), year, 4, 'c', 2, primary);
+
+    clock = create_component<Clock>(Point(12, 15), primary, BLACK, secondary, accent, GREY);
+
+    update_data();
+    bind_actions();
+
+}
+
+void TimePage::update_data() {
+    time = get_time_str();
+    time_tb->swap_text(time);
+
+    date = get_date_str();
+    date_tb->swap_text(date);
+
+    year = get_year_str();
+    year_tb->swap_text(year);
+
+    if (clock != nullptr) clock->update_time(time);
+}\n
+=== File: ./pages/time/timepage.hpp ===
+#ifndef TIME_PAGE_HPP
+#define TIME_PAGE_HPP
+
+#include <string>
+#include <array>
+#include <functional>
+#include <optional>
+
+#include <utils/time/time.hpp>
+#include <utils/inputs/rotary_encoder.hpp>
+#include <components/components.hpp>
+#include "page_components/clock.hpp"
+#include "../page.hpp"
+
+class TimePage : public Page {
+    private:
+        std::string time;
+        std::string date;
+        std::string year;
+
+        TextBox *time_tb = nullptr;
+        TextBox *date_tb = nullptr;
+        TextBox *year_tb = nullptr;
+        Clock   *clock   = nullptr;
+    
+    public:
+
+        RotaryEncoder rotary;
+
+        TimePage(std::string name) : Page(name), time(""), rotary() { init_page(); };
+
+        TimePage(std::string name, Profile p) : Page(name, p), time(""), rotary() { init_page(); };
+        
+        /**
+         * @brief Builds the clock and text components for the time page.
+         */
+        void init_page();
+        
+        /**
+         * @brief Updates the displayed time, date, and year each frame.
+         */
+        void update_data();
+
+};
+
+
+
+#endif // TIME_PAGE_HPP\n
+=== File: ./pages/page.cpp ===
+#include "page.hpp"
+
+#include <pages/pageselection/pageselection.hpp>
+
+/**
+ * @brief Renders all page components into the provided matrix buffer.
+ *
+ * @param matrix The display matrix to draw into.
+ */
+void Page::render_page(std::array<Color, MATRIX_SIZE>& matrix) {
+    for (auto& c : components) {
+        c->render_component(matrix);
+    }
+}
+
+/**
+ * @brief Default page action handler.
+ *
+ * Returns no action unless overridden by a derived page.
+ *
+ * @param action Rotary action requested.
+ * @param rotary Encoder index that triggered the action.
+ * @return Optional result from the action.
+ */
+PageActionResult Page::execute_action(RotaryAction action, int rotary) {
+    if (rotary == 0) return rotary_left.execute(action);
+    else return {};
+}
+
+void Page::bind_actions() {
+    rotary_left.bind(RotaryAction::Press, [this]() -> PageActionResult {
+        return PushAction{std::make_unique<PageSelectionPage>("Page Selection", Config::page_names, name)};
+    });
+}\n
+=== File: ./pages/pageselection/pageselection.hpp ===
+
+#ifndef PAGESELECTION_HPP
+#define PAGESELECTION_HPP
+
+#include <optional>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+#include "../page.hpp"
+#include <components/components.hpp>
+#include <utils/inputs/rotary_encoder.hpp>
+
+// TODO: change to just SelectionPage or similar
+
+class PageSelectionPage : public Page {
+    private:
+        
+        int selected_idx;
+        int initial_idx;
+        RotaryEncoder rotary_left, rotary_right;
+
+        void bind_actions();
+
+    public:
+
+        PageSelectionPage(std::string name, std::vector<std::string> page_names) : Page(name), selected_idx(0) {
+            init_page(page_names);
+        }
+
+        PageSelectionPage(std::string name, std::vector<std::string> page_names, int selected_idx) : Page(name), selected_idx(selected_idx), initial_idx(selected_idx) {
+            init_page(page_names);
+        }
+
+        PageSelectionPage(std::string name, std::vector<std::string> page_names, std::string selected_name) : Page(name) {
+            std::vector<std::string>::iterator it = std::find(page_names.begin(), page_names.end(), selected_name);
+            
+            if (it == page_names.end()) selected_idx = initial_idx = 0;
+            else selected_idx = initial_idx = distance(page_names.begin(), it);
+
+            init_page(page_names);
+        }
+
+        /**
+         * @brief Initializes the page selection UI with the available pages.
+         *
+         * @param page_names List of page names to display.
+         */
+        void init_page(std::vector<std::string> page_names);
+
+        void render_page(std::array<Color, MATRIX_SIZE>& matrix);
+
+        /**
+         * @brief Updates page selection state (no dynamic content currently).
+         */
+        void update_data() override;
+
+        /**
+         * @brief Executes the page selection rotary actions.
+         *
+         * @param action The selected rotary action.
+         * @param rotary Which encoder index triggered the action.
+         * @return Optional selected page index.
+         */
+        PageActionResult execute_action(RotaryAction action, int rotary) override;
+};
+
+#endif // PAGESELECTION_HPP
+\n
+=== File: ./pages/pageselection/pageselection.cpp ===
+#include "pageselection.hpp"
+
+#include <iostream>
+
+void PageSelectionPage::bind_actions() {
+    rotary_left.bind(RotaryAction::Left, [this]() -> PageActionResult {
+        components[selected_idx]->change_primary(UNSELECTED);
+
+        if (selected_idx == 0) selected_idx = components.size() - 1;
+        else selected_idx -= 1;
+        
+        std::cout << "After Selected: " << selected_idx <<std::endl;
+
+        components[selected_idx]->change_primary(WHITE);
+
+        return {};
+    });
+
+    rotary_left.bind(RotaryAction::Right, [this]() -> PageActionResult {
+        components[selected_idx]->change_primary(UNSELECTED);
+
+        if (selected_idx == (components.size() - 1)) selected_idx = 0;
+        else selected_idx += 1;
+
+        components[selected_idx]->change_primary(WHITE);
+
+        return {};
+    });
+
+    rotary_left.bind(RotaryAction::Press, [this]() -> PageActionResult {
+        if (selected_idx == initial_idx) return PopAction();
+        else return NavigateAction(selected_idx + 1);
+    });
+
+    rotary_right.bind(RotaryAction::Press, [this]() -> PageActionResult {
+        return PopAction();
+    });
+}
+
+void PageSelectionPage::render_page(std::array<Color, MATRIX_SIZE>& matrix) {
+    for (auto& c : components) {
+        c->render_component(matrix);
+    }
+}
+
+void PageSelectionPage::init_page(std::vector<std::string> page_names) {
+    for (int i = 0; i < page_names.size(); i++) {
+        const auto& name = page_names[i];
+        create_component<TextBox>(Point(2, (i * 7) + 2), name, 16, 'l', 2, UNSELECTED, BLACK);
+    }
+
+    components[selected_idx]->change_primary(WHITE);
+
+    bind_actions();
+}
+
+void PageSelectionPage::update_data() {
+
+}
+
+PageActionResult PageSelectionPage::execute_action(RotaryAction action, int rotary) {
+    if (rotary == 0) return rotary_left.execute(action);
+    else return rotary_right.execute(action);
+}
+\n
+=== File: ./pages/actions.hpp ===
+#ifndef PAGES_ACTIONS_HPP
+#define PAGES_ACTIONS_HPP
+
+#include <memory>
+#include <variant>
+
+class Page;
+
+struct NavigateAction { int index; };
+struct ReplaceAction { std::unique_ptr<Page> page; };
+struct PushAction { std::unique_ptr<Page> page; };
+struct PopAction { std::unique_ptr<Page> page; };
+
+using PageActionResult = std::variant<std::monostate, 
+                                        NavigateAction,
+                                        ReplaceAction,
+                                        PushAction,
+                                        PopAction>;
+
+#endif // PAGES_ACTIONS_HPP\n
+=== File: ./pages/menu_config.hpp ===
+#ifndef MENU_CONFIG_HPP
+#define MENU_CONFIG_HPP
+
+#include <vector>
+#include <string>
+
+// TODO: Have pages push to page_names or something when instaniated
+
+namespace Config {
+    inline const std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
+
+
+}
+
+#endif // MENU_CONFIG_HPP\n
+=== File: ./point/CMakeLists.txt ===
+add_library(point INTERFACE)
+
+target_include_directories(point INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/..")
+\n
+=== File: ./point/point.hpp ===
+#ifndef POINT_HPP
+#define POINT_HPP
+
+class Point {
+    public:
+        int x, y;
+
+        Point() = default;
+
+        Point(int x, int y) : x(x), y(y) {};
+
+        bool operator==(const Point& other) const {
+            return x == other.x && y == other.y;
+        }
+
+        bool operator!=(const Point& other) const {
+            return !(*this == other);
+        }
+        
+};
+
+
+#endif // POINT_HPP\n
+=== File: ./simulator/CMakeLists.txt ===
+add_library (
+    simulator
+    simulator.hpp
+    headers/renderer.hpp src/renderer.cpp
+    headers/parser.hpp src/parser.cpp
+)
+
+target_link_libraries ( simulator PUBLIC color SDL3::SDL3 )
+target_include_directories ( simulator PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/headers")\n
+=== File: ./simulator/headers/parser.hpp ===
+#ifndef PARSER_HPP
+#define PARSER_HPP
+
+#include <vector>
+#include <string>
+
+/**
+ * @brief Command-line flags recognized by the simulator.
+ */
+extern std::vector<std::string> flags;
+
+/**
+ * @brief Parses simulator command-line arguments into integer values.
+ *
+ * @param argc Argument count.
+ * @param args Argument values.
+ * @return Vector containing parsed flag values in the order defined by flags.
+ */
+std::vector<int> parse_args (int argc, char* args[]);
+
+
+#endif // PARSER_HPP\n
+=== File: ./simulator/headers/renderer.hpp ===
+#ifndef RENDERER_HPP
+#define RENDERER_HPP
+
+#include <SDL3/SDL.h>
+
+#include <string>
+#include <array>
+#include <color/color/color.hpp>
+#include <components/component.hpp>
+
+
+class Renderer {
+    public:
+        int window_width;
+        int window_height;
+        int pixel_width;
+        int pixel_height;
+        int pixel_gap;
+        std::string window_name; 
+
+        
+        /**
+         * @brief Default constructor initializes renderer state and creates the window.
+         */
+        Renderer() : window_width{ 0 }, window_height { 0 }, 
+        pixel_width{ 0 }, pixel_height{ 0 }, pixel_gap{ 0 },
+        window_name{"Renderer"}, window{nullptr}, 
+        renderer {nullptr} {
+            init_window();
+        }
+        
+        /**
+         * @brief Constructs a renderer and initializes the SDL window.
+         *
+         * @param wwidth  Pixel width of the window.
+         * @param wheight Pixel height of the window.
+         * @param pwidth  Width of each rendered matrix pixel.
+         * @param pheight Height of each rendered matrix pixel.
+         * @param pgap    Gap between rendered matrix pixels.
+         * @param name    The window title.
+         */
+        Renderer(int wwidth, int wheight, int pwidth, int pheight, int pgap, std::string name = "Renderer") :
+        window_width{ wwidth }, window_height{ wheight }, pixel_width{ pwidth },
+        pixel_height{ pheight }, pixel_gap{ pgap }, window_name{ name }, 
+        window{nullptr}, renderer {nullptr} {
+            sdl_init_success = init_window();
+        }
+        
+        /**
+         * @brief Returns whether the renderer successfully initialized.
+         *
+         * @return true if the SDL window and renderer are ready.
+         */
+        bool able_to_render();
+
+        /**
+         * @brief Draws the provided matrix buffer to the SDL window.
+         *
+         * @param grid The pixel buffer to render.
+         * @return true when rendering completed successfully.
+         */
+        bool render_matrix(std::array<Color, MATRIX_SIZE> grid);
+        
+        /**
+         * @brief Destroys the window and shuts down SDL.
+         */
+        void close_window();
+        
+        /**
+         * @brief Runs the renderer loop until closed.
+         */
+        void render_loop();
+        
+        private: 
+        SDL_Window* window;
+        SDL_Renderer* renderer;
+        bool sdl_init_success;
+        
+        bool init_window();
+        
+
+    };
+ 
+
+
+
+#endif // RENDERER_HPP\n
+=== File: ./simulator/simulator.hpp ===
+#ifndef SIMULATOR_HPP
+#define SIMULATOR_HPP
+
+#include "headers/renderer.hpp"
+#include "headers/parser.hpp"
+
+#endif // SIMULATOR_HPP\n
+=== File: ./simulator/src/parser.cpp ===
+#include "../headers/parser.hpp"
+#include <iostream>
+#include <stdexcept>
+
+std::vector<std::string> flags = {"--page", "--font_size", "--refresh_rate", "--window_width", "--window_height"};
+
+std::vector<int> parse_args (int argc, char* args[]) {
+    std::vector<int> inputs(5, 0);
+    inputs[3] = 1408;
+    inputs[4] = 704;
+    
+    for (int i = 0; i < argc; i++) {
+        std::string flag(args[i]);
+        
+        if (!(i + 1 < argc)) continue; 
+        std::string value(args[i + 1]);
+        for (int j = 0; j < static_cast<int>(flags.size()); j++) {
+            if (flag == flags[j]) {
+                try {
+                    inputs[j] = std::stoi(value);
+                } catch (const std::invalid_argument&) {
+                    std::cerr << "Warning: invalid value for " << flag << ": " << value << ", using default\n";
+                } catch (const std::out_of_range&) {
+                    std::cerr << "Warning: out-of-range value for " << flag << ": " << value << ", using default\n";
+                }
+            }
+        }
+    }
+
+    if (inputs[3] <= 0) {
+        std::cerr << "Warning: invalid window width, using default 1408\n";
+        inputs[3] = 1408;
+    }
+    if (inputs[4] <= 0) {
+        std::cerr << "Warning: invalid window height, using default 704\n";
+        inputs[4] = 704;
+    }
+
+    return inputs;
+
+}\n
+=== File: ./simulator/src/renderer.cpp ===
+#include <renderer.hpp>
+
+bool Renderer::able_to_render() {
+    return sdl_init_success;
+}
+
+bool Renderer::init_window() {
+
+    if (SDL_Init( SDL_INIT_VIDEO ) == false ) {
+    
+        SDL_Log ( "SDL could not initalize!: SDL error: %s\n", SDL_GetError() );
+        return false;
+    
+    }
+
+    if (window = SDL_CreateWindow( window_name.c_str(), window_width, window_height, 0 ); window == nullptr ) {
+    
+        SDL_Log( "Window could not be created, SDL error: %s\n", SDL_GetError() );
+        return false;
+    
+    } else {
+        
+        renderer = SDL_CreateRenderer( window , NULL);
+        
+        return true;
+    
+    }
+}
+
+bool Renderer::render_matrix(std::array<Color, MATRIX_SIZE> matrix) {
+
+    SDL_SetRenderDrawColor( renderer, 10, 10, 10, 255 );
+    SDL_RenderClear( renderer );
+
+    for (int i = 0; i < 64; i++) {
+        for (int j = 0; j < 32; j++) {
+            SDL_Color color = matrix[j * 64 + i].getSDL_Color();
+            SDL_SetRenderDrawColor( renderer, color.r, color.g, color.b, color.a);
+
+            SDL_FRect pixel;
+            pixel.x = (pixel_gap * (i * 2 + 1) + (pixel_width * i));
+            pixel.y = (pixel_gap * (j * 2 + 1) + (pixel_height * j));
+            pixel.w = pixel_width;
+            pixel.h = pixel_height;
+            
+
+            SDL_RenderFillRect( renderer, &pixel);
+        }
+    }
+
+    SDL_RenderPresent( renderer );
+
+    return true;
+
+}
+
+void Renderer::close_window() {
+    SDL_DestroyWindow( window );
+    window = nullptr;
+
+    SDL_Quit();
+}
+
+
+
+\n
+=== File: ./utils/CMakeLists.txt ===
+add_library (utils STATIC
+    time/time.cpp time/time.hpp
+    inputs/rotary_encoder.hpp
+    inputs/input.hpp
+)
+
+target_include_directories( utils PUBLIC 
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+)\n
+=== File: ./utils/inputs/input.hpp ===
+#ifndef INPUT_HPP
+#define INPUT_HPP
+
+#include <array>
+#include <functional>
+#include <optional>
+
+#include <pages/actions.hpp>
+
+template <size_t N>
+class InputHandler {
+    public:
+        std::array<std::function<PageActionResult()>, N> actions;
+
+        /**
+         * @brief Stores a callback for a named input action.
+         *
+         * @param action The action index to bind.
+         * @param func   The callback invoked when the action occurs.
+         */
+        void bind(size_t action, std::function<PageActionResult()> func) {
+            if (action < N) actions[action] = func;
+        }
+
+        /**
+         * @brief Executes the bound callback for a given action.
+         *
+         * @param action The action index to invoke.
+         * @return The optional integer result from the callback.
+         */
+        PageActionResult execute(size_t action) const {
+            if (action < N && actions[action]) return actions[action]();
+
+            return {};
+        }
+};
+
+#endif // INPUT_HPP
+\n
+=== File: ./utils/inputs/rotary_encoder.hpp ===
+#ifndef INPUT_TYPES_HPP
+#define INPUT_TYPES_HPP
+
+#include <array>
+#include <functional>
+#include <optional>
+
+#include "input.hpp"
+
+enum class RotaryAction : size_t {
+    Left,
+    Right, 
+    Press,
+    COUNT
+};
+
+/**
+ * @brief A rotary encoder input handler with predefined left/right/press actions.
+ */
+class RotaryEncoder : public InputHandler<static_cast<size_t>(RotaryAction::COUNT)> {
+    public:
+        /**
+         * @brief Binds a callback to a rotary action.
+         *
+         * @param action Rotary action to bind.
+         * @param func   Callback invoked when the action occurs.
+         */
+        void bind(RotaryAction action, std::function<PageActionResult()> func) {
+            InputHandler::bind(static_cast<size_t>(action), std::move(func));
+        }
+
+        /**
+         * @brief Executes the callback bound to the requested rotary action.
+         *
+         * @param action The action to execute.
+         * @return Optional integer result from the bound callback.
+         */
+        PageActionResult execute (RotaryAction action) const {
+            return InputHandler::execute(static_cast<size_t>(action));
+        }
+};
+
+#endif // INPUT_TYPES_HPP\n
+=== File: ./utils/time/time.cpp ===
+#include "time.hpp"
+
+#include <format>
+
+std::string get_time_str() {
+    
+    auto now = std::chrono::system_clock::now();
+    std::chrono::zoned_time local{std::chrono::current_zone(), now};
+
+    std::string s = std::format("{:%I:%M %p}", local);
+    s.erase(8);
+
+    return s;
+
+}
+
+std::string get_date_str() {
+
+    auto now = std::chrono::system_clock::now();
+    std::chrono::zoned_time local{std::chrono::current_zone(), now};
+
+    std::string s = std::format("{:%a %b%d}", local);
+
+    return s;
+}
+
+std::string get_year_str() {
+
+    auto now = std::chrono::system_clock::now();
+    std::chrono::zoned_time local{std::chrono::current_zone(), now};
+
+    std::string s = std::format("{:%Y}", local);
+    
+    return s;
+}\n
+=== File: ./utils/time/time.hpp ===
+#ifndef TIME_HPP
+#define TIME_HPP
+
+#include <chrono>
+#include <string>
+
+/**
+ * @brief Returns the current local time formatted as a short string.
+ *
+ * @return Time string in hh:mm AM/PM format.
+ */
+std::string get_time_str();
+
+/**
+ * @brief Returns the current local abbreviated date string.
+ *
+ * @return Date string in the format "Day MonDD".
+ */
+std::string get_date_str();
+
+/**
+ * @brief Returns the current local year as a string.
+ *
+ * @return Four-digit year string.
+ */
+std::string get_year_str();
+
+
+#endif // TIME_HPP\n
+=== File: ./profile/CMakeLists.txt ===
+add_library(profile STATIC
+    profile.cpp profile.hpp
+    defaults.hpp
+)
+
+target_link_libraries(profile PUBLIC color nlohmann_json::nlohmann_json)
+
+target_include_directories(profile PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")\n
+=== File: ./profile/profile.hpp ===
+#ifndef PROFILE_HPP
+#define PROFILE_HPP
+
+#include <string>
+#include <fstream>
+#include <vector>
+
+#include <nlohmann/json.hpp>
+
+#include <color/colors.hpp>
+
+class Profile {
+    private:
+        std::string username;
+        Color primary;
+        Color secondary;
+        Color accent;
+
+    public: 
+        Profile() { init_profile(); };
+
+        void init_profile();
+
+        nlohmann::json parse_value(std::string value);
+
+        void parse_profile(std::string filename);
+
+        Color get_primary() const { return primary; };
+
+        Color get_secondary() const {return secondary; };
+
+        Color get_accent() const { return accent; };
+
+        Color set_primary(Color& new_primary);
+
+        Color set_secondary(Color& new_secondary);
+
+        Color set_accent(Color& new_accent);
+
+};
+
+#endif // PROFILE_HPP\n
+=== File: ./profile/profile.cpp ===
+#include "profile.hpp"
+#include "defaults.hpp"
+
+#include <iostream>
+
+void Profile::init_profile() {
+    std::ifstream file("../profile/profile.json");
+    if (file) {
+        nlohmann::json data = nlohmann::json::parse(file);
+
+        auto type = data["username"];
+
+        username = data["username"];
+        primary = Color(data["primary"][0], data["primary"][1], data["primary"][2]);
+        secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
+        accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
+
+        std::cout << "Profile \"" << username << "\" Found!" << std::endl;
+
+    } else {
+        username = DEFAULT_USERNAME;
+        primary = DEFAULT_PRIMARY;
+        secondary = DEFAULT_SECONDARY;
+        accent = DEFAULT_ACCENT;
+
+        std::cout << "No existing profile found" << std::endl;
+    }
+
+}
+
+void Profile::parse_profile(std::string filename) {
+    std::ifstream file(filename);
+    if (file) {
+        nlohmann::json data = nlohmann::json::parse(file);
+        std::vector<uint8_t> a = data["accent"];
+
+        username = data["username"];
+        primary = Color(data["primary"][0], data["primary"][1], data["primary"][2]);
+        secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
+        accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
+
+        std::cout << "Profile \"" << username << "\" Found!" << std::endl;
+
+    } else {
+
+        std::cout << "No existing profile found" << std::endl;
+
+    }
+}
+
+nlohmann::json Profile::parse_value(std::string value) {
+    std::ifstream file("../profile/profile.json");
+
+    if (file) {
+        nlohmann::json data = nlohmann::json::parse(file);
+        
+        return data[value];
+
+    } else {
+        return {};
+    }
+}
+
+Color Profile::set_primary(Color& new_primary) {
+    primary = new_primary;
+
+    return primary;
+}
+
+Color Profile::set_secondary(Color& new_secondary) {
+    secondary = new_secondary;
+
+    return secondary;
+}
+
+Color Profile::set_accent(Color& new_accent) {
+    accent = new_accent;
+
+    return accent;
+}\n
+=== File: ./profile/defaults.hpp ===
+#ifndef PROFILE_DEFAULTS_HPP
+#define PROFILE_DEFAULTS_HPP
+
+#include <color/colors.hpp>
+#include <string>
+
+inline const std::string DEFAULT_USERNAME = "User";
+inline const Color DEFAULT_PRIMARY = WHITE;
+inline const Color DEFAULT_SECONDARY = BLACK;
+inline const Color DEFAULT_ACCENT = GREY;
+
+#endif // PROFILE_DEFAULTS_HPP\n

@@ -3,8 +3,12 @@
 
 #include <iostream>
 
-void Profile::init_profile() {
-    std::ifstream file("../profile/profile.json");
+void Profile::init_profile(std::string p) {
+    if (p == "") path = std::string(PROJECT_ROOT_DIR) + "/profile/profile.json";
+    else path = "../profile/profile.json";
+    std::cout << "Path: " << path << std::endl;
+
+    std::ifstream file(path);
     if (file) {
         nlohmann::json data = nlohmann::json::parse(file);
 

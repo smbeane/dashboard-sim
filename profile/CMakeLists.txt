@@ -6,3 +6,5 @@ add_library(profile STATIC
 target_link_libraries(profile PUBLIC color nlohmann_json::nlohmann_json)
 
 target_include_directories(profile PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+
+target_compile_definitions(profile PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}")
