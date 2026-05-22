@@ -16,7 +16,7 @@ void Line::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     int err = dx + dy;
 
     while (true) {
-        if (x1 >= 0 && x1 < 64 && y1 >= 0 && y1 < 32) {
+        if (matrix_in_bounds(x1, x2)) {
             matrix[y1 * 64 + x1] = this->primary;
         }
 

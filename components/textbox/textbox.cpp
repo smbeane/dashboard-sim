@@ -49,7 +49,7 @@ void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
                 int px = dx + col;
                 int py = dy + row;
 
-                if (px >= 0 && px < 64 && py >= 0 && py < 32) {
+                if (matrix_in_bounds(px, py)) {
                     int pixel_index = (py * 64) + px;
                     matrix[pixel_index] = (character & mask) ? primary : secondary;
                 }
