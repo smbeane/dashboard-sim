@@ -1,33 +1,32 @@
 #include "textbox.hpp"
 
-void TextBox::init_component(std::string t) {
+void TextBox::init_component(const std::string& t) {
     for (char c : t) {
-                text.push_back(std::toupper(c));
-            }
+        text.push_back(std::toupper(c));
+    }
 
-            if (text.length() > length) {
-                    text.append(scroll_gap, ' ');
-            } else {
-                int total = length - text.length();
+    if (text.length() > length) {
+            text.append(scroll_gap, ' ');
+    } else {
+        int total = length - text.length();
 
-                switch (alignment) {
-                    case 'l': 
-                        text.append(total, ' ');
-                        break;
-                    case 'c':
-                        text.insert(0, total / 2, ' ');
-                        text.append(total - (total / 2), ' ');
-                        break;
+        switch (alignment) {
+            case 'l': 
+                text.append(total, ' ');
+                break;
+            case 'c':
+                text.insert(0, total / 2, ' ');
+                text.append(total - (total / 2), ' ');
+                break;
 
-                    case 'r':
-                        text.insert(0, total, ' ');
-                        break;
-                }
-                    
-            }
+            case 'r':
+                text.insert(0, total, ' ');
+                break;
+        }
+            
+    }
 
-
-            scroll_start = text.begin();
+    scroll_start = text.begin();
 }
 
 void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
@@ -66,35 +65,9 @@ void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     }
 }
     
-void TextBox::swap_text(std::string new_text) {
+void TextBox::swap_text(const std::string& new_text) {
     text.clear();
-
-    for (char c : new_text) {
-        text.push_back(std::toupper(c));
-    }
-
-    if (text.length() > length) {
-            text.append(scroll_gap, ' ');
-    } else {
-        int total = length - text.length();
-
-        switch (alignment) {
-            case 'l': 
-                text.append(total, ' ');
-                break;
-            case 'c':
-                text.insert(0, total / 2, ' ');
-                text.append(total - (total / 2), ' ');
-                break;
-
-            case 'r':
-                text.insert(0, total, ' ');
-                break;
-        }
-            
-    }
-
-    scroll_start = text.begin();
+    init_component(new_text);
 }
 
 void TextBox::scroll_text() {

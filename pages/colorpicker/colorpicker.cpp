@@ -82,11 +82,4 @@ void ColorPickerPage::update_color(int progress) {
 
 void ColorPickerPage::update_data() {
 
-}  
-
-PageActionResult ColorPickerPage::execute_action(RotaryAction action, int rotary) {
-    if (rotary == 0) return rotary_left.execute(action);
-    else return rotary_right.execute(action);
-    
 }
-

@@ -18,8 +18,10 @@ class PageSelectionPage : public Page {
         
         int selected_idx;
         int initial_idx;
-        RotaryEncoder rotary_left, rotary_right;
 
+        /**
+         * @brief Binds all given actions to their corresponding function
+         */
         void bind_actions();
 
     public:
@@ -48,21 +50,6 @@ class PageSelectionPage : public Page {
          */
         void init_page(std::vector<std::string> page_names);
 
-        void render_page(std::array<Color, MATRIX_SIZE>& matrix);
-
-        /**
-         * @brief Updates page selection state (no dynamic content currently).
-         */
-        void update_data() override;
-
-        /**
-         * @brief Executes the page selection rotary actions.
-         *
-         * @param action The selected rotary action.
-         * @param rotary Which encoder index triggered the action.
-         * @return Optional selected page index.
-         */
-        PageActionResult execute_action(RotaryAction action, int rotary) override;
 };
 
 #endif // PAGESELECTION_HPP

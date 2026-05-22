@@ -25,11 +25,9 @@ class TimePage : public Page {
     
     public:
 
-        RotaryEncoder rotary;
+        TimePage(std::string name) : Page(name), time("") { init_page(); };
 
-        TimePage(std::string name) : Page(name), time(""), rotary() { init_page(); };
-
-        TimePage(std::string name, Profile p) : Page(name, p), time(""), rotary() { init_page(); };
+        TimePage(std::string name, Profile p) : Page(name, p), time("") { init_page(); };
         
         /**
          * @brief Builds the clock and text components for the time page.

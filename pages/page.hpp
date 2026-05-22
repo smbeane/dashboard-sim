@@ -23,7 +23,7 @@ class Page {
         Color secondary;
         Color accent;
 
-        RotaryEncoder rotary_left;
+        RotaryEncoder rotary_left, rotary_right;
 
         /**
          * @brief Constructs and adds a component to the page's layout
@@ -66,7 +66,7 @@ class Page {
          * Derived pages should override this to refresh text, animations,
          * or other per-frame logic.
          */
-        virtual void update_data() = 0;
+        virtual void update_data();
         
         /**
          * @brief Renders all owned components into the matrix buffer.
@@ -74,7 +74,6 @@ class Page {
          * @param matrix The target display buffer.
          */
         virtual void render_page(std::array<Color, MATRIX_SIZE>& matrix);
-
 
         /**
          * @brief Executes an input action for the page.

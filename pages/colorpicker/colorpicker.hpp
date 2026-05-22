@@ -19,10 +19,20 @@ class ColorPickerPage : public Page {
         int curr_selected;
 
         Rectangle* picked_rect;
-        RotaryEncoder rotary_left, rotary_right;
 
+        /**
+         * @brief Binds all given actions to their corresponding function
+         */
         void bind_actions();
 
+
+        /**
+         * @brief Updates the text corresponding to slider and 
+         *        the Rectangle showing the selected color.
+         *        To be used by the action lambda functions
+         * 
+         * @param progress The integer on the selected slider (0-255)
+         */
         void update_color(int progress);
 
     public: 
@@ -41,7 +51,6 @@ class ColorPickerPage : public Page {
          */
         ColorPickerPage(std::string name, Color curr) : Page(name), chosen(curr) { init_page(); }; 
         
-
         /**
          * @brief Creates the color picker components and binds input actions.
          */
@@ -51,15 +60,6 @@ class ColorPickerPage : public Page {
          * @brief Updates page state each frame (currently no periodic updates).
          */
         void update_data() override;
-
-        /**
-         * @brief Executes color picker rotary input actions.
-         *
-         * @param action Rotary action to perform.
-         * @param rotary Which encoder index triggered the action.
-         * @return Optional integer output for navigation.
-         */
-        PageActionResult execute_action(RotaryAction action, int rotary);
 
 };
 

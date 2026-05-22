@@ -33,7 +33,7 @@ class TextBox : public Component {
          * @param scroll_gap The number of 3x5 spaces between full scroll rotations
          * @param primary The Color of the text
         */
-        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary)
+        TextBox (Point pos, const std::string& t, int length, char alignment, int scroll_gap, Color primary)
         :  Component(primary, BLACK), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) { init_component(t); };
 
         // TODO: update to include font selections
@@ -48,12 +48,12 @@ class TextBox : public Component {
          * @param primary The Color of the text
          * @param secondary The Color of the background of the TextBox
         */
-        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
+        TextBox (Point pos, const std::string& t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
         :  Component(primary, secondary), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) { init_component(t); };
 
 
         
-        void init_component(std::string t);
+        void init_component(const std::string& t);
 
         /**
          * @brief Renders component (currently using default font)
@@ -67,7 +67,7 @@ class TextBox : public Component {
          * 
          * @param new_text std::string of new text to be rendered
          */
-        void swap_text(std::string new_text);
+        void swap_text(const std::string& new_text);
         
         /**
          * @brief Scrolls the text by one character, but does not rerender

@@ -6,7 +6,6 @@
 void Profile::init_profile(std::string p) {
     if (p == "") path = std::string(PROJECT_ROOT_DIR) + "/profile/profile.json";
     else path = "../profile/profile.json";
-    std::cout << "Path: " << path << std::endl;
 
     std::ifstream file(path);
     if (file) {
@@ -19,7 +18,6 @@ void Profile::init_profile(std::string p) {
         secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
         accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
 
-        std::cout << "Profile \"" << username << "\" Found!" << std::endl;
 
     } else {
         username = DEFAULT_USERNAME;
@@ -27,7 +25,6 @@ void Profile::init_profile(std::string p) {
         secondary = DEFAULT_SECONDARY;
         accent = DEFAULT_ACCENT;
 
-        std::cout << "No existing profile found" << std::endl;
     }
 
 }
@@ -43,11 +40,6 @@ void Profile::parse_profile(std::string filename) {
         secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
         accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
 
-        std::cout << "Profile \"" << username << "\" Found!" << std::endl;
-
-    } else {
-
-        std::cout << "No existing profile found" << std::endl;
 
     }
 }
