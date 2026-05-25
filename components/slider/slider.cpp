@@ -6,7 +6,7 @@ void Slider::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     Line line (start, end, primary);
     line.render_component(matrix);
 
-    int x_pos = start.x + round((float(progress) / (max - min)) * (length - 1));
+    int x_pos = start.x + static_cast<int>(round(((progress * 1.0) / float(max - min)) * float(length - 1)));
     matrix[64 * start.y + x_pos] = secondary;
 }
 

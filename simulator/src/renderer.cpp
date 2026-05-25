@@ -45,10 +45,10 @@ bool Renderer::render_matrix(std::array<Color, 64*32> matrix) {
             SDL_SetRenderDrawColor( renderer, color.r, color.g, color.b, color.a);
 
             SDL_FRect pixel;
-            pixel.x = (pixel_gap * (i * 2 + 1) + (pixel_width * i));
-            pixel.y = (pixel_gap * (j * 2 + 1) + (pixel_height * j));
-            pixel.w = pixel_width;
-            pixel.h = pixel_height;
+            pixel.x = static_cast<float>((pixel_gap * (i * 2 + 1) + (pixel_width * i)));
+            pixel.y = static_cast<float>((pixel_gap * (j * 2 + 1) + (pixel_height * j)));
+            pixel.w = static_cast<float>(pixel_width);
+            pixel.h = static_cast<float>(pixel_height);
             
 
             SDL_RenderFillRect( renderer, &pixel);

@@ -1,13 +1,13 @@
 #include "textbox.hpp"
 
 void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
-    int box_length = text.length() > length ? length : text.length();
+    size_t box_length = text.length() > length ? length : text.length();
     int dx = this->pos.x;
     int dy = this->pos.y;
 
     std::string::const_iterator curr_char = scroll_start;
 
-    for (int c = 0; c < box_length; c++) {
+    for (size_t c = 0; c < box_length; c++) {
         if (text.empty()) break;
         uint16_t character = font_3x5[*curr_char - 32];
 
@@ -40,13 +40,13 @@ void TextBox::swap_text(std::string new_text) {
     text.clear();
 
     for (char c : new_text) {
-        text.push_back(std::toupper(c));
+        text.push_back(static_cast<char>(std::toupper(c)));
     }
 
     if (text.length() > length) {
             text.append(scroll_gap, ' ');
     } else {
-        int total = length - text.length();
+        size_t total = length - text.length();
 
         switch (alignment) {
             case 'l': 

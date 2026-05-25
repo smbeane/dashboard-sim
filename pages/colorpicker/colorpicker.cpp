@@ -23,12 +23,12 @@ void ColorPickerPage::init_page() {
 
 void ColorPickerPage::bind_actions() {
     rotary_left.bind(RotaryAction::Left, [this]() {
-        int progress = sliders[curr_selected]->decrement_slider();
+        uint8_t progress = static_cast<uint8_t>(sliders[curr_selected]->decrement_slider());
         update_color(progress);
     });
 
     rotary_left.bind(RotaryAction::Right, [this]() {
-        int progress = sliders[curr_selected]->increment_slider();
+        uint8_t progress = static_cast<uint8_t>(sliders[curr_selected]->increment_slider());
         update_color(progress);
     });
 
@@ -58,8 +58,8 @@ void ColorPickerPage::bind_actions() {
 
 }
 
-void ColorPickerPage::update_color(int progress) {
-    textboxes[curr_selected]->swap_text(std::to_string(progress));
+void ColorPickerPage::update_color(uint8_t progress) {
+    textboxes[curr_selected]->swap_text(std::to_string(static_cast<int>(progress)));
 
         switch (curr_selected) {
             case 0: chosen.r = progress; break;

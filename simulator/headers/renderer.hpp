@@ -20,10 +20,8 @@ class Renderer {
         /**
          * @brief no instantiations, all variables set to 0 and inits window
          */
-        Renderer() : window_width{ 0 }, window_height { 0 }, 
-        pixel_width{ 0 }, pixel_height{ 0 }, pixel_gap{ 0 },
-        window_name{"Renderer"}, window{nullptr}, 
-        renderer {nullptr} {
+        Renderer() : window_width{ 0 }, window_height { 0 }, pixel_width{ 0 }, pixel_height{ 0 }, pixel_gap{ 0 },
+        window_name{"Renderer"}, window{nullptr}, renderer {nullptr} {
             init_window();
         }
         
@@ -31,15 +29,10 @@ class Renderer {
          * @brief sets all variables, inits window and renderer
          * 
          * @param wwidth  pixel width of the window
-         * 
          * @param wheight pixel height of the window
-         * 
          * @param pwidth  pixel width of each "pixel" begin rendered
-         * 
          * @param pheight pixel height of each "pixel" being rendered
-         * 
          * @param pgap    pixel gap between "pixels" being rendered
-         * 
          * @param name    the name of the rendering window
          */
         Renderer(int wwidth, int wheight, int pwidth, int pheight, int pgap, std::string name = "Renderer") :
@@ -55,14 +48,12 @@ class Renderer {
         
         void close_window();
         
-        void render_loop();
-        
         private: 
-        SDL_Window* window;
-        SDL_Renderer* renderer;
-        bool sdl_init_success;
-        
-        bool init_window();
+            SDL_Window* window;
+            SDL_Renderer* renderer;
+            bool sdl_init_success;
+            
+            bool init_window();
         
 
     };

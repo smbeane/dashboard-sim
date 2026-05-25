@@ -23,7 +23,7 @@ class ColorPickerPage : public Page {
 
         void bind_actions();
 
-        void update_color(int progress);
+        void update_color(uint8_t progress);
 
     public: 
         /**

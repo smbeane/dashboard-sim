@@ -8,10 +8,10 @@
 namespace {
     void update_minute_hand(Line& hand, std::string time, int x, int y) {
         int minute = std::stoi(time.substr(3, 2));
-        float degree = (minute / 60.0) * 2 * PI;
+        double degree = (minute / 60.0) * 2 * PI;
 
-        int dx = 8 * cos(degree - PI / 2);
-        int dy = 8 * sin(degree - PI / 2);
+        int dx = static_cast<int>(std::round(8 * cos(degree - PI / 2)));
+        int dy = static_cast<int>(std::round(8 * sin(degree - PI / 2)));
 
         hand.set_endx(dx + x);
         hand.set_endy(dy + y);
@@ -21,10 +21,10 @@ namespace {
         int hour = std::stoi(time.substr(0, 2));
         int minute = std::stoi(time.substr(3, 2));
 
-        float degree = ((hour / 12.0) + (minute / 720.0))* 2 * PI;
+        double degree = ((hour / 12.0) + (minute / 720.0))* 2 * PI;
 
-        int dx = 6 * cos(degree - PI / 2);
-        int dy = 6 * sin(degree - PI / 2);
+        int dx = static_cast<int>(std::round(6 * cos(degree - PI / 2)));
+        int dy = static_cast<int>(std::round(6 * sin(degree - PI / 2)));
 
         hand.set_endx(dx + x);
         hand.set_endy(dy + y);

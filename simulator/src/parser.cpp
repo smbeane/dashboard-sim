@@ -12,7 +12,7 @@ std::vector<int> parse_args (int argc, char* args[]) {
         
         if (!(i + 1 < argc)) continue; 
         std::string value(args[i + 1]);
-        for (int j = 0; j < flags.size(); j++) {
+        for (size_t j = 0; j < flags.size(); j++) {
             if ( flag == flags[j] ) inputs[j] = std::stoi(value);
         } 
     }

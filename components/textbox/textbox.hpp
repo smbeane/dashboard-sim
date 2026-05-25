@@ -9,10 +9,11 @@
 class TextBox : public Component {
     private: 
         Point pos;
-        std::string::const_iterator scroll_start;
         std::string text;
-        int length, scroll_gap;
+        std::string::const_iterator scroll_start;
+        size_t length;
         char alignment;
+        int scroll_gap;
         
     public: 
         
@@ -20,7 +21,7 @@ class TextBox : public Component {
          * @brief Constructs default TextBox, position (0, 0), 
          *        completely transparent with 0 length and text
          */
-        TextBox () : Component( BLACK, BLACK), pos({0, 0}), text(""), length(0), alignment('l'), scroll_gap(0) {};
+        TextBox () : Component(BLACK, BLACK), pos({0, 0}), text(""), length(0), alignment('l'), scroll_gap(0) {};
         
 
         // TODO: update to include font selections
@@ -35,16 +36,16 @@ class TextBox : public Component {
          * @param primary The Color of the text
          * @param secondary The Color of the background of the TextBox
         */
-        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
-        :  Component(primary, secondary), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) {
+        TextBox (Point pos, std::string t, size_t length, char alignment, int scroll_gap, Color primary, Color secondary) 
+        :  Component(primary, secondary), pos(pos), length(length), alignment(alignment), scroll_gap(scroll_gap) {
             for (char c : t) {
-                text.push_back(std::toupper(c));
+                text.push_back(static_cast<char>(std::toupper(c)));
             }
 
             if (text.length() > length) {
                     text.append(scroll_gap, ' ');
             } else {
-                int total = length - text.length();
+                size_t total = length - text.length();
 
                 switch (alignment) {
                     case 'l': 
