@@ -1,6 +1,5 @@
 #include "pageselection.hpp"
 
-#include <iostream>
 
 void MenuPage::init_page(std::vector<std::string> page_names) {
     for (size_t i = 0; i < page_names.size(); i++) {

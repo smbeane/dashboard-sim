@@ -25,8 +25,11 @@ class Profile {
 
         nlohmann::json parse_value(std::string value);
 
+<<<<<<< HEAD
         void save_profile();
 
+=======
+>>>>>>> d28efb2 (save work)
         Color get_primary() const { return primary; };
 
         Color get_secondary() const {return secondary; };

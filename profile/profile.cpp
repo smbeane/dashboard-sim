@@ -1,17 +1,14 @@
 #include "profile.hpp"
 #include "defaults.hpp"
 
-#include <iostream>
 
 void Profile::init_profile(std::string p) {
-    if (p == "") path = std::string(PROJECT_ROOT_DIR) + "/profile/profile.json";
-    else path = "../profile/profile.json";
+    if (p == "") this->path = std::string(PROJECT_ROOT_DIR) + "/profile/profile.json";
+    else this->path = "../profile/profile.json";
 
-    std::ifstream file(path);
+    std::ifstream file(this->path);
     if (file) {
         nlohmann::json data = nlohmann::json::parse(file);
-
-        auto type = data["username"];
 
         username = data["username"];
         primary = data["primary"];
@@ -24,13 +21,12 @@ void Profile::init_profile(std::string p) {
         primary = DEFAULT_PRIMARY;
         secondary = DEFAULT_SECONDARY;
         accent = DEFAULT_ACCENT;
-
     }
 
 }
 
 nlohmann::json Profile::parse_value(std::string value) {
-    std::ifstream file("../profile/profile.json");
+    std::ifstream file(this->path);
 
     if (file) {
         nlohmann::json data = nlohmann::json::parse(file);

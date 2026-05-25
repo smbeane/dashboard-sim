@@ -1,6 +1,5 @@
 #include "colorpicker.hpp"
 
-#include <iostream>
 #include <pages/pageselection/pageselection.hpp>
 
 void ColorPickerPage::init_page() {

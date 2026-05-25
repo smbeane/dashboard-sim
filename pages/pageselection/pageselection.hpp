@@ -26,6 +26,7 @@ class MenuPage : public Page {
 
     public:
 
+<<<<<<< HEAD
         MenuPage(std::string name, std::vector<std::string> page_names) : Page(name), selected_idx(0) {
             init_page(page_names);
         }
@@ -36,6 +37,18 @@ class MenuPage : public Page {
 
         MenuPage(std::string name, std::vector<std::string> page_names, std::string selected_name) : Page(name) {
             std::vector<std::string>::iterator it = std::find(page_names.begin(), page_names.end(), selected_name);
+=======
+        PageSelectionPage(std::string name, const std::vector<std::string>& page_names) : Page(name), selected_idx(0) {
+            init_page(page_names);
+        }
+
+        PageSelectionPage(std::string name, const std::vector<std::string>& page_names, int selected_idx) : Page(name), selected_idx(selected_idx), initial_idx(selected_idx) {
+            init_page(page_names);
+        }
+
+        PageSelectionPage(std::string name, const std::vector<std::string> page_names, const std::string& selected_name) : Page(name) {
+            auto it = std::find(page_names.begin(), page_names.end(), selected_name);
+>>>>>>> d28efb2 (save work)
             
             if (it == page_names.end()) selected_idx = initial_idx = 0;
             else selected_idx = initial_idx = static_cast<int>(distance(page_names.begin(), it));

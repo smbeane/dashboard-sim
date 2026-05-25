@@ -1,6 +1,5 @@
 #include "circle.hpp"
 
-#include <iostream>
 
 void Circle::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     if (!secondary.is_transparent()) {

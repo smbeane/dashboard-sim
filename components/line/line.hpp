@@ -1,6 +1,8 @@
 #ifndef LINE_HPP
 #define LINE_HPP
 
+#include <cmath> 
+
 #include "../component.hpp"
 
 class Line : public Component {

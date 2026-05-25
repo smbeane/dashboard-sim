@@ -11,7 +11,7 @@ SDL_Color Color::getSDL_Color() {
 }
 
 std::ostream& operator<<(std::ostream& os, const Color& color) {
-    os << "(" << std::to_string(color.r) << ", " << std::to_string(color.g) << ", " <<  std::to_string(color.b) << ")" << std::endl;
+    os << "(" << std::to_string(static_cast<int>(color.r)) << ", " << std::to_string(static_cast<int>(color.g)) << ", " <<  std::to_string(static_cast<int>(color.b)) << ")" << std::endl;
 
     return os;
 }

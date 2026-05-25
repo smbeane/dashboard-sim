@@ -1,8 +1,5 @@
 #include "timepage.hpp"
 
-#include <iostream>
-
-const Color MinuteHand = Color(255, 110, 0, 1);
 
 void TimePage::init_page() {
     time_tb = create_component<TextBox>(Point(29, 3), time, 8, 'c', 2, primary);

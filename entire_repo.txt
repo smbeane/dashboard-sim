@@ -2,6 +2,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(dashboard_sim LANGUAGES CXX VERSION 1.0.0)
 
+# uncomment to check for memory errors (128 bytes on fedora is okay becayse of wayland)
+# running with `SDL_VIDEODRIVER=x11 ./dashboard_sim` will not give those leaks
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
+
 find_package(nlohmann_json REQUIRED)
 
 # include(FetchContent)
@@ -217,7 +221,7 @@ void Circle::draw_border(std::array<Color, MATRIX_SIZE>& matrix) {
     int d = 3 - 2 * r;
 
     auto plot_border = [&](int px, int py) {
-        if (px >= 0 && px < 64 && py >= 0 && py < 32) {
+        if (matrix_in_bounds(px, py)) {
             matrix[py * 64 + px] = primary;
         }
     };
@@ -384,6 +388,8 @@ class Component {
          */
         void change_secondary (const Color& new_secondary) { secondary = new_secondary; };
 
+        virtual ~Component() = default;
+
 };
 
 #endif // COMPONENT_HPP\n
@@ -422,7 +428,7 @@ void Line::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     int err = dx + dy;
 
     while (true) {
-        if (x1 >= 0 && x1 < 64 && y1 >= 0 && y1 < 32) {
+        if (matrix_in_bounds(x1, x2)) {
             matrix[y1 * 64 + x1] = this->primary;
         }
 
@@ -785,76 +791,8 @@ class Slider : public Component {
 === File: ./components/textbox/textbox.cpp ===
 #include "textbox.hpp"
 
-void TextBox::init_component(std::string t) {
+void TextBox::init_component(const std::string& t) {
     for (char c : t) {
-                text.push_back(std::toupper(c));
-            }
-
-            if (text.length() > length) {
-                    text.append(scroll_gap, ' ');
-            } else {
-                int total = length - text.length();
-
-                switch (alignment) {
-                    case 'l': 
-                        text.append(total, ' ');
-                        break;
-                    case 'c':
-                        text.insert(0, total / 2, ' ');
-                        text.append(total - (total / 2), ' ');
-                        break;
-
-                    case 'r':
-                        text.insert(0, total, ' ');
-                        break;
-                }
-                    
-            }
-
-
-            scroll_start = text.begin();
-}
-
-void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
-    int box_length = text.length() > length ? length : text.length();
-    int dx = this->pos.x;
-    int dy = this->pos.y;
-
-    std::string::const_iterator curr_char = scroll_start;
-
-    for (int c = 0; c < box_length; c++) {
-        if (text.empty()) break;
-        uint16_t character = font_3x5[*curr_char - 32];
-
-        // bit position for 5x3 font rendering (bit 15)
-        uint16_t mask = 0x4000; 
-
-        for (int row = 0; row < 5; row++) {
-            for (int col = 0; col < 3; col++) {
-                int px = dx + col;
-                int py = dy + row;
-
-                if (px >= 0 && px < 64 && py >= 0 && py < 32) {
-                    int pixel_index = (py * 64) + px;
-                    matrix[pixel_index] = (character & mask) ? primary : secondary;
-                }
-                mask >>= 1;
-            }
-        }
-
-        curr_char++;
-        if (curr_char == text.end()) {
-            curr_char = text.begin();
-        }
-
-        dx += 4;
-    }
-}
-    
-void TextBox::swap_text(std::string new_text) {
-    text.clear();
-
-    for (char c : new_text) {
         text.push_back(std::toupper(c));
     }
 
@@ -880,6 +818,47 @@ void TextBox::swap_text(std::string new_text) {
     }
 
     scroll_start = text.begin();
+}
+
+void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
+    int box_length = text.length() > length ? length : text.length();
+    int dx = this->pos.x;
+    int dy = this->pos.y;
+
+    std::string::const_iterator curr_char = scroll_start;
+
+    for (int c = 0; c < box_length; c++) {
+        if (text.empty()) break;
+        uint16_t character = font_3x5[*curr_char - 32];
+
+        // bit position for 5x3 font rendering (bit 15)
+        uint16_t mask = 0x4000; 
+
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 3; col++) {
+                int px = dx + col;
+                int py = dy + row;
+
+                if (matrix_in_bounds(px, py)) {
+                    int pixel_index = (py * 64) + px;
+                    matrix[pixel_index] = (character & mask) ? primary : secondary;
+                }
+                mask >>= 1;
+            }
+        }
+
+        curr_char++;
+        if (curr_char == text.end()) {
+            curr_char = text.begin();
+        }
+
+        dx += 4;
+    }
+}
+    
+void TextBox::swap_text(const std::string& new_text) {
+    text.clear();
+    init_component(new_text);
 }
 
 void TextBox::scroll_text() {
@@ -928,7 +907,7 @@ class TextBox : public Component {
          * @param scroll_gap The number of 3x5 spaces between full scroll rotations
          * @param primary The Color of the text
         */
-        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary)
+        TextBox (Point pos, const std::string& t, int length, char alignment, int scroll_gap, Color primary)
         :  Component(primary, BLACK), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) { init_component(t); };
 
         // TODO: update to include font selections
@@ -943,12 +922,12 @@ class TextBox : public Component {
          * @param primary The Color of the text
          * @param secondary The Color of the background of the TextBox
         */
-        TextBox (Point pos, std::string t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
+        TextBox (Point pos, const std::string& t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
         :  Component(primary, secondary), pos(pos), length(length), scroll_gap(scroll_gap), alignment(alignment) { init_component(t); };
 
 
         
-        void init_component(std::string t);
+        void init_component(const std::string& t);
 
         /**
          * @brief Renders component (currently using default font)
@@ -962,7 +941,7 @@ class TextBox : public Component {
          * 
          * @param new_text std::string of new text to be rendered
          */
-        void swap_text(std::string new_text);
+        void swap_text(const std::string& new_text);
         
         /**
          * @brief Scrolls the text by one character, but does not rerender
@@ -1147,10 +1126,6 @@ Page* add_page(std::string name, Args... args) {
 }
 
 
-void check_profile() {
-    
-}
-
 int main ( int argc, char* argv[] ) {
     
     std::vector<int> inputs = parse_args(argc, argv);
@@ -1210,6 +1185,8 @@ int main ( int argc, char* argv[] ) {
         render.render_matrix(grid);
         page_stack.back()->update_data();
     }
+
+    render.close_window();
 
     return 0;
 }\n
@@ -1324,15 +1301,7 @@ void ColorPickerPage::update_color(int progress) {
 
 void ColorPickerPage::update_data() {
 
-}  
-
-PageActionResult ColorPickerPage::execute_action(RotaryAction action, int rotary) {
-    if (rotary == 0) return rotary_left.execute(action);
-    else return rotary_right.execute(action);
-    
-}
-
-\n
+}\n
 === File: ./pages/colorpicker/colorpicker.hpp ===
 #ifndef COLORPICKER_HPP
 #define COLORPICKER_HPP
@@ -1355,10 +1324,20 @@ class ColorPickerPage : public Page {
         int curr_selected;
 
         Rectangle* picked_rect;
-        RotaryEncoder rotary_left, rotary_right;
 
+        /**
+         * @brief Binds all given actions to their corresponding function
+         */
         void bind_actions();
 
+
+        /**
+         * @brief Updates the text corresponding to slider and 
+         *        the Rectangle showing the selected color.
+         *        To be used by the action lambda functions
+         * 
+         * @param progress The integer on the selected slider (0-255)
+         */
         void update_color(int progress);
 
     public: 
@@ -1377,7 +1356,6 @@ class ColorPickerPage : public Page {
          */
         ColorPickerPage(std::string name, Color curr) : Page(name), chosen(curr) { init_page(); }; 
         
-
         /**
          * @brief Creates the color picker components and binds input actions.
          */
@@ -1388,15 +1366,6 @@ class ColorPickerPage : public Page {
          */
         void update_data() override;
 
-        /**
-         * @brief Executes color picker rotary input actions.
-         *
-         * @param action Rotary action to perform.
-         * @param rotary Which encoder index triggered the action.
-         * @return Optional integer output for navigation.
-         */
-        PageActionResult execute_action(RotaryAction action, int rotary);
-
 };
 
 #endif // COLORPICKER_HPP
@@ -1405,17 +1374,16 @@ class ColorPickerPage : public Page {
 #include "component_demo.hpp"
 
 void ComponentPage::init_page() {
-    components.push_back(std::make_unique<Rectangle>(Point(3, 3), 10, 10, primary, secondary));
-    components.push_back(std::make_unique<Line>(Point(15, 3), Point(24, 12), secondary));
-    components.push_back(std::make_unique<Circle>(Point(32, 8), 5, primary, secondary));
-    components.push_back(std::make_unique<ProgressBar>(Point(40, 4), 20, 5, 50, primary, secondary));
-    components.push_back(std::make_unique<Slider>(Point(40, 12), 20, 0, 100, 49, true, primary, secondary));
-    components.push_back(std::make_unique<TextBox>(Point(5, 17), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 14, 'l', 2, primary));
-    components.push_back(std::make_unique<TextBox>(Point(5, 24), " !\"#$%&'()*+,-./'):;<=>?@[\\]^_`", 14, 'l', 2, primary));
+    create_component<Rectangle>(Point(3, 3), 10, 10, primary, secondary);
+    create_component<Line>(Point(15, 3), Point(24, 12), secondary);
+    create_component<Circle>(Point(32, 8), 5, primary, secondary);
+    create_component<ProgressBar>(Point(40, 4), 20, 5, 50, primary, secondary);
+    create_component<Slider>(Point(40, 12), 20, 0, 100, 49, true, primary, secondary);
+    create_component<TextBox>(Point(5, 17), "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 14, 'l', 2, primary);
+    create_component<TextBox>(Point(5, 24), " !\"#$%&'()*+,-./'):;<=>?@[\\]^_`", 14, 'l', 2, primary);
 
     bind_actions();
 }
-
 
 void ComponentPage::update_data() {
     for (auto& comp : components) {
@@ -1442,7 +1410,6 @@ class ComponentPage : public Page {
         ComponentPage(std::string name) : Page(name) { init_page(); };
 
         ComponentPage(std::string name, Profile p) : Page(name, p) { init_page(); };
-
 
         /**
          * @brief Creates demo components for the component showcase page.
@@ -1483,7 +1450,7 @@ class Page {
         Color secondary;
         Color accent;
 
-        RotaryEncoder rotary_left;
+        RotaryEncoder rotary_left, rotary_right;
 
         /**
          * @brief Constructs and adds a component to the page's layout
@@ -1526,7 +1493,7 @@ class Page {
          * Derived pages should override this to refresh text, animations,
          * or other per-frame logic.
          */
-        virtual void update_data() = 0;
+        virtual void update_data();
         
         /**
          * @brief Renders all owned components into the matrix buffer.
@@ -1534,7 +1501,6 @@ class Page {
          * @param matrix The target display buffer.
          */
         virtual void render_page(std::array<Color, MATRIX_SIZE>& matrix);
-
 
         /**
          * @brief Executes an input action for the page.
@@ -1544,6 +1510,8 @@ class Page {
          * @return Optional integer output that may signal page navigation.
          */
         virtual PageActionResult execute_action(RotaryAction action, int rotary);
+
+        virtual ~Page() = default;
 };
 
 
@@ -1763,11 +1731,9 @@ class TimePage : public Page {
     
     public:
 
-        RotaryEncoder rotary;
+        TimePage(std::string name) : Page(name), time("") { init_page(); };
 
-        TimePage(std::string name) : Page(name), time(""), rotary() { init_page(); };
-
-        TimePage(std::string name, Profile p) : Page(name, p), time(""), rotary() { init_page(); };
+        TimePage(std::string name, Profile p) : Page(name, p), time("") { init_page(); };
         
         /**
          * @brief Builds the clock and text components for the time page.
@@ -1789,35 +1755,25 @@ class TimePage : public Page {
 
 #include <pages/pageselection/pageselection.hpp>
 
-/**
- * @brief Renders all page components into the provided matrix buffer.
- *
- * @param matrix The display matrix to draw into.
- */
 void Page::render_page(std::array<Color, MATRIX_SIZE>& matrix) {
     for (auto& c : components) {
         c->render_component(matrix);
     }
 }
 
-/**
- * @brief Default page action handler.
- *
- * Returns no action unless overridden by a derived page.
- *
- * @param action Rotary action requested.
- * @param rotary Encoder index that triggered the action.
- * @return Optional result from the action.
- */
-PageActionResult Page::execute_action(RotaryAction action, int rotary) {
-    if (rotary == 0) return rotary_left.execute(action);
-    else return {};
+void Page::update_data() {
+    
 }
 
 void Page::bind_actions() {
     rotary_left.bind(RotaryAction::Press, [this]() -> PageActionResult {
         return PushAction{std::make_unique<PageSelectionPage>("Page Selection", Config::page_names, name)};
     });
+}
+
+PageActionResult Page::execute_action(RotaryAction action, int rotary) {
+    if (rotary == 0) return rotary_left.execute(action);
+    else return rotary_right.execute(action);
 }\n
 === File: ./pages/pageselection/pageselection.hpp ===
 
@@ -1840,8 +1796,10 @@ class PageSelectionPage : public Page {
         
         int selected_idx;
         int initial_idx;
-        RotaryEncoder rotary_left, rotary_right;
 
+        /**
+         * @brief Binds all given actions to their corresponding function
+         */
         void bind_actions();
 
     public:
@@ -1870,21 +1828,6 @@ class PageSelectionPage : public Page {
          */
         void init_page(std::vector<std::string> page_names);
 
-        void render_page(std::array<Color, MATRIX_SIZE>& matrix);
-
-        /**
-         * @brief Updates page selection state (no dynamic content currently).
-         */
-        void update_data() override;
-
-        /**
-         * @brief Executes the page selection rotary actions.
-         *
-         * @param action The selected rotary action.
-         * @param rotary Which encoder index triggered the action.
-         * @return Optional selected page index.
-         */
-        PageActionResult execute_action(RotaryAction action, int rotary) override;
 };
 
 #endif // PAGESELECTION_HPP
@@ -1894,6 +1837,17 @@ class PageSelectionPage : public Page {
 
 #include <iostream>
 
+void PageSelectionPage::init_page(std::vector<std::string> page_names) {
+    for (int i = 0; i < page_names.size(); i++) {
+        const auto& name = page_names[i];
+        create_component<TextBox>(Point(2, (i * 7) + 2), name, 16, 'l', 2, UNSELECTED, BLACK);
+    }
+
+    components[selected_idx]->change_primary(WHITE);
+
+    bind_actions();
+}
+
 void PageSelectionPage::bind_actions() {
     rotary_left.bind(RotaryAction::Left, [this]() -> PageActionResult {
         components[selected_idx]->change_primary(UNSELECTED);
@@ -1901,8 +1855,6 @@ void PageSelectionPage::bind_actions() {
         if (selected_idx == 0) selected_idx = components.size() - 1;
         else selected_idx -= 1;
         
-        std::cout << "After Selected: " << selected_idx <<std::endl;
-
         components[selected_idx]->change_primary(WHITE);
 
         return {};
@@ -1929,31 +1881,6 @@ void PageSelectionPage::bind_actions() {
     });
 }
 
-void PageSelectionPage::render_page(std::array<Color, MATRIX_SIZE>& matrix) {
-    for (auto& c : components) {
-        c->render_component(matrix);
-    }
-}
-
-void PageSelectionPage::init_page(std::vector<std::string> page_names) {
-    for (int i = 0; i < page_names.size(); i++) {
-        const auto& name = page_names[i];
-        create_component<TextBox>(Point(2, (i * 7) + 2), name, 16, 'l', 2, UNSELECTED, BLACK);
-    }
-
-    components[selected_idx]->change_primary(WHITE);
-
-    bind_actions();
-}
-
-void PageSelectionPage::update_data() {
-
-}
-
-PageActionResult PageSelectionPage::execute_action(RotaryAction action, int rotary) {
-    if (rotary == 0) return rotary_left.execute(action);
-    else return rotary_right.execute(action);
-}
 \n
 === File: ./pages/actions.hpp ===
 #ifndef PAGES_ACTIONS_HPP
@@ -2122,12 +2049,7 @@ class Renderer {
          * @brief Destroys the window and shuts down SDL.
          */
         void close_window();
-        
-        /**
-         * @brief Runs the renderer loop until closed.
-         */
-        void render_loop();
-        
+
         private: 
         SDL_Window* window;
         SDL_Renderer* renderer;
@@ -2135,11 +2057,7 @@ class Renderer {
         
         bool init_window();
         
-
     };
- 
-
-
 
 #endif // RENDERER_HPP\n
 === File: ./simulator/simulator.hpp ===
@@ -2250,6 +2168,7 @@ bool Renderer::render_matrix(std::array<Color, MATRIX_SIZE> matrix) {
 }
 
 void Renderer::close_window() {
+    SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow( window );
     window = nullptr;
 
@@ -2427,7 +2346,9 @@ add_library(profile STATIC
 
 target_link_libraries(profile PUBLIC color nlohmann_json::nlohmann_json)
 
-target_include_directories(profile PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")\n
+target_include_directories(profile PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+
+target_compile_definitions(profile PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}")\n
 === File: ./profile/profile.hpp ===
 #ifndef PROFILE_HPP
 #define PROFILE_HPP
@@ -2442,15 +2363,18 @@ target_include_directories(profile PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")\n
 
 class Profile {
     private:
+        std::string path;
         std::string username;
         Color primary;
         Color secondary;
         Color accent;
 
     public: 
-        Profile() { init_profile(); };
+        Profile() { init_profile(""); };
 
-        void init_profile();
+        Profile(std::string p) { init_profile(p); };
+
+        void init_profile(std::string path);
 
         nlohmann::json parse_value(std::string value);
 
@@ -2477,8 +2401,11 @@ class Profile {
 
 #include <iostream>
 
-void Profile::init_profile() {
-    std::ifstream file("../profile/profile.json");
+void Profile::init_profile(std::string p) {
+    if (p == "") path = std::string(PROJECT_ROOT_DIR) + "/profile/profile.json";
+    else path = "../profile/profile.json";
+
+    std::ifstream file(path);
     if (file) {
         nlohmann::json data = nlohmann::json::parse(file);
 
@@ -2489,7 +2416,6 @@ void Profile::init_profile() {
         secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
         accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
 
-        std::cout << "Profile \"" << username << "\" Found!" << std::endl;
 
     } else {
         username = DEFAULT_USERNAME;
@@ -2497,7 +2423,6 @@ void Profile::init_profile() {
         secondary = DEFAULT_SECONDARY;
         accent = DEFAULT_ACCENT;
 
-        std::cout << "No existing profile found" << std::endl;
     }
 
 }
@@ -2513,11 +2438,6 @@ void Profile::parse_profile(std::string filename) {
         secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
         accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
 
-        std::cout << "Profile \"" << username << "\" Found!" << std::endl;
-
-    } else {
-
-        std::cout << "No existing profile found" << std::endl;
 
     }
 }

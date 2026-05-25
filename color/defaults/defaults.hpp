@@ -3,11 +3,11 @@
 
 #include "../color/color.hpp"
 
-inline const Color BLACK(0, 0, 0, 1);
-inline const Color WHITE(255, 255, 255, 1);
-inline const Color GREY(128, 128, 128, 1);
-inline const Color PROFILE_COLOR(63, 81, 181, 1);
-inline const Color UNSELECTED(80, 80, 80, 1);
-inline const Color TRANSPARENT(0, 0, 0, 0);
+inline constexpr Color BLACK(0, 0, 0, true);
+inline constexpr Color WHITE(255, 255, 255, true);
+inline constexpr Color GREY(128, 128, 128, true);
+inline constexpr Color PROFILE_COLOR(63, 81, 181, true);
+inline constexpr Color UNSELECTED(80, 80, 80, true);
+inline constexpr Color TRANSPARENT(0, 0, 0, false);
 
 #endif // DEFAULT_COLORS_HPP

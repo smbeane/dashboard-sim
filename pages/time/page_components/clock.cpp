@@ -1,7 +1,6 @@
 #include "clock.hpp"
 
 #include <cmath>
-#include <iostream>
 
 #define PI 3.1415
 
