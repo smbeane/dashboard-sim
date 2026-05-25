@@ -36,10 +36,8 @@ void TextBox::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     }
 }
     
-void TextBox::swap_text(std::string new_text) {
-    text.clear();
-
-    for (char c : new_text) {
+void TextBox::init_component(const std::string& t) {
+    for (char c : t) {
         text.push_back(static_cast<char>(std::toupper(c)));
     }
 
@@ -65,6 +63,11 @@ void TextBox::swap_text(std::string new_text) {
     }
 
     scroll_start = text.begin();
+}
+
+void TextBox::swap_text(const std::string& new_text) {
+    text.clear();
+    init_component(new_text);
 }
 
 void TextBox::scroll_text() {

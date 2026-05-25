@@ -23,6 +23,19 @@ class TextBox : public Component {
          */
         TextBox () : Component(BLACK, BLACK), pos({0, 0}), text(""), length(0), alignment('l'), scroll_gap(0) {};
         
+        // TODO: update to include font selections
+        /** 
+         * @brief Constructs a TextBox at defined 
+         * 
+         * @param pos The top left offset from the top left corner of screen (0-63, 0-31)
+         * @param t std::string of text to be rendered
+         * @param length The number of characters to be displayed at one time
+         * @param alignment Character corresponding to text alignment ('l', 'c', 'r')
+         * @param scroll_gap The number of 3x5 spaces between full scroll rotations
+         * @param primary The Color of the text
+        */
+        TextBox (Point pos, const std::string& t, int length, char alignment, int scroll_gap, Color primary)
+        :  Component(primary, BLACK), pos(pos), length(length), alignment(alignment), scroll_gap(scroll_gap) { init_component(t); };
 
         // TODO: update to include font selections
         /** 
@@ -36,38 +49,13 @@ class TextBox : public Component {
          * @param primary The Color of the text
          * @param secondary The Color of the background of the TextBox
         */
-        TextBox (Point pos, std::string t, size_t length, char alignment, int scroll_gap, Color primary, Color secondary) 
-        :  Component(primary, secondary), pos(pos), length(length), alignment(alignment), scroll_gap(scroll_gap) {
-            for (char c : t) {
-                text.push_back(static_cast<char>(std::toupper(c)));
-            }
-
-            if (text.length() > length) {
-                    text.append(scroll_gap, ' ');
-            } else {
-                size_t total = length - text.length();
-
-                switch (alignment) {
-                    case 'l': 
-                        text.append(total, ' ');
-                        break;
-                    case 'c':
-                        text.insert(0, total / 2, ' ');
-                        text.append(total - (total / 2), ' ');
-                        break;
-
-                    case 'r':
-                        text.insert(0, total, ' ');
-                        break;
-                }
-                    
-            }
+        TextBox (Point pos, const std::string& t, int length, char alignment, int scroll_gap, Color primary, Color secondary) 
+        :  Component(primary, secondary), pos(pos), length(length), alignment(alignment), scroll_gap(scroll_gap) { init_component(t); };
 
 
-            scroll_start = text.begin();
-            
-        }
         
+        void init_component(const std::string& t);
+
         /**
          * @brief Renders component (currently using default font)
          * 
@@ -80,7 +68,7 @@ class TextBox : public Component {
          * 
          * @param new_text std::string of new text to be rendered
          */
-        void swap_text(std::string new_text);
+        void swap_text(const std::string& new_text);
         
         /**
          * @brief Scrolls the text by one character, but does not rerender

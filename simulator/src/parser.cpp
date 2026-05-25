@@ -1,4 +1,6 @@
 #include "../headers/parser.hpp"
+#include <iostream>
+#include <stdexcept>
 
 std::vector<std::string> flags = {"--page", "--font_size", "--refresh_rate", "--window_width", "--window_height"};
 
@@ -12,9 +14,26 @@ std::vector<int> parse_args (int argc, char* args[]) {
         
         if (!(i + 1 < argc)) continue; 
         std::string value(args[i + 1]);
-        for (size_t j = 0; j < flags.size(); j++) {
-            if ( flag == flags[j] ) inputs[j] = std::stoi(value);
-        } 
+        for (int j = 0; j < static_cast<int>(flags.size()); j++) {
+            if (flag == flags[j]) {
+                try {
+                    inputs[j] = std::stoi(value);
+                } catch (const std::invalid_argument&) {
+                    std::cerr << "Warning: invalid value for " << flag << ": " << value << ", using default\n";
+                } catch (const std::out_of_range&) {
+                    std::cerr << "Warning: out-of-range value for " << flag << ": " << value << ", using default\n";
+                }
+            }
+        }
+    }
+
+    if (inputs[3] <= 0) {
+        std::cerr << "Warning: invalid window width, using default 1408\n";
+        inputs[3] = 1408;
+    }
+    if (inputs[4] <= 0) {
+        std::cerr << "Warning: invalid window height, using default 704\n";
+        inputs[4] = 704;
     }
 
     return inputs;

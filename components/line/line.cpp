@@ -3,7 +3,6 @@
 
 void Line::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     if (primary.is_transparent()) return;
-    
     int x1 = this->start.x;
     int y1 = this->start.y;
     int x2 = this->end.x; 
@@ -16,8 +15,8 @@ void Line::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
     int err = dx + dy;
 
     while (true) {
-        if (x1 >= 0 && x1 < 64 && y1 >= 0 && y1 < 32) {
-            matrix[y1 * 64 + x1] = this->primary;
+        if (matrix_in_bounds(x1, y1)) {
+            matrix[matrix_index(x1, y1)] = this->primary;
         }
 
         if (x1 == x2 && y1 == y2) break;

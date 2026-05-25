@@ -4,12 +4,7 @@
         {
             "name": "dev_pc", 
             "binaryDir": "${sourceDir}/build",
-            "installDir": "${sourceDir}/build/install",
-            "generator": "MinGW Makefiles",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "C:/programming/MSYS2/ucrt64/bin/gcc.exe",
-                "CMAKE_CXX_COMPILER": "C:/programming/MSYS2/ucrt64/bin/g++.exe"
-            }
+            "generator": "Ninja"
         }, 
         {
             "name": "dev_laptop", 

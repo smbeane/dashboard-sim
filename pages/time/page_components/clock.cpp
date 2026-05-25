@@ -46,33 +46,25 @@ void Clock::update_time(std::string time) {
 }
 
 void Clock::render_time_notches(std::array<Color, MATRIX_SIZE>& matrix) {
-    // 12 o'clock
+    auto set_notch = [&](int px, int py) {
+        if (matrix_in_bounds(px, py)) {
+            matrix[matrix_index(px, py)] = notch_color;
+        }
+    };
+
     int x = center.x;
     int y = center.y;
-    
-    matrix[(y - 9) * 64 + x] = notch_color;
-    
-    // 11 and 1 o'clock
-    matrix[(y - 8) * 64 + (x - 5)] = notch_color;
-    matrix[(y - 8) * 64 + (x + 5)] = notch_color;
-    
-    // 10 and 2 o'clock
-    matrix[(y - 5) * 64 + (x - 8)] = notch_color;
-    matrix[(y - 5) * 64 + (x + 8)] = notch_color;
 
-    // 9 and 3 o'clock
-    matrix[y * 64 + (x - 9)] = notch_color;
-    matrix[y * 64 + (x + 9)] = notch_color;
-    
-    // 8 and 4 o'clock
-    matrix[(y + 5) * 64 + (x - 8)] = notch_color;
-    matrix[(y + 5) * 64 + (x + 8)] = notch_color;
-    
-    // 7 and 5 o'clock
-    matrix[(y + 8) * 64 + (x - 5)] = notch_color;
-    matrix[(y + 8) * 64 + (x + 5)] = notch_color;
-    
-    // 6 o'clock
-    matrix[(y + 9) * 64 + x] = notch_color;
-
+    set_notch(x, y - 9);
+    set_notch(x - 5, y - 8);
+    set_notch(x + 5, y - 8);
+    set_notch(x - 8, y - 5);
+    set_notch(x + 8, y - 5);
+    set_notch(x - 9, y);
+    set_notch(x + 9, y);
+    set_notch(x - 8, y + 5);
+    set_notch(x + 8, y + 5);
+    set_notch(x - 5, y + 8);
+    set_notch(x + 5, y + 8);
+    set_notch(x, y + 9);
 }

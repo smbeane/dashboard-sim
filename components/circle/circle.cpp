@@ -54,7 +54,7 @@ void Circle::draw_border(std::array<Color, MATRIX_SIZE>& matrix) {
     int d = 3 - 2 * r;
 
     auto plot_border = [&](int px, int py) {
-        if (px >= 0 && px < 64 && py >= 0 && py < 32) {
+        if (matrix_in_bounds(px, py)) {
             matrix[py * 64 + px] = primary;
         }
     };

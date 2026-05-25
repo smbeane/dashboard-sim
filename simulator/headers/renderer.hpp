@@ -6,6 +6,8 @@
 #include <string>
 #include <array>
 #include <color/color/color.hpp>
+#include <components/component.hpp>
+
 
 class Renderer {
     public:
@@ -18,34 +20,47 @@ class Renderer {
 
         
         /**
-         * @brief no instantiations, all variables set to 0 and inits window
+         * @brief Default constructor initializes renderer state and creates the window.
          */
         Renderer() : window_width{ 0 }, window_height { 0 }, pixel_width{ 0 }, pixel_height{ 0 }, pixel_gap{ 0 },
-        window_name{"Renderer"}, window{nullptr}, renderer {nullptr} {
+        window_name{"Renderer"}, renderer {nullptr} {
             init_window();
         }
         
         /**
-         * @brief sets all variables, inits window and renderer
-         * 
-         * @param wwidth  pixel width of the window
-         * @param wheight pixel height of the window
-         * @param pwidth  pixel width of each "pixel" begin rendered
-         * @param pheight pixel height of each "pixel" being rendered
-         * @param pgap    pixel gap between "pixels" being rendered
-         * @param name    the name of the rendering window
+         * @brief Constructs a renderer and initializes the SDL window.
+         *
+         * @param wwidth  Pixel width of the window.
+         * @param wheight Pixel height of the window.
+         * @param pwidth  Width of each rendered matrix pixel.
+         * @param pheight Height of each rendered matrix pixel.
+         * @param pgap    Gap between rendered matrix pixels.
+         * @param name    The window title.
          */
         Renderer(int wwidth, int wheight, int pwidth, int pheight, int pgap, std::string name = "Renderer") :
         window_width{ wwidth }, window_height{ wheight }, pixel_width{ pwidth },
-        pixel_height{ pheight }, pixel_gap{ pgap }, window_name{ name }, 
-        window{nullptr}, renderer {nullptr} {
+        pixel_height{ pheight }, pixel_gap{ pgap }, window_name{ name }, renderer {nullptr} {
             sdl_init_success = init_window();
         }
         
+        /**
+         * @brief Returns whether the renderer successfully initialized.
+         *
+         * @return true if the SDL window and renderer are ready.
+         */
         bool able_to_render();
 
-        bool render_matrix(std::array<Color, 64*32> grid);
+        /**
+         * @brief Draws the provided matrix buffer to the SDL window.
+         *
+         * @param grid The pixel buffer to render.
+         * @return true when rendering completed successfully.
+         */
+        bool render_matrix(std::array<Color, MATRIX_SIZE> grid);
         
+        /**
+         * @brief Destroys the window and shuts down SDL.
+         */
         void close_window();
         
         private: 
@@ -55,10 +70,6 @@ class Renderer {
             
             bool init_window();
         
-
     };
- 
-
-
 
 #endif // RENDERER_HPP

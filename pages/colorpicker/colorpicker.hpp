@@ -5,13 +5,13 @@
 #include <string>
 #include <array>
 #include <functional>
+#include <optional>
 
 #include <components/components.hpp>
 #include <color/colors.hpp>
-#include "../page.hpp"
+#include <pages/page.hpp>
 
 class ColorPickerPage : public Page {
-    // TODO: clean up initialization and saved variables
     private:
         Color chosen;
         std::array<Slider*, 3> sliders;
@@ -19,42 +19,47 @@ class ColorPickerPage : public Page {
         int curr_selected;
 
         Rectangle* picked_rect;
-        RotaryEncoder rotary_left, rotary_right;
 
+        /**
+         * @brief Binds all given actions to their corresponding function
+         */
         void bind_actions();
 
+
+        /**
+         * @brief Updates the text corresponding to slider and 
+         *        the Rectangle showing the selected color.
+         *        To be used by the action lambda functions
+         * 
+         * @param progress The integer on the selected slider (0-255)
+         */
         void update_color(uint8_t progress);
 
     public: 
         /**
-         * @brief 
+         * @brief Constructs the default color picker page with black initial color.
          */
-        ColorPickerPage() : Page("ColorPicker"), chosen(BLACK) { init_page(); };
+        ColorPickerPage() : Page("Color Picker"), chosen(BLACK) { init_page(); };
 
         /**
-         * @brief
+         * @brief Constructs a color picker page using the specified page name.
+         */
+        ColorPickerPage(std::string name) : Page(name), chosen(BLACK) { init_page(); };
+        
+        /**
+         * @brief Constructs a color picker page with an initial chosen color.
          */
         ColorPickerPage(std::string name, Color curr) : Page(name), chosen(curr) { init_page(); }; 
-
+        
         /**
-         * @brief 
+         * @brief Creates the color picker components and binds input actions.
          */
-        ColorPickerPage(std::string name) : Page(name)  {}
+        void init_page();
 
         /**
-         * @brief
-         */
-        void init_page() override;
-
-        /**
-         * @brief
+         * @brief Updates page state each frame (currently no periodic updates).
          */
         void update_data() override;
-
-        /**
-         * @brief 
-         */
-        void execute_action(RotaryAction action, int rotary);
 
 };
 

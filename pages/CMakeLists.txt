@@ -5,6 +5,7 @@ add_library(pages STATIC
     component_demo/component_demo.cpp component_demo/component_demo.hpp
     time/timepage.cpp time/timepage.hpp
     colorpicker/colorpicker.cpp colorpicker/colorpicker.hpp
+    pageselection/pageselection.cpp pageselection/pageselection.hpp
 )
 
 target_include_directories(pages PUBLIC 
@@ -15,6 +16,7 @@ target_link_libraries(pages
     PUBLIC 
         components 
         color 
+        profile
     PRIVATE    
         utils 
         time_components

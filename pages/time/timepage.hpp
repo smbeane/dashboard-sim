@@ -4,6 +4,7 @@
 #include <string>
 #include <array>
 #include <functional>
+#include <optional>
 
 #include <utils/time/time.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
@@ -24,12 +25,18 @@ class TimePage : public Page {
     
     public:
 
-        RotaryEncoder rotary;
+        TimePage(std::string name) : Page(name), time("") { init_page(); };
 
-        TimePage(std::string name) : Page(name), time(""), rotary() { init_page(); };
+        TimePage(std::string name, Profile p) : Page(name, p), time("") { init_page(); };
         
+        /**
+         * @brief Builds the clock and text components for the time page.
+         */
         void init_page();
         
+        /**
+         * @brief Updates the displayed time, date, and year each frame.
+         */
         void update_data();
 
 };

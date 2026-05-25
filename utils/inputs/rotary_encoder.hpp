@@ -3,6 +3,7 @@
 
 #include <array>
 #include <functional>
+#include <optional>
 
 #include "input.hpp"
 
@@ -13,14 +14,29 @@ enum class RotaryAction : size_t {
     COUNT
 };
 
+/**
+ * @brief A rotary encoder input handler with predefined left/right/press actions.
+ */
 class RotaryEncoder : public InputHandler<static_cast<size_t>(RotaryAction::COUNT)> {
     public:
-        void bind(RotaryAction action, std::function<void()> func) {
+        /**
+         * @brief Binds a callback to a rotary action.
+         *
+         * @param action Rotary action to bind.
+         * @param func   Callback invoked when the action occurs.
+         */
+        void bind(RotaryAction action, std::function<PageActionResult()> func) {
             InputHandler::bind(static_cast<size_t>(action), std::move(func));
         }
 
-        void execute (RotaryAction action) const {
-            InputHandler::execute(static_cast<size_t>(action));
+        /**
+         * @brief Executes the callback bound to the requested rotary action.
+         *
+         * @param action The action to execute.
+         * @return Optional integer result from the bound callback.
+         */
+        PageActionResult execute (RotaryAction action) const {
+            return InputHandler::execute(static_cast<size_t>(action));
         }
 };
 

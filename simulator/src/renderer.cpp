@@ -21,20 +21,13 @@ bool Renderer::init_window() {
     } else {
         
         renderer = SDL_CreateRenderer( window , NULL);
-
-        if ( !(this->able_to_render())) {
-        
-            SDL_Log ( "Window could not initialize \n");   
-            return false;
-
-        }   
         
         return true;
     
     }
 }
 
-bool Renderer::render_matrix(std::array<Color, 64*32> matrix) {
+bool Renderer::render_matrix(std::array<Color, MATRIX_SIZE> matrix) {
 
     SDL_SetRenderDrawColor( renderer, 10, 10, 10, 255 );
     SDL_RenderClear( renderer );
@@ -62,6 +55,7 @@ bool Renderer::render_matrix(std::array<Color, 64*32> matrix) {
 }
 
 void Renderer::close_window() {
+    SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow( window );
     window = nullptr;
 

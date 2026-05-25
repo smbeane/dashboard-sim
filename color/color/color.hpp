@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <SDL3/SDL_pixels.h>
+#include <iostream>
 
 class Color {
     public:
@@ -12,14 +13,14 @@ class Color {
         bool is_visible;
 
         /**
-         * @brief Constructs black transparent color
+         * @brief Constructs black color
         */
-        Color() : r(0), g(0), b(0), is_visible(false) {};
+        Color() : r(0), g(0), b(0), is_visible(true) {};
 
         /**
          * @brief Constructs a color of defined RGB 
          * 
-         * @param r 8-b red value of Color (0-255)
+         * @param r 8-bit red value of Color (0-255)
          * @param g 8-bit green value of Color (0-255)
          * @param b 8-bit blue value of Color (0-255)
          */
@@ -50,9 +51,9 @@ class Color {
          * @returns bool if visible
          */
         bool is_transparent() const { return !is_visible; }
+
+        friend std::ostream& operator<<(std::ostream& os, const Color& color);
+
 };
-
-
-
 
 #endif // COLOR_HPP
