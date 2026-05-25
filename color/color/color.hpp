@@ -2,11 +2,8 @@
 #define COLOR_HPP
 
 #include <cstdint>
-<<<<<<< HEAD
 #include <string>
 #include <SDL3/SDL_pixels.h>
-=======
->>>>>>> d28efb2 (save work)
 #include <iostream>
 #include <nlohmann/json.hpp>
 

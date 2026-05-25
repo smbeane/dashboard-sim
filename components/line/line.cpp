@@ -15,11 +15,7 @@ void Line::render_component(std::array<Color, MATRIX_SIZE>& matrix) {
 
     while (true) {
         if (matrix_in_bounds(x1, y1)) {
-<<<<<<< HEAD
             matrix[matrix_index(x1, y1)] = this->primary;
-=======
-            matrix[y1 * 64 + x1] = this->primary;
->>>>>>> d28efb2 (save work)
         }
 
         if (x1 == x2 && y1 == y2) break;
