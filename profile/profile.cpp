@@ -14,9 +14,9 @@ void Profile::init_profile(std::string p) {
         auto type = data["username"];
 
         username = data["username"];
-        primary = Color(data["primary"][0], data["primary"][1], data["primary"][2]);
-        secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
-        accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
+        primary = data["primary"];
+        secondary = data["secondary"];
+        accent = data["accent"];
 
 
     } else {
@@ -27,21 +27,6 @@ void Profile::init_profile(std::string p) {
 
     }
 
-}
-
-void Profile::parse_profile(std::string filename) {
-    std::ifstream file(filename);
-    if (file) {
-        nlohmann::json data = nlohmann::json::parse(file);
-        std::vector<uint8_t> a = data["accent"];
-
-        username = data["username"];
-        primary = Color(data["primary"][0], data["primary"][1], data["primary"][2]);
-        secondary = Color(data["secondary"][0], data["secondary"][1], data["secondary"][2]);
-        accent = Color(data["accent"][0], data["accent"][1], data["accent"][2]);
-
-
-    }
 }
 
 nlohmann::json Profile::parse_value(std::string value) {
@@ -57,20 +42,34 @@ nlohmann::json Profile::parse_value(std::string value) {
     }
 }
 
-Color Profile::set_primary(Color& new_primary) {
+Color Profile::set_primary(const Color& new_primary) {
     primary = new_primary;
 
     return primary;
 }
 
-Color Profile::set_secondary(Color& new_secondary) {
+Color Profile::set_secondary(const Color& new_secondary) {
     secondary = new_secondary;
 
     return secondary;
 }
 
-Color Profile::set_accent(Color& new_accent) {
+Color Profile::set_accent(const Color& new_accent) {
     accent = new_accent;
 
     return accent;
+}
+
+void Profile::save_profile() {
+    nlohmann::json data; 
+
+    data["username"] = this->username;
+    data["primary"] = this->primary;
+    data["secondary"] = this->secondary;
+    data["accent"] = this->accent;
+
+    std::ofstream file(path);
+    if (file) {
+        file << data.dump(4);
+    }
 }

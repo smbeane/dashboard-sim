@@ -18,8 +18,6 @@
 const int pixel_gap  { 2 };
 const int pixel_size { 18 };
 
-const inline std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
-
 template<class... Ts>
 struct overloaded : Ts... {
     using Ts::operator()...;
@@ -30,7 +28,7 @@ overloaded(Ts...) -> overloaded<Ts...>;
 
 std::vector<std::function<std::unique_ptr<Page>(Profile p)>> factory { 
     [](Profile p) {
-        return std::make_unique<PageSelectionPage>("Page Selection", page_names);
+        return std::make_unique<MenuPage>("Page Selection", Config::page_names);
     },
     [](Profile p) {
         return std::make_unique<ComponentPage>("Component Demo", p);
@@ -39,7 +37,7 @@ std::vector<std::function<std::unique_ptr<Page>(Profile p)>> factory {
         return std::make_unique<TimePage>("Time Display", p);
     }, 
     [](Profile p) {
-        return std::make_unique<ColorPickerPage>("Color Picker");
+        return std::make_unique<ColorPickerPage>("Color Picker", p.get_primary());
     }
 }; 
 

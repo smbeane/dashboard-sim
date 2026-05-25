@@ -50,7 +50,7 @@ void ColorPickerPage::bind_actions() {
     });
 
     rotary_left.bind(RotaryAction::Press, [this]() -> PageActionResult{
-        return PushAction{std::make_unique<PageSelectionPage>("Page Selection", Config::page_names, name)};
+        return PushAction{std::make_unique<MenuPage>("Page Selection", Config::page_names, name)};
     });
     
     rotary_right.bind(RotaryAction::Left, [this]() -> PageActionResult{

@@ -8,8 +8,7 @@
 
 namespace Config {
     inline const std::vector<std::string> page_names = {"Component Demo", "Time Display", "Color Picker"};
-
-
+    inline const std::vector<std::string> settings = {"Primary Color", "Secondary Color", "Accent Color"};
 }
 
 #endif // MENU_CONFIG_HPP

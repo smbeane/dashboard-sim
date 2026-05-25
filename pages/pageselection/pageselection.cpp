@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void PageSelectionPage::init_page(std::vector<std::string> page_names) {
+void MenuPage::init_page(std::vector<std::string> page_names) {
     for (size_t i = 0; i < page_names.size(); i++) {
         const std::string& name = page_names[i];
         create_component<TextBox>(Point(2, (static_cast<int>(i) * 7) + 2), name, 16, 'l', 2, UNSELECTED, BLACK);
@@ -13,7 +13,7 @@ void PageSelectionPage::init_page(std::vector<std::string> page_names) {
     bind_actions();
 }
 
-void PageSelectionPage::bind_actions() {
+void MenuPage::bind_actions() {
     rotary_left.bind(RotaryAction::Left, [this]() -> PageActionResult {
         components[selected_idx]->change_primary(UNSELECTED);
 

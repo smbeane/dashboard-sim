@@ -11,9 +11,9 @@
 #include <components/components.hpp>
 #include <utils/inputs/rotary_encoder.hpp>
 
-// TODO: change to just SelectionPage or similar
+// TODO: change to just MenuPage or similar
 
-class PageSelectionPage : public Page {
+class MenuPage : public Page {
     private:
         
         size_t selected_idx;
@@ -26,15 +26,15 @@ class PageSelectionPage : public Page {
 
     public:
 
-        PageSelectionPage(std::string name, std::vector<std::string> page_names) : Page(name), selected_idx(0) {
+        MenuPage(std::string name, std::vector<std::string> page_names) : Page(name), selected_idx(0) {
             init_page(page_names);
         }
 
-        PageSelectionPage(std::string name, std::vector<std::string> page_names, size_t selected_idx) : Page(name), selected_idx(selected_idx), initial_idx(selected_idx) {
+        MenuPage(std::string name, std::vector<std::string> page_names, size_t selected_idx) : Page(name), selected_idx(selected_idx), initial_idx(selected_idx) {
             init_page(page_names);
         }
 
-        PageSelectionPage(std::string name, std::vector<std::string> page_names, std::string selected_name) : Page(name) {
+        MenuPage(std::string name, std::vector<std::string> page_names, std::string selected_name) : Page(name) {
             std::vector<std::string>::iterator it = std::find(page_names.begin(), page_names.end(), selected_name);
             
             if (it == page_names.end()) selected_idx = initial_idx = 0;

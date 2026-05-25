@@ -6,7 +6,6 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
-
 #include <color/colors.hpp>
 
 class Profile {
@@ -26,7 +25,7 @@ class Profile {
 
         nlohmann::json parse_value(std::string value);
 
-        void parse_profile(std::string filename);
+        void save_profile();
 
         Color get_primary() const { return primary; };
 
@@ -34,11 +33,11 @@ class Profile {
 
         Color get_accent() const { return accent; };
 
-        Color set_primary(Color& new_primary);
+        Color set_primary(const Color& new_primary);
 
-        Color set_secondary(Color& new_secondary);
+        Color set_secondary(const Color& new_secondary);
 
-        Color set_accent(Color& new_accent);
+        Color set_accent(const Color& new_accent);
 
 };
 

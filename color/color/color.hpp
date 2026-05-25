@@ -2,8 +2,10 @@
 #define COLOR_HPP
 
 #include <cstdint>
+#include <string>
 #include <SDL3/SDL_pixels.h>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 class Color {
     public:
@@ -54,6 +56,19 @@ class Color {
 
         friend std::ostream& operator<<(std::ostream& os, const Color& color);
 
+
+
 };
+
+inline void to_json(nlohmann::json& j, const Color& c) {
+    j = {c.r, c.g, c.b};
+}
+
+inline void from_json(const nlohmann::json& j, Color& c) {
+    c.r = j.at(0).get<uint8_t>();
+    c.g = j.at(1).get<uint8_t>();
+    c.b = j.at(2).get<uint8_t>();
+    c.is_visible = true;
+}
 
 #endif // COLOR_HPP
